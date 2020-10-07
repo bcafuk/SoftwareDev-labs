@@ -41,6 +41,7 @@ public class ArrayIndexedCollection extends Collection {
      * Constructs an array collection from the elements of another collection.
      *
      * @param other the collection whose elements to insert into the new array collection
+     * @throws NullPointerException if <code>other</code> is <code>null</code>
      */
     public ArrayIndexedCollection(Collection other) {
         this(other, defaultCapacity);
@@ -53,6 +54,7 @@ public class ArrayIndexedCollection extends Collection {
      *
      * @param other           the collection whose elements to insert into the new array collection
      * @param initialCapacity the minimum initial capacity
+     * @throws NullPointerException if <code>other</code> is <code>null</code>
      */
     public ArrayIndexedCollection(Collection other, int initialCapacity) {
         this(Math.max(other.size(), initialCapacity));
