@@ -33,8 +33,8 @@ public class ArrayIndexedCollection extends Collection {
         if (initialCapacity < 1)
             throw new IllegalArgumentException("The initial size of the collection must be at least 1, but " + initialCapacity + "was given.");
 
-        size = initialCapacity;
-        elements = new Object[size];
+        size = 0;
+        elements = new Object[initialCapacity];
     }
 
     /**
