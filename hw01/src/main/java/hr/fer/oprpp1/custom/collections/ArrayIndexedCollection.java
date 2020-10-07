@@ -113,6 +113,7 @@ public class ArrayIndexedCollection extends Collection {
         if (position < 0 || position > size)
             throw new IndexOutOfBoundsException("Valid positions are 0 to " + size + ", but " + position + " was passed.");
 
+        growIfNecessary();
         System.arraycopy(elements, position, elements, position + 1, size - position);
         elements[position] = value;
         size++;
