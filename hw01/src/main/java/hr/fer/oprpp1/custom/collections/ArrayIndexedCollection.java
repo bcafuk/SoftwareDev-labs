@@ -78,10 +78,7 @@ public class ArrayIndexedCollection extends Collection {
      */
     @Override
     public void add(Object value) {
-        Objects.requireNonNull(value, "null cannot be added to collection.");
-
-        growIfNecessary();
-        elements[size++] = value;
+        insert(value, size);
     }
 
     /**
