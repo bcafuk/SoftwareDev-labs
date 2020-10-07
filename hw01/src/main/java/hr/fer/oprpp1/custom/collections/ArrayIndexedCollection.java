@@ -174,6 +174,17 @@ public class ArrayIndexedCollection extends Collection {
         return Arrays.copyOf(elements, size);
     }
 
+    /**
+     * Runs a processor's <code>process</code> method for every object in the collection, in order of ascending index.
+     *
+     * @param processor the processor to use
+     */
+    @Override
+    public void forEach(Processor processor) {
+        for (int i = 0; i < size; i++)
+            processor.process(elements[i]);
+    }
+
     @Override
     public void clear() {
         size = 0;
