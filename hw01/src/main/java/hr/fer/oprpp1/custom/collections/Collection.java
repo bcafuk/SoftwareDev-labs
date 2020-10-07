@@ -49,7 +49,7 @@ public class Collection {
      * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
      *
      * @param value the object to be removed
-     * @return <code>true</code> if an occurrece of <code>value</code> was found and removed, <code>false</code> otherwise
+     * @return <code>true</code> if an occurrence of <code>value</code> was found and removed, <code>false</code> otherwise
      */
     public boolean remove(Object value) {
         return false;
