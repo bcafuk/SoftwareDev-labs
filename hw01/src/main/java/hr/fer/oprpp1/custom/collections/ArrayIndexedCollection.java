@@ -44,7 +44,7 @@ public class ArrayIndexedCollection extends Collection {
      * @throws NullPointerException if <code>other</code> is <code>null</code>
      */
     public ArrayIndexedCollection(Collection other) {
-        this(other, defaultCapacity);
+        this(other, 1);
     }
 
     /**
