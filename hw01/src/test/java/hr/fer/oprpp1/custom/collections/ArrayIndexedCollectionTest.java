@@ -98,6 +98,20 @@ class ArrayIndexedCollectionTest {
     }
 
     @Test
+    public void addDuplicates() {
+        ArrayIndexedCollection collection = new ArrayIndexedCollection();
+
+        for (int i = 0; i < 10; i++)
+            collection.add(new Element(1, 1));
+
+        for (int i = 0; i < 10; i++) {
+            Element elementGotten = (Element) collection.get(i);
+            assertEquals(1, elementGotten.uniqueID);
+            assertEquals(1, elementGotten.comparisonID);
+        }
+    }
+
+    @Test
     public void containsElement() {
         ArrayIndexedCollection collection = new ArrayIndexedCollection();
 
@@ -131,6 +145,26 @@ class ArrayIndexedCollectionTest {
 
         assertEquals(-1, collection.indexOf(new Element(1, 1)));
         assertEquals(-1, collection.indexOf(null));
+    }
+
+    @Test
+    public void indexOfDuplicateElement() {
+        ArrayIndexedCollection collection = new ArrayIndexedCollection();
+
+        for (int i = 0; i < 10; i++)
+            collection.add(new Element(-i, i));
+
+        collection.add(new Element(1, -1));
+
+        for (int i = 10; i < 20; i++)
+            collection.add(new Element(-i, i));
+
+        collection.add(new Element(1, -2));
+
+        for (int i = 20; i < 30; i++)
+            collection.add(new Element(-i, i));
+
+        assertEquals(10, collection.indexOf(new Element(1, -2)));
     }
 
     @Test
@@ -185,6 +219,44 @@ class ArrayIndexedCollectionTest {
         collection.remove(0);
 
         assertTrue(collection.isEmpty());
+    }
+
+    @Test
+    public void removeDuplicateElement() {
+        ArrayIndexedCollection collection = new ArrayIndexedCollection();
+
+        for (int i = 0; i < 10; i++)
+            collection.add(new Element(-i, i));
+
+        collection.add(new Element(1, -1));
+
+        for (int i = 10; i < 20; i++)
+            collection.add(new Element(-i, i));
+
+        collection.add(new Element(1, -2));
+
+        for (int i = 20; i < 30; i++)
+            collection.add(new Element(-i, i));
+
+        assertTrue(collection.remove(new Element(1, -2)));
+
+        assertEquals(31, collection.size());
+
+        for (int i = 0; i < 20; i++) {
+            Element elementGotten = (Element) collection.get(i);
+            assertEquals(i, elementGotten.uniqueID);
+            assertEquals(-i, elementGotten.comparisonID);
+        }
+
+        Element duplicateElement = (Element) collection.get(20);
+        assertEquals(-2, duplicateElement.uniqueID);
+        assertEquals(1, duplicateElement.comparisonID);
+
+        for (int i = 20; i < 30; i++) {
+            Element elementGotten = (Element) collection.get(i + 1);
+            assertEquals(i, elementGotten.uniqueID);
+            assertEquals(-i, elementGotten.comparisonID);
+        }
     }
 
     @Test
