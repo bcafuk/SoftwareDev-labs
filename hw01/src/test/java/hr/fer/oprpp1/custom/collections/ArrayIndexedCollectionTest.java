@@ -301,7 +301,7 @@ class ArrayIndexedCollectionTest {
     }
 
     @Test
-    public void removeByNonexistantReference() {
+    public void removeByNonexistentReference() {
         final int elementCount = 100;
         ArrayIndexedCollection collection = createCollection(elementCount);
 
