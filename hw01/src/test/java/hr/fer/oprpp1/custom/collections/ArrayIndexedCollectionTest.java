@@ -212,7 +212,7 @@ class ArrayIndexedCollectionTest {
     public void removeFromEnd() {testRemoval(100, 99);}
 
     @Test
-    public void removeLastElement() {
+    public void removeOnlyElement() {
         ArrayIndexedCollection collection = new ArrayIndexedCollection();
 
         collection.add(new Element(0, 0));
