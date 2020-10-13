@@ -71,7 +71,10 @@ public class LinkedListIndexedCollection extends Collection {
         if (last != null)
             last.next = newNode;
 
+        if (first == null)
+            first = newNode;
         last = newNode;
+
         size++;
     }
 
