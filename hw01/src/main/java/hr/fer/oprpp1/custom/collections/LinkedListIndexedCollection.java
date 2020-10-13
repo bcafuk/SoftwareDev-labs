@@ -149,6 +149,8 @@ public class LinkedListIndexedCollection extends Collection {
             first = newNode;
 
         currentNode.previous = newNode;
+
+        size++;
     }
 
     /**
@@ -237,6 +239,8 @@ public class LinkedListIndexedCollection extends Collection {
             node.next.previous = node.previous;
         else
             last = node.previous;
+
+        size--;
     }
 
     @Override
