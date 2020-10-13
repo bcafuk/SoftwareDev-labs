@@ -1,7 +1,7 @@
 package hr.fer.oprpp1.custom.collections;
 
 /**
- * A generic collection of objects
+ * A generic collection of objects.
  *
  * @author Borna Cafuk
  */
