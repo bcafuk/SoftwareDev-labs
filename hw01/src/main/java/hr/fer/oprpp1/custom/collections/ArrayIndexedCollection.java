@@ -180,9 +180,9 @@ public class ArrayIndexedCollection extends Collection {
     }
 
     /**
-     * Runs a processor's <code>process</code> method for every object in the collection, in order of ascending index.
+     * Runs a {@link Processor}'s {@link Processor#process(Object)} method for every object in the collection, in order of ascending index.
      *
-     * @param processor the processor to use
+     * @param processor the {@link Processor} to use
      */
     @Override
     public void forEach(Processor processor) {
