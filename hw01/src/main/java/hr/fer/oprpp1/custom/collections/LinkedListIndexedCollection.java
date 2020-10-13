@@ -51,6 +51,11 @@ public class LinkedListIndexedCollection extends Collection {
         return size;
     }
 
+    @Override
+    public boolean contains(Object value) {
+        return indexOf(value) != -1;
+    }
+
     /**
      * Adds an element to the end of the list.
      *
@@ -166,6 +171,44 @@ public class LinkedListIndexedCollection extends Collection {
     }
 
     /**
+     * Finds the first node in the list whose value is equal to the parameter.
+     * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
+     * The parameter may be <code>null</code>, in which case <code>null</code> is returned.
+     *
+     * @param value the element to find
+     * @return the node with the value if it exists in the collection, <code>null</code> otherwise
+     */
+    public ListNode findNode(Object value) {
+        if (value == null)
+            return null;
+
+        for (ListNode node = first; node != null; node = node.next) {
+            if (value.equals(node.value))
+                return node;
+        }
+
+        return null;
+    }
+
+    /**
+     * Removes the first occurrence of an object from the collection.
+     * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
+     *
+     * @param value the object to be removed
+     * @return <code>true</code> if an occurrence of <code>value</code> was found and removed, <code>false</code> otherwise
+     */
+    @Override
+    public boolean remove(Object value) {
+        ListNode node = findNode(value);
+
+        if (node == null)
+            return false;
+
+        remove(node);
+        return true;
+    }
+
+    /**
      * Removes the element at the specified index.
      * All elements that are currently after the index get shifted towards the start of the array.
      *
@@ -173,16 +216,47 @@ public class LinkedListIndexedCollection extends Collection {
      * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the list
      */
     public void remove(int index) {
-        ListNode removedNode = getNode(index);
+        remove(getNode(index));
+    }
 
-        if (removedNode.previous != null)
-            removedNode.previous.next = removedNode.next;
+    /**
+     * Removes a node from the list.
+     *
+     * @param node the node to remove
+     */
+    private void remove(ListNode node) {
+        if (node.previous != null)
+            node.previous.next = node.next;
         else
-            first = removedNode.next;
+            first = node.next;
 
-        if (removedNode.next != null)
-            removedNode.next.previous = removedNode.previous;
+        if (node.next != null)
+            node.next.previous = node.previous;
         else
-            last = removedNode.previous;
+            last = node.previous;
+    }
+
+    @Override
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+
+        int index = 0;
+        for (ListNode node = first; node != null; node = node.next) {
+            array[index] = node.value;
+            index++;
+        }
+
+        return array;
+    }
+
+    /**
+     * Runs a processor's <code>process</code> method for every object in the collection, in order of ascending index.
+     *
+     * @param processor the processor to use
+     */
+    @Override
+    public void forEach(Processor processor) {
+        for (ListNode node = first; node != null; node = node.next)
+            processor.process(node.value);
     }
 }
