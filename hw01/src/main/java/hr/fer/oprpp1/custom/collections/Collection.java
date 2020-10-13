@@ -20,7 +20,7 @@ public class Collection {
     /**
      * Returns the size of the collection.
      *
-     * @return the number of objects currently stores in the collection
+     * @return the number of objects currently stored in the collection
      */
     public int size() {
         return 0;
