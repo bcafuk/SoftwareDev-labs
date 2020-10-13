@@ -17,7 +17,7 @@ class ArrayIndexedCollectionTest {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (!(o instanceof Element)) return false;
             Element element = (Element) o;
             return comparisonID == element.comparisonID;
         }
