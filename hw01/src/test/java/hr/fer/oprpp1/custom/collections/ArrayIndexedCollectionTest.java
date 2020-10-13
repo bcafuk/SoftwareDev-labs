@@ -302,6 +302,25 @@ class ArrayIndexedCollectionTest {
     }
 
     @Test
+    public void addAfterClear() {
+        final int elementCount = 100;
+        ArrayIndexedCollection collection = createCollection(elementCount);
+
+        collection.clear();
+
+        for (int i = 0; i < elementCount; i++)
+            collection.add(new Element(i, -i));
+
+        assertEquals(elementCount, collection.size());
+
+        for (int i = 0; i < elementCount; i++) {
+            Element elementGotten = (Element) collection.get(i);
+            assertEquals(-i, elementGotten.uniqueID);
+            assertEquals(i, elementGotten.comparisonID);
+        }
+    }
+
+    @Test
     public void convertToArray() {
         final int elementCount = 100;
         ArrayIndexedCollection collection = createCollection(elementCount);
