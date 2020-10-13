@@ -31,7 +31,7 @@ class ArrayIndexedCollectionTest {
     }
 
     @Test
-    public void inititalCapacityConstructor() {
+    public void initialCapacityConstructor() {
         ArrayIndexedCollection collection = new ArrayIndexedCollection(32);
         assertTrue(collection.isEmpty());
         assertEquals(0, collection.size());
