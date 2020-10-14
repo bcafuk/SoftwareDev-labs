@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * A linked-list-backed collection.
- *
+ * <p>
  * This collection may contain duplicate elements, but not {@code null} references.
  *
  * @author Borna Cafuk
@@ -30,9 +30,9 @@ public class LinkedListIndexedCollection extends Collection {
         /**
          * Initializes a list node with all its fields.
          *
-         * @param next the node in the list immediately following this one
+         * @param next     the node in the list immediately following this one
          * @param previous the node in the list immediately preceding this one
-         * @param value the object represented by this node
+         * @param value    the object represented by this node
          */
         public ListNode(ListNode next, ListNode previous, Object value) {
             this.next = next;
@@ -151,7 +151,7 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Inserts an element into the list at a specified position.
-     *
+     * <p>
      * All elements that are currently at or after the position get shifted towards the end of the list.
      * Afterwards, the inserted element will have the specified index.
      *
@@ -185,7 +185,7 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Finds the first occurrence of an element in the list and returns its index.
-     *
+     * <p>
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case -1 is returned.
      *
@@ -208,7 +208,7 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Finds the first node in the list whose {@link ListNode#value} is equal to the parameter.
-     *
+     * <p>
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case {@code null} is returned.
      *
@@ -229,7 +229,7 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Removes the first occurrence of an object from the collection.
-     *
+     * <p>
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method.
      *
@@ -249,7 +249,7 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Removes the element at the specified index.
-     *
+     * <p>
      * All elements that are currently after the index get shifted towards the start of the array.
      *
      * @param index the index at which to remove the element

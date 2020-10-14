@@ -8,7 +8,7 @@ package hr.fer.oprpp1.custom.collections;
 public class Collection {
     /**
      * This constructor ensures that {@link Collection}s cannot be instantiated except by subclasses.
-     *
+     * <p>
      * At this point in the lesson plan, abstract classes haven't yet been covered, so I used protected constructors and
      * dummy implementations of methods that are expected to be overridden, as instructed in the assignment document.
      */
@@ -41,7 +41,7 @@ public class Collection {
 
     /**
      * Tests whether the collection contains an object.
-     *
+     * <p>
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method.
      *
@@ -54,13 +54,12 @@ public class Collection {
 
     /**
      * Removes one occurrence of an object from the collection.
-     *
+     * <p>
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method.
      *
      * @param value the object to be removed
      * @return {@code true} if an occurrence of {@code value} was found and removed, {@code false} otherwise
-     *
      */
     public boolean remove(Object value) {
         return false;

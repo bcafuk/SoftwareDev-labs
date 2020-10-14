@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * An array-backed collection with constant-time lookup.
- *
+ * <p>
  * This collection may contain duplicate elements, but not {@code null} references.
  *
  * @author Borna Cafuk
@@ -63,7 +63,7 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Constructs an array collection from the elements of another collection.
-     *
+     * <p>
      * This constructor takes a minimum initial capacity. If the specified collection has more elements,
      * then the number of its elements is taken as the initial capacity instead.
      *
@@ -114,7 +114,7 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Inserts an element into the array at a specified position.
-     *
+     * <p>
      * All elements that are currently at or after the position get shifted towards the end of the array.
      * Afterwards, the inserted element will have the specified index.
      *
@@ -139,7 +139,7 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Finds the first occurrence of an element in the array and returns its index.
-     *
+     * <p>
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case -1 is returned.
      *

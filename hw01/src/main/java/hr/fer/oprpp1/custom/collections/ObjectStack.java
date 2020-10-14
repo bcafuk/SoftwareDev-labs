@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * A last in, first out stack for objects.
- *
+ * <p>
  * The stack is not allowed to contain {@code null}.
  *
  * @author Borna Cafuk
