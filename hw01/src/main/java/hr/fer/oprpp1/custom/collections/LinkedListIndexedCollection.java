@@ -4,16 +4,36 @@ import java.util.Objects;
 
 /**
  * A linked-list-backed collection.
- * This collection may contain duplicate elements, but not <code>null</code> references.
+ *
+ * This collection may contain duplicate elements, but not {@code null} references.
  *
  * @author Borna Cafuk
  */
 public class LinkedListIndexedCollection extends Collection {
+    /**
+     * An internal class representing a node of a linked list.
+     */
     private static class ListNode {
+        /**
+         * Reference to the next node in the list, or {@code null} if this node is the last in the list.
+         */
         public ListNode next;
+        /**
+         * Reference to the previous node in the list, or {@code null} if this node is the first in the list.
+         */
         public ListNode previous;
+        /**
+         * The payload of the node, the object represented by this node.
+         */
         public Object value;
 
+        /**
+         * Initializes a list node with all its fields.
+         *
+         * @param next the node in the list immediately following this one
+         * @param previous the node in the list immediately preceding this one
+         * @param value the object represented by this node
+         */
         public ListNode(ListNode next, ListNode previous, Object value) {
             this.next = next;
             this.previous = previous;
@@ -21,12 +41,21 @@ public class LinkedListIndexedCollection extends Collection {
         }
     }
 
+    /**
+     * The number of elements currently contained in the linked list.
+     */
     private int size;
+    /**
+     * The first node in the list, or {@code null} if the list is empty.
+     */
     private ListNode first;
+    /**
+     * The last node in the list, or {@code null} if the list is empty.
+     */
     private ListNode last;
 
     /**
-     * Constructs empty collection.
+     * Constructs an empty collection.
      */
     public LinkedListIndexedCollection() {
         size = 0;
@@ -35,10 +64,10 @@ public class LinkedListIndexedCollection extends Collection {
     }
 
     /**
-     * Constructs an array collection from the elements of another collection.
+     * Constructs a linked list collection from the elements of another collection.
      *
      * @param other the collection whose elements to insert into the new linked list collection
-     * @throws NullPointerException if <code>other</code> is <code>null</code>
+     * @throws NullPointerException if {@code other} is {@code null}
      */
     public LinkedListIndexedCollection(Collection other) {
         this();
@@ -60,7 +89,7 @@ public class LinkedListIndexedCollection extends Collection {
      * Adds an element to the end of the list.
      *
      * @param value the element to add
-     * @throws NullPointerException if the element is <code>null</code>
+     * @throws NullPointerException if the element is {@code null}
      */
     @Override
     public void add(Object value) {
@@ -90,7 +119,7 @@ public class LinkedListIndexedCollection extends Collection {
     }
 
     /**
-     * Gets the <code>ListNode</code> at the specified index.
+     * Gets the node at the specified index.
      *
      * @param index the index of the element to get
      * @return the element at the index
@@ -122,12 +151,13 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Inserts an element into the list at a specified position.
+     *
      * All elements that are currently at or after the position get shifted towards the end of the list.
      * Afterwards, the inserted element will have the specified index.
      *
      * @param value    the element to insert
      * @param position the position where to insert the element
-     * @throws NullPointerException if the element is <code>null</code>
+     * @throws NullPointerException if the element is {@code null}
      */
     public void insert(Object value, int position) {
         Objects.requireNonNull(value, "null cannot be inserted into collection.");
@@ -155,8 +185,9 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Finds the first occurrence of an element in the list and returns its index.
-     * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
-     * The parameter may be <code>null</code>, in which case -1 is returned.
+     *
+     * Whether an object in the collection is equal to the parameter is determined using the
+     * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case -1 is returned.
      *
      * @param value the element to find
      * @return the index of the element if it exists in the collection, -1 otherwise
@@ -176,12 +207,13 @@ public class LinkedListIndexedCollection extends Collection {
     }
 
     /**
-     * Finds the first node in the list whose value is equal to the parameter.
-     * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
-     * The parameter may be <code>null</code>, in which case <code>null</code> is returned.
+     * Finds the first node in the list whose {@link ListNode#value} is equal to the parameter.
+     *
+     * Whether an object in the collection is equal to the parameter is determined using the
+     * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case {@code null} is returned.
      *
      * @param value the element to find
-     * @return the node with the value if it exists in the collection, <code>null</code> otherwise
+     * @return the node with the value if it exists in the collection, {@code null} otherwise
      */
     private ListNode findNode(Object value) {
         if (value == null)
@@ -197,10 +229,12 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Removes the first occurrence of an object from the collection.
-     * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
+     *
+     * Whether an object in the collection is equal to the parameter is determined using the
+     * {@link Object#equals(Object)} method.
      *
      * @param value the object to be removed
-     * @return <code>true</code> if an occurrence of <code>value</code> was found and removed, <code>false</code> otherwise
+     * @return {@code true} if an occurrence of {@code value} was found and removed, {@code false} otherwise
      */
     @Override
     public boolean remove(Object value) {
@@ -215,6 +249,7 @@ public class LinkedListIndexedCollection extends Collection {
 
     /**
      * Removes the element at the specified index.
+     *
      * All elements that are currently after the index get shifted towards the start of the array.
      *
      * @param index the index at which to remove the element
@@ -257,7 +292,8 @@ public class LinkedListIndexedCollection extends Collection {
     }
 
     /**
-     * Runs a {@link Processor}'s {@link Processor#process(Object)} method for every object in the collection, in order of ascending index.
+     * Runs a {@link Processor}'s {@link Processor#process(Object)} method for every object in the collection,
+     * in order of ascending index.
      *
      * @param processor the {@link Processor} to use
      */

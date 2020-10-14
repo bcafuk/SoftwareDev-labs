@@ -4,11 +4,15 @@ import java.util.Objects;
 
 /**
  * A last in, first out stack for objects.
- * The stack is not allowed to contain <code>null</code>.
+ *
+ * The stack is not allowed to contain {@code null}.
  *
  * @author Borna Cafuk
  */
 public class ObjectStack {
+    /**
+     * The internal indexed collection that contains the stack elements.
+     */
     private ArrayIndexedCollection collection;
 
     /**
@@ -19,7 +23,7 @@ public class ObjectStack {
     /**
      * Returns whether the stack is empty.
      *
-     * @return <code>true</code> if the stack is empty, <code>false</code> otherwise
+     * @return {@code true} if the stack is empty, {@code false} otherwise
      */
     public boolean isEmpty() {return collection.isEmpty();}
 
@@ -34,7 +38,7 @@ public class ObjectStack {
      * Pushes an object onto the top of the stack.
      *
      * @param value the object to be added onto the stack
-     * @throws NullPointerException if the object to be pushed is <code>null</code>
+     * @throws NullPointerException if the object to be pushed is {@code null}
      */
     public void push(Object value) {
         Objects.requireNonNull(value, "null cannot be pushed onto the stack.");

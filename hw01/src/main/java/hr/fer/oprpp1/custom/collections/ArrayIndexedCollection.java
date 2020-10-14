@@ -5,19 +5,33 @@ import java.util.Objects;
 
 /**
  * An array-backed collection with constant-time lookup.
- * This collection may contain duplicate elements, but not <code>null</code> references.
+ *
+ * This collection may contain duplicate elements, but not {@code null} references.
  *
  * @author Borna Cafuk
  */
 public class ArrayIndexedCollection extends Collection {
+    /**
+     * The default capacity (i.e. the size of the internal array) when no capacity is specified in the constructor.
+     */
     private static final int DEFAULT_CAPACITY = 16;
+    /**
+     * By how much the capacity is multiplied when an element is to be added to an already full array.
+     */
     private static final int GROWTH_FACTOR = 2;
 
+    /**
+     * How many elements are contained in the collection, i.e. how many indices of the internal array are occupied.
+     */
     private int size;
+    /**
+     * The internal array containing the elements of the collection. Unused indices are set to {@code null}.
+     */
     private Object[] elements;
 
     /**
-     * Constructs an array collection with the default initial capacity of 16.
+     * Constructs an array collection with the default initial capacity of
+     * {@link ArrayIndexedCollection#DEFAULT_CAPACITY}.
      */
     public ArrayIndexedCollection() {
         this(DEFAULT_CAPACITY);
@@ -41,7 +55,7 @@ public class ArrayIndexedCollection extends Collection {
      * Constructs an array collection from the elements of another collection.
      *
      * @param other the collection whose elements to insert into the new array collection
-     * @throws NullPointerException if <code>other</code> is <code>null</code>
+     * @throws NullPointerException if {@code other} is {@code null}
      */
     public ArrayIndexedCollection(Collection other) {
         this(other, 1);
@@ -49,12 +63,13 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Constructs an array collection from the elements of another collection.
-     * It also takes a minimum initial capacity. If the specified collection has more elements,
+     *
+     * This constructor takes a minimum initial capacity. If the specified collection has more elements,
      * then the number of its elements is taken as the initial capacity instead.
      *
      * @param other           the collection whose elements to insert into the new array collection
      * @param initialCapacity the minimum initial capacity
-     * @throws NullPointerException if <code>other</code> is <code>null</code>
+     * @throws NullPointerException if {@code other} is {@code null}
      */
     public ArrayIndexedCollection(Collection other, int initialCapacity) {
         this(Math.max(other.size(), initialCapacity));
@@ -76,7 +91,7 @@ public class ArrayIndexedCollection extends Collection {
      * Adds an element to the end of the array.
      *
      * @param value the element to add
-     * @throws NullPointerException if the element is <code>null</code>
+     * @throws NullPointerException if the element is {@code null}
      */
     @Override
     public void add(Object value) {
@@ -99,12 +114,13 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Inserts an element into the array at a specified position.
+     *
      * All elements that are currently at or after the position get shifted towards the end of the array.
      * Afterwards, the inserted element will have the specified index.
      *
      * @param value    the element to insert
      * @param position the position where to insert the element
-     * @throws NullPointerException if the element is <code>null</code>
+     * @throws NullPointerException if the element is {@code null}
      */
     public void insert(Object value, int position) {
         Objects.requireNonNull(value, "null cannot be inserted into collection.");
@@ -123,8 +139,9 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Finds the first occurrence of an element in the array and returns its index.
-     * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
-     * The parameter may be <code>null</code>, in which case -1 is returned.
+     *
+     * Whether an object in the collection is equal to the parameter is determined using the
+     * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case -1 is returned.
      *
      * @param value the element to find
      * @return the index of the element if it exists in the collection, -1 otherwise
@@ -142,10 +159,11 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Removes the first occurrence of an object from the collection.
-     * Whether an object in the collection is equal to the parameter is determined using the <code>equals</code> method.
+     * Whether an object in the collection is equal to the parameter is determined using the
+     * {@link Object#equals(Object)} method.
      *
      * @param value the object to be removed
-     * @return <code>true</code> if an occurrence of <code>value</code> was found and removed, <code>false</code> otherwise
+     * @return {@code true} if an occurrence of {@code value} was found and removed, {@code false} otherwise
      */
     @Override
     public boolean remove(Object value) {
@@ -181,7 +199,8 @@ public class ArrayIndexedCollection extends Collection {
     }
 
     /**
-     * Runs a {@link Processor}'s {@link Processor#process(Object)} method for every object in the collection, in order of ascending index.
+     * Runs a {@link Processor}'s {@link Processor#process(Object)} method for every object in the collection,
+     * in order of ascending index.
      *
      * @param processor the {@link Processor} to use
      */
@@ -198,7 +217,7 @@ public class ArrayIndexedCollection extends Collection {
     }
 
     /**
-     * Doubles the size of the array if it is full.
+     * Increases the size of the array {@link ArrayIndexedCollection#GROWTH_FACTOR} times if it is full.
      */
     private void growIfNecessary() {
         if (size < elements.length)

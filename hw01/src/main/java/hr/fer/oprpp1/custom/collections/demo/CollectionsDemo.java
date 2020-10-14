@@ -11,7 +11,8 @@ import java.util.Arrays;
  */
 public class CollectionsDemo {
     /**
-     * The contents of this method have been copied verbatim from the assignment document written by doc. dr. sc. Marko Čupić.
+     * The contents of this method have been copied verbatim from
+     * the assignment document written by doc. dr. sc. Marko Čupić.
      *
      * @author Marko Čupić
      */
