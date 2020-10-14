@@ -13,8 +13,6 @@ public class CollectionsDemo {
     /**
      * The contents of this method have been copied verbatim from
      * the assignment document written by doc. dr. sc. Marko Čupić.
-     *
-     * @author Marko Čupić
      */
     public static void main(String[] args) {
         ArrayIndexedCollection col = new ArrayIndexedCollection(2);
