@@ -169,7 +169,8 @@ public class ArrayIndexedCollection extends Collection {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Valid indices are 0 to " + (size - 1) + ", but " + index + " was passed.");
 
-        System.arraycopy(elements, index + 1, elements, index, size - index - 1);
+        if (index != size - 1)
+            System.arraycopy(elements, index + 1, elements, index, size - index - 1);
         size--;
         elements[size] = null;
     }
