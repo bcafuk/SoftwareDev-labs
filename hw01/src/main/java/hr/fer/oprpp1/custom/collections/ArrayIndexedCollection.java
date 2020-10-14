@@ -10,8 +10,8 @@ import java.util.Objects;
  * @author Borna Cafuk
  */
 public class ArrayIndexedCollection extends Collection {
-    private static final int defaultCapacity = 16;
-    private static final int growthFactor = 2;
+    private static final int DEFAULT_CAPACITY = 16;
+    private static final int GROWTH_FACTOR = 2;
 
     private int size;
     private Object[] elements;
@@ -20,7 +20,7 @@ public class ArrayIndexedCollection extends Collection {
      * Constructs an array collection with the default initial capacity of 16.
      */
     public ArrayIndexedCollection() {
-        this(defaultCapacity);
+        this(DEFAULT_CAPACITY);
     }
 
     /**
@@ -204,7 +204,7 @@ public class ArrayIndexedCollection extends Collection {
         if (size < elements.length)
             return;
 
-        Object[] newElements = new Object[elements.length * growthFactor];
+        Object[] newElements = new Object[elements.length * GROWTH_FACTOR];
         System.arraycopy(elements, 0, newElements, 0, size);
         elements = newElements;
     }
