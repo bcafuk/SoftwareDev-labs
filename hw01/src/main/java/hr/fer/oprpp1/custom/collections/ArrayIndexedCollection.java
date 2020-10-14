@@ -31,7 +31,7 @@ public class ArrayIndexedCollection extends Collection {
 
     /**
      * Constructs an array collection with the default initial capacity of
-     * {@link ArrayIndexedCollection#DEFAULT_CAPACITY}.
+     * {@value ArrayIndexedCollection#DEFAULT_CAPACITY}.
      */
     public ArrayIndexedCollection() {
         this(DEFAULT_CAPACITY);
@@ -217,7 +217,7 @@ public class ArrayIndexedCollection extends Collection {
     }
 
     /**
-     * Increases the size of the array {@link ArrayIndexedCollection#GROWTH_FACTOR} times if it is full.
+     * Increases the size of the array {@value ArrayIndexedCollection#GROWTH_FACTOR} times if it is full.
      */
     private void growIfNecessary() {
         if (size < elements.length)
