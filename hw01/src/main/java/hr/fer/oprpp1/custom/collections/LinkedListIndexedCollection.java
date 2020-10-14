@@ -183,7 +183,7 @@ public class LinkedListIndexedCollection extends Collection {
      * @param value the element to find
      * @return the node with the value if it exists in the collection, <code>null</code> otherwise
      */
-    public ListNode findNode(Object value) {
+    private ListNode findNode(Object value) {
         if (value == null)
             return null;
 
