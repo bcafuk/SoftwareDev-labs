@@ -228,7 +228,8 @@ public class ComplexNumber {
 
         sb.append(real);
 
-        if (imaginary > 0)
+        // Special case: NaN is not less than zero
+        if (!(imaginary < 0))
             sb.append('+');
 
         sb.append(imaginary).append('i');
