@@ -10,8 +10,18 @@ import java.util.regex.Pattern;
  * @author Borna Cafuk
  */
 public class ComplexNumber {
+    /**
+     * A regex used in the {@link ComplexNumber#parse(String)} method to parse purely real numbers.
+     */
     static private final Pattern REAL_PATTERN = Pattern.compile("[+-]?\\d+(?:\\.\\d+)?");
+    /**
+     * A regex used in the {@link ComplexNumber#parse(String)} method to parse purely imaginary numbers.
+     */
     static private final Pattern IMAGINARY_PATTERN = Pattern.compile("([+-]?(?:\\d+(?:\\.\\d+)?)?)i");
+    /**
+     * A regex used in the {@link ComplexNumber#parse(String)} method to parse complex numbers with both their real and
+     * imaginary parts specified.
+     */
     static private final Pattern COMPLEX_PATTERN = Pattern.compile("([+-]?\\d+(?:\\.\\d+)?)([+-](?:\\d+(?:\\.\\d+)?)?)i");
 
     /**
