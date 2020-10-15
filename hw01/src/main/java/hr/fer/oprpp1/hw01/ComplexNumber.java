@@ -164,7 +164,7 @@ public class ComplexNumber {
      */
     private ComplexNumber reciproc() {
         double denominator = real * real + imaginary * imaginary;
-        return new ComplexNumber(real / denominator, imaginary / denominator);
+        return new ComplexNumber(real / denominator, -imaginary / denominator);
     }
 
     /**
