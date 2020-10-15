@@ -3,6 +3,7 @@ package hr.fer.oprpp1.hw01;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.EmptySource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -236,5 +237,31 @@ class ComplexNumberTest {
     @CsvFileSource(resources = "/nonfiniteComplexNumbers.csv", numLinesToSkip = 1)
     public void testToStringNonfinite(double real, double imaginary, double magnitude, double angle, String string) {
         assertEquals(string, new ComplexNumber(real, imaginary).toString());
+    }
+
+    @Test
+    public void parseNull() {
+        assertThrows(
+                NullPointerException.class,
+                () -> ComplexNumber.parse(null)
+        );
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "/validComplexStrings.csv", numLinesToSkip = 1)
+    public void parseValid(String string, double real, double imaginary) {
+        ComplexNumber z = ComplexNumber.parse(string);
+        assertEquals(real, z.getReal(), DOUBLE_EPSILON);
+        assertEquals(imaginary, z.getImaginary(), DOUBLE_EPSILON);
+    }
+
+    @ParameterizedTest
+    @EmptySource
+    @CsvFileSource(resources = "/invalidComplexStrings.csv")
+    public void parseInvalid(String string) {
+        assertThrows(
+                NumberFormatException.class,
+                () -> ComplexNumber.parse(string)
+        );
     }
 }
