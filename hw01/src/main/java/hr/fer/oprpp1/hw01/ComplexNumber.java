@@ -109,7 +109,7 @@ public class ComplexNumber {
 
         // Math2.atan2 returns an angle between -pi and pi
         if (angle < 0)
-            angle += Math.PI;
+            angle += 2 * Math.PI;
 
         return angle;
     }
