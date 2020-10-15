@@ -1,11 +1,19 @@
 package hr.fer.oprpp1.hw01;
 
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * An immutable complex number.
  *
  * @author Borna Cafuk
  */
 public class ComplexNumber {
+    static private final Pattern REAL_PATTERN = Pattern.compile("[+-]?\\d+(?:\\.\\d+)?");
+    static private final Pattern IMAGINARY_PATTERN = Pattern.compile("([+-]?(?:\\d+(?:\\.\\d+)?)?)i");
+    static private final Pattern COMPLEX_PATTERN = Pattern.compile("([+-]?\\d+(?:\\.\\d+)?)([+-](?:\\d+(?:\\.\\d+)?)?)i");
+
     /**
      * The real part of the number.
      */
@@ -58,14 +66,51 @@ public class ComplexNumber {
     }
 
     /**
+     * Parses a double from a string, but if the string is empty or contains only a sign, implies a result of 1 or -1.
+     *
+     * @param s the string to parse
+     * @return <ul>
+     * <li>1.0 if the string is empty or "+",</li>
+     * <li>-1.0 if the string is "-",</li>
+     * <li>the result of {@link Double#parseDouble(String)} otherwise.</li>
+     * </ul>
+     */
+    private static double parseWithImpliedUnit(String s) {
+        return switch (s) {
+            case "", "+" -> 1;
+            case "-" -> -1;
+            default -> Double.parseDouble(s);
+        };
+    }
+
+    /**
      * Parses a string and constructs a complex number.
      *
      * @param s the string to parse
      * @return a new complex number
+     * @throws NullPointerException  if the input is null
+     * @throws NumberFormatException if the input string is not a valid complex number
      */
     public static ComplexNumber parse(String s) {
-        // TODO: Implement parse method
-        throw new UnsupportedOperationException("Not yet implemented.");
+        Objects.requireNonNull(s, "Cannot parse null.");
+
+        if (REAL_PATTERN.matcher(s).matches())
+            return fromReal(Double.parseDouble(s));
+
+        Matcher imaginaryMatcher = IMAGINARY_PATTERN.matcher(s);
+        if (imaginaryMatcher.matches()) {
+            String group = imaginaryMatcher.group(1);
+            return fromImaginary(parseWithImpliedUnit(group));
+        }
+
+        Matcher complexMatcher = COMPLEX_PATTERN.matcher(s);
+        if (!complexMatcher.matches())
+            throw new NumberFormatException("String cannot be parsed to a complex number: " + s);
+
+        double real = Double.parseDouble(complexMatcher.group(1));
+        String imaginaryGroup = complexMatcher.group(2);
+
+        return new ComplexNumber(real, parseWithImpliedUnit(imaginaryGroup));
     }
 
     /**
