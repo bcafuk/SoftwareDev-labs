@@ -10,6 +10,8 @@ public interface ElementsGetter {
      * Returns whether if the collection has more elements.
      *
      * @return {@code true} if the collection has more elements, {@code false} otherwise
+     * @throws ConcurrentModificationException if the collection has changed since this {@link ElementsGetter}
+     *                                         has been created
      */
     boolean hasNextElement();
 

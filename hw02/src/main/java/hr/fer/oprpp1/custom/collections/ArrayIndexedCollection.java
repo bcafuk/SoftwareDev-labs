@@ -95,6 +95,8 @@ public class ArrayIndexedCollection implements Collection {
 
     /**
      * Adds an element to the end of the array.
+     * <p>
+     * Invalidates existing {@link Getter}s if a reallocation occurs.
      *
      * @param value the element to add
      * @throws NullPointerException if the element is {@code null}
@@ -123,6 +125,12 @@ public class ArrayIndexedCollection implements Collection {
      * <p>
      * All elements that are currently at or after the position get shifted towards the end of the array.
      * Afterwards, the inserted element will have the specified index.
+     * <p>
+     * Invalidates existing {@link Getter}s if:
+     * <ul>
+     *     <li>the element is not inserted at the end, or</li>
+     *     <li>the element is inserted at the end an a reallocation occurs.</li>
+     * </ul>
      *
      * @param value    the element to insert
      * @param position the position where to insert the element
@@ -169,6 +177,8 @@ public class ArrayIndexedCollection implements Collection {
      * Removes the first occurrence of an object from the collection.
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method.
+     * <p>
+     * Invalidates existing {@link Getter}s if the element removed is not from the end.
      *
      * @param value the object to be removed
      * @return {@code true} if an occurrence of {@code value} was found and removed, {@code false} otherwise
@@ -187,6 +197,8 @@ public class ArrayIndexedCollection implements Collection {
     /**
      * Removes the element at the specified index.
      * All elements that are currently after the index get shifted towards the start of the array.
+     * <p>
+     * Invalidates existing {@link Getter}s if the element removed is not from the end.
      *
      * @param index the index at which to remove the element
      * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the array
@@ -221,6 +233,11 @@ public class ArrayIndexedCollection implements Collection {
             processor.process(elements[i]);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Invalidates existing {@link Getter}s.
+     */
     @Override
     public void clear() {
         size = 0;
@@ -230,6 +247,8 @@ public class ArrayIndexedCollection implements Collection {
 
     /**
      * Increases the size of the array {@value ArrayIndexedCollection#GROWTH_FACTOR} times if it is full.
+     * <p>
+     * Invalidates existing {@link Getter}s if a reallocation occurs.
      */
     private void growIfNecessary() {
         if (size < elements.length)
