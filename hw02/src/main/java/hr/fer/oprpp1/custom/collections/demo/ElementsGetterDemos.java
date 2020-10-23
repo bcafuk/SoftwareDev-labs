@@ -85,7 +85,7 @@ public class ElementsGetterDemos {
         System.out.println("Jedan element: " + getter.getNextElement());
         System.out.println("Jedan element: " + getter.getNextElement());
         System.out.println("Jedan element: " + getter.getNextElement());
-        System.out.println("Jedan element: " + getter.getNextElement());
+        System.out.println("Jedan element: " + getter.getNextElement());  // Should throw
     }
 
 
@@ -124,14 +124,24 @@ public class ElementsGetterDemos {
      * @param args command line arguments to the program; ignored
      */
     public static void main(String[] args) {
+        System.out.println("Demo 1:");
         try {
             basicDemo();
         } catch (NoSuchElementException e) {
-            System.err.println(e.toString());
+            System.out.println(e.toString());
         }
 
+        System.out.println("\nDemo 2:");
         multipleHasNextElements();
-        noHasNextElement();
+
+        System.out.println("\nDemo 3:");
+        try {
+            noHasNextElement();
+        } catch (NoSuchElementException e) {
+            System.out.println(e.toString());
+        }
+
+        System.out.println("\nDemo 4:");
         multipleGetters();
     }
 }
