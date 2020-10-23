@@ -24,4 +24,14 @@ public interface ElementsGetter {
      *                                         has been created
      */
     Object getNextElement();
+
+    /**
+     * Calls {@link Processor#process(Object)} on all remaining elements.
+     *
+     * @param p the processor to use
+     */
+    default void processRemaining(Processor p) {
+        while (hasNextElement())
+            p.process(getNextElement());
+    }
 }
