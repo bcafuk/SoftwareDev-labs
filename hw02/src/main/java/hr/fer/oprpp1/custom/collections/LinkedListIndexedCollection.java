@@ -1,5 +1,6 @@
 package hr.fer.oprpp1.custom.collections;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -301,5 +302,49 @@ public class LinkedListIndexedCollection implements Collection {
     public void forEach(Processor processor) {
         for (ListNode node = first; node != null; node = node.next)
             processor.process(node.value);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The elements are returned in order of increasing index.
+     */
+    @Override
+    public ElementsGetter createElementsGetter() {
+        return new Getter(this);
+    }
+
+    /**
+     * An implementation of {@link ElementsGetter} for this class.
+     */
+    private static class Getter implements ElementsGetter {
+        /**
+         * The node of the first element which has not yet been returned by {@link #getNextElement()}.
+         */
+        private ListNode currentNode;
+
+        /**
+         * Constructs a new {@link Getter} for a given {@link LinkedListIndexedCollection}.
+         *
+         * @param collection the collection whose elements will be returned by this getter
+         */
+        private Getter(LinkedListIndexedCollection collection) {
+            this.currentNode = collection.first;
+        }
+
+        @Override
+        public boolean hasNextElement() {
+            return currentNode != null;
+        }
+
+        @Override
+        public Object getNextElement() {
+            if (!hasNextElement())
+                throw new NoSuchElementException("There are no more elements in this collection.");
+
+            Object value = currentNode.value;
+            currentNode = currentNode.next;
+            return value;
+        }
     }
 }
