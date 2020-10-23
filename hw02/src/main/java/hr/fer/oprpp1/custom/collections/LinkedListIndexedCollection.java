@@ -1,5 +1,6 @@
 package hr.fer.oprpp1.custom.collections;
 
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -54,6 +55,10 @@ public class LinkedListIndexedCollection implements Collection {
      * The last node in the list, or {@code null} if the list is empty.
      */
     private ListNode last;
+    /**
+     * A modification counter used in {@link Getter} to check for concurrent modifications.
+     */
+    private long modificationCount = 0;
 
     /**
      * Constructs an empty collection.
@@ -106,6 +111,7 @@ public class LinkedListIndexedCollection implements Collection {
         last = newNode;
 
         size++;
+        modificationCount++;
     }
 
     /**
@@ -148,6 +154,7 @@ public class LinkedListIndexedCollection implements Collection {
         size = 0;
         first = null;
         last = null;
+        modificationCount++;
     }
 
     /**
@@ -182,6 +189,7 @@ public class LinkedListIndexedCollection implements Collection {
         currentNode.previous = newNode;
 
         size++;
+        modificationCount++;
     }
 
     /**
@@ -277,6 +285,7 @@ public class LinkedListIndexedCollection implements Collection {
             last = node.previous;
 
         size--;
+        modificationCount++;
     }
 
     @Override
@@ -322,6 +331,19 @@ public class LinkedListIndexedCollection implements Collection {
          * The node of the first element which has not yet been returned by {@link #getNextElement()}.
          */
         private ListNode currentNode;
+        /**
+         * The collection whose elements will be returned by this getter.
+         * <p>
+         * This could be removed by making {@link Getter} non-static,
+         * but the assignment PDF specifies that it has to be static.
+         */
+        private LinkedListIndexedCollection collection;
+        /**
+         * The {@link #modificationCount} at the moment of this {@link ElementsGetter}'s creation.
+         * <p>
+         * This is used to monitor for concurrent modifications.
+         */
+        private long savedModificationCount;
 
         /**
          * Constructs a new {@link Getter} for a given {@link LinkedListIndexedCollection}.
@@ -329,11 +351,16 @@ public class LinkedListIndexedCollection implements Collection {
          * @param collection the collection whose elements will be returned by this getter
          */
         private Getter(LinkedListIndexedCollection collection) {
+            this.collection = collection;
             this.currentNode = collection.first;
+            this.savedModificationCount = collection.modificationCount;
         }
 
         @Override
         public boolean hasNextElement() {
+            if (collection.modificationCount != savedModificationCount)
+                throw new ConcurrentModificationException("The collection has been modified since the ElementsGetter has been constructed.");
+
             return currentNode != null;
         }
 
