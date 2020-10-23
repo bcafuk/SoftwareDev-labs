@@ -3,6 +3,7 @@ package hr.fer.oprpp1.custom.collections.demo;
 import hr.fer.oprpp1.custom.collections.ArrayIndexedCollection;
 import hr.fer.oprpp1.custom.collections.Collection;
 import hr.fer.oprpp1.custom.collections.ElementsGetter;
+import hr.fer.oprpp1.custom.collections.Processor;
 
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
@@ -131,6 +132,21 @@ public class ElementsGetterDemos {
 
         System.out.println("Jedan element: " + getter.getNextElement()); // Should throw
     }
+    
+    /**
+     * Demonstrates {@link ElementsGetter#processRemaining(Processor)}.
+     */
+    public static void processRemaining() {
+        Collection col = new ArrayIndexedCollection();
+        col.add("Ivo");
+        col.add("Ana");
+        col.add("Jasna");
+        
+        ElementsGetter getter = col.createElementsGetter();
+        getter.getNextElement();
+        
+        getter.processRemaining(System.out::println);
+    }
 
     /**
      * Calls the other demonstration methods:
@@ -141,6 +157,7 @@ public class ElementsGetterDemos {
      *     <li>{@link #noHasNextElement()}</li>
      *     <li>{@link #multipleGetters()}</li>
      *     <li>{@link #concurrentModification()}</li>
+     *     <li>{@link #processRemaining()}</li>
      * </ul>
      *
      * @param args command line arguments to the program; ignored
@@ -172,5 +189,8 @@ public class ElementsGetterDemos {
         } catch (ConcurrentModificationException e) {
             System.out.println(e.toString());
         }
+
+        System.out.println("\nDemo 6:");
+        processRemaining();
     }
 }
