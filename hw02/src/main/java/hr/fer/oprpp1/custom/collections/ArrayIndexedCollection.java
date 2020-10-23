@@ -31,7 +31,7 @@ public class ArrayIndexedCollection implements Collection {
      */
     private Object[] elements;
     /**
-     * A modification counter used in {@link Getter} to check for concurrent modifications.
+     * A modification counter used in {@link ArrayIndexedElementsGetter} to check for concurrent modifications.
      */
     private long modificationCount = 0;
 
@@ -96,7 +96,7 @@ public class ArrayIndexedCollection implements Collection {
     /**
      * Adds an element to the end of the array.
      * <p>
-     * Invalidates existing {@link Getter}s if a reallocation occurs.
+     * Invalidates existing {@link ArrayIndexedElementsGetter}s if a reallocation occurs.
      *
      * @param value the element to add
      * @throws NullPointerException if the element is {@code null}
@@ -126,7 +126,7 @@ public class ArrayIndexedCollection implements Collection {
      * All elements that are currently at or after the position get shifted towards the end of the array.
      * Afterwards, the inserted element will have the specified index.
      * <p>
-     * Invalidates existing {@link Getter}s if:
+     * Invalidates existing {@link ArrayIndexedElementsGetter}s if:
      * <ul>
      *     <li>the element is not inserted at the end, or</li>
      *     <li>the element is inserted at the end an a reallocation occurs.</li>
@@ -178,7 +178,7 @@ public class ArrayIndexedCollection implements Collection {
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method.
      * <p>
-     * Invalidates existing {@link Getter}s if the element removed is not from the end.
+     * Invalidates existing {@link ArrayIndexedElementsGetter}s if the element removed is not from the end.
      *
      * @param value the object to be removed
      * @return {@code true} if an occurrence of {@code value} was found and removed, {@code false} otherwise
@@ -198,7 +198,7 @@ public class ArrayIndexedCollection implements Collection {
      * Removes the element at the specified index.
      * All elements that are currently after the index get shifted towards the start of the array.
      * <p>
-     * Invalidates existing {@link Getter}s if the element removed is not from the end.
+     * Invalidates existing {@link ArrayIndexedElementsGetter}s if the element removed is not from the end.
      *
      * @param index the index at which to remove the element
      * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the array
@@ -236,7 +236,7 @@ public class ArrayIndexedCollection implements Collection {
     /**
      * {@inheritDoc}
      * <p>
-     * Invalidates existing {@link Getter}s.
+     * Invalidates existing {@link ArrayIndexedElementsGetter}s.
      */
     @Override
     public void clear() {
@@ -248,7 +248,7 @@ public class ArrayIndexedCollection implements Collection {
     /**
      * Increases the size of the array {@value ArrayIndexedCollection#GROWTH_FACTOR} times if it is full.
      * <p>
-     * Invalidates existing {@link Getter}s if a reallocation occurs.
+     * Invalidates existing {@link ArrayIndexedElementsGetter}s if a reallocation occurs.
      */
     private void growIfNecessary() {
         if (size < elements.length)
@@ -267,13 +267,13 @@ public class ArrayIndexedCollection implements Collection {
      */
     @Override
     public ElementsGetter createElementsGetter() {
-        return new Getter(this);
+        return new ArrayIndexedElementsGetter(this);
     }
 
     /**
      * An implementation of {@link ElementsGetter} for this class.
      */
-    private static class Getter implements ElementsGetter {
+    private static class ArrayIndexedElementsGetter implements ElementsGetter {
         /**
          * The index of the first element which has not yet been returned by {@link #getNextElement()}.
          */
@@ -281,7 +281,7 @@ public class ArrayIndexedCollection implements Collection {
         /**
          * The collection whose elements will be returned by this getter.
          * <p>
-         * This could be removed by making {@link Getter} non-static,
+         * This could be removed by making {@link ArrayIndexedElementsGetter} non-static,
          * but the assignment PDF specifies that it has to be static.
          */
         private ArrayIndexedCollection collection;
@@ -293,11 +293,11 @@ public class ArrayIndexedCollection implements Collection {
         private long savedModificationCount;
 
         /**
-         * Constructs a new {@link Getter} for a given {@link ArrayIndexedCollection}.
+         * Constructs a new {@link ArrayIndexedElementsGetter} for a given {@link ArrayIndexedCollection}.
          *
          * @param collection the collection whose elements will be returned by this getter
          */
-        private Getter(ArrayIndexedCollection collection) {
+        private ArrayIndexedElementsGetter(ArrayIndexedCollection collection) {
             this.collection = collection;
             this.savedModificationCount = collection.modificationCount;
         }

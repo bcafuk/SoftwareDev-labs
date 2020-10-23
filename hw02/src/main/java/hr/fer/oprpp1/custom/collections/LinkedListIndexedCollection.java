@@ -56,7 +56,7 @@ public class LinkedListIndexedCollection implements Collection {
      */
     private ListNode last;
     /**
-     * A modification counter used in {@link Getter} to check for concurrent modifications.
+     * A modification counter used in {@link LinkedListElementsGetter} to check for concurrent modifications.
      */
     private long modificationCount = 0;
 
@@ -94,7 +94,7 @@ public class LinkedListIndexedCollection implements Collection {
     /**
      * Adds an element to the end of the list.
      * <p>
-     * Invalidates existing {@link Getter}s.
+     * Invalidates existing {@link LinkedListElementsGetter}s.
      *
      * @param value the element to add
      * @throws NullPointerException if the element is {@code null}
@@ -154,7 +154,7 @@ public class LinkedListIndexedCollection implements Collection {
     /**
      * {@inheritDoc}
      * <p>
-     * Invalidates existing {@link Getter}s.
+     * Invalidates existing {@link LinkedListElementsGetter}s.
      */
     @Override
     public void clear() {
@@ -170,7 +170,7 @@ public class LinkedListIndexedCollection implements Collection {
      * All elements that are currently at or after the position get shifted towards the end of the list.
      * Afterwards, the inserted element will have the specified index.
      * <p>
-     * Invalidates existing {@link Getter}s.
+     * Invalidates existing {@link LinkedListElementsGetter}s.
      *
      * @param value    the element to insert
      * @param position the position where to insert the element
@@ -251,7 +251,7 @@ public class LinkedListIndexedCollection implements Collection {
      * Whether an object in the collection is equal to the parameter is determined using the
      * {@link Object#equals(Object)} method.
      * <p>
-     * Invalidates existing {@link Getter}s.
+     * Invalidates existing {@link LinkedListElementsGetter}s.
      *
      * @param value the object to be removed
      * @return {@code true} if an occurrence of {@code value} was found and removed, {@code false} otherwise
@@ -272,7 +272,7 @@ public class LinkedListIndexedCollection implements Collection {
      * <p>
      * All elements that are currently after the index get shifted towards the start of the array.
      * <p>
-     * Invalidates existing {@link Getter}s.
+     * Invalidates existing {@link LinkedListElementsGetter}s.
      *
      * @param index the index at which to remove the element
      * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the list
@@ -284,7 +284,7 @@ public class LinkedListIndexedCollection implements Collection {
     /**
      * Removes a node from the list.
      * <p>
-     * Invalidates existing {@link Getter}s.
+     * Invalidates existing {@link LinkedListElementsGetter}s.
      *
      * @param node the node to remove
      */
@@ -335,13 +335,13 @@ public class LinkedListIndexedCollection implements Collection {
      */
     @Override
     public ElementsGetter createElementsGetter() {
-        return new Getter(this);
+        return new LinkedListElementsGetter(this);
     }
 
     /**
      * An implementation of {@link ElementsGetter} for this class.
      */
-    private static class Getter implements ElementsGetter {
+    private static class LinkedListElementsGetter implements ElementsGetter {
         /**
          * The node of the first element which has not yet been returned by {@link #getNextElement()}.
          */
@@ -349,7 +349,7 @@ public class LinkedListIndexedCollection implements Collection {
         /**
          * The collection whose elements will be returned by this getter.
          * <p>
-         * This could be removed by making {@link Getter} non-static,
+         * This could be removed by making {@link LinkedListElementsGetter} non-static,
          * but the assignment PDF specifies that it has to be static.
          */
         private LinkedListIndexedCollection collection;
@@ -361,11 +361,11 @@ public class LinkedListIndexedCollection implements Collection {
         private long savedModificationCount;
 
         /**
-         * Constructs a new {@link Getter} for a given {@link LinkedListIndexedCollection}.
+         * Constructs a new {@link LinkedListElementsGetter} for a given {@link LinkedListIndexedCollection}.
          *
          * @param collection the collection whose elements will be returned by this getter
          */
-        private Getter(LinkedListIndexedCollection collection) {
+        private LinkedListElementsGetter(LinkedListIndexedCollection collection) {
             this.collection = collection;
             this.currentNode = collection.first;
             this.savedModificationCount = collection.modificationCount;
