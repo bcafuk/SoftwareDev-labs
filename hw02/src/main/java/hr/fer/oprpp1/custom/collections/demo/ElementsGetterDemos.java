@@ -116,6 +116,9 @@ public class ElementsGetterDemos {
     /**
      * Demonstrates that {@link ElementsGetter} detects concurrent modification
      * and throws a {@link ConcurrentModificationException}.
+     * <p>
+     * The contents of this method have been copied verbatim from
+     * the assignment document written by doc. dr. sc. Marko Čupić.
      */
     public static void concurrentModification() {
         Collection col = new ArrayIndexedCollection();
@@ -135,6 +138,9 @@ public class ElementsGetterDemos {
     
     /**
      * Demonstrates {@link ElementsGetter#processRemaining(Processor)}.
+     * <p>
+     * The contents of this method have been copied verbatim from
+     * the assignment document written by doc. dr. sc. Marko Čupić.
      */
     public static void processRemaining() {
         Collection col = new ArrayIndexedCollection();
@@ -159,8 +165,6 @@ public class ElementsGetterDemos {
      *     <li>{@link #concurrentModification()}</li>
      *     <li>{@link #processRemaining()}</li>
      * </ul>
-     *
-     * @param args command line arguments to the program; ignored
      */
     public static void main(String[] args) {
         System.out.println("Demo 1:");
