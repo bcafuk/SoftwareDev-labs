@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author Borna Cafuk
  */
-public class LinkedListIndexedCollection extends Collection {
+public class LinkedListIndexedCollection implements Collection {
     /**
      * An internal class representing a node of a linked list.
      */

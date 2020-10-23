@@ -10,7 +10,7 @@ import java.util.Objects;
  *
  * @author Borna Cafuk
  */
-public class ArrayIndexedCollection extends Collection {
+public class ArrayIndexedCollection implements Collection {
     /**
      * The default capacity (i.e. the size of the internal array) when no capacity is specified in the constructor.
      */
