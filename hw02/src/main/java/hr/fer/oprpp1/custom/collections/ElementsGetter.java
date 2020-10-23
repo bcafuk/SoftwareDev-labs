@@ -4,6 +4,8 @@ import java.util.ConcurrentModificationException;
 
 /**
  * Implementations of this interface are used to get the elements of a {@link Collection}.
+ *
+ * @author Borna Cafuk
  */
 public interface ElementsGetter {
     /**
