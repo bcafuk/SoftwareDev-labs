@@ -4,6 +4,7 @@ import hr.fer.oprpp1.custom.collections.ArrayIndexedCollection;
 import hr.fer.oprpp1.custom.collections.Collection;
 import hr.fer.oprpp1.custom.collections.ElementsGetter;
 
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
 /**
@@ -112,6 +113,26 @@ public class ElementsGetterDemos {
     }
 
     /**
+     * Demonstrates that {@link ElementsGetter} detects concurrent modification
+     * and throws a {@link ConcurrentModificationException}.
+     */
+    public static void concurrentModification() {
+        Collection col = new ArrayIndexedCollection();
+        col.add("Ivo");
+        col.add("Ana");
+        col.add("Jasna");
+
+        ElementsGetter getter = col.createElementsGetter();
+
+        System.out.println("Jedan element: " + getter.getNextElement());
+        System.out.println("Jedan element: " + getter.getNextElement());
+
+        col.clear();
+
+        System.out.println("Jedan element: " + getter.getNextElement()); // Should throw
+    }
+
+    /**
      * Calls the other demonstration methods:
      *
      * <ul>
@@ -119,6 +140,7 @@ public class ElementsGetterDemos {
      *     <li>{@link #multipleHasNextElements()}</li>
      *     <li>{@link #noHasNextElement()}</li>
      *     <li>{@link #multipleGetters()}</li>
+     *     <li>{@link #concurrentModification()}</li>
      * </ul>
      *
      * @param args command line arguments to the program; ignored
@@ -143,5 +165,12 @@ public class ElementsGetterDemos {
 
         System.out.println("\nDemo 4:");
         multipleGetters();
+
+        System.out.println("\nDemo 5:");
+        try {
+            concurrentModification();
+        } catch (ConcurrentModificationException e) {
+            System.out.println(e.toString());
+        }
     }
 }
