@@ -63,7 +63,13 @@ public interface Collection {
      *
      * @param processor the {@link Processor} to use
      */
-    void forEach(Processor processor);
+    default void forEach(Processor processor) {
+        ElementsGetter getter = createElementsGetter();
+
+        while (getter.hasNextElement()) {
+            processor.process(getter.getNextElement());
+        }
+    }
 
     /**
      * Adds all elements from another collection into itself.

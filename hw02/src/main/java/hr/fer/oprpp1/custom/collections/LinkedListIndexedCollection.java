@@ -317,18 +317,6 @@ public class LinkedListIndexedCollection implements Collection {
     }
 
     /**
-     * Runs a {@link Processor}'s {@link Processor#process(Object)} method for every object in the collection,
-     * in order of ascending index.
-     *
-     * @param processor the {@link Processor} to use
-     */
-    @Override
-    public void forEach(Processor processor) {
-        for (ListNode node = first; node != null; node = node.next)
-            processor.process(node.value);
-    }
-
-    /**
      * {@inheritDoc}
      * <p>
      * The elements are returned in order of increasing index.

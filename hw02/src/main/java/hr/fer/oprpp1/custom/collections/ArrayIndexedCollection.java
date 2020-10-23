@@ -222,18 +222,6 @@ public class ArrayIndexedCollection implements Collection {
     }
 
     /**
-     * Runs a {@link Processor}'s {@link Processor#process(Object)} method for every object in the collection,
-     * in order of ascending index.
-     *
-     * @param processor the {@link Processor} to use
-     */
-    @Override
-    public void forEach(Processor processor) {
-        for (int i = 0; i < size; i++)
-            processor.process(elements[i]);
-    }
-
-    /**
      * {@inheritDoc}
      * <p>
      * Invalidates existing {@link ArrayIndexedElementsGetter}s.
