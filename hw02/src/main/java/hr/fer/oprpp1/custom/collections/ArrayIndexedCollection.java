@@ -1,6 +1,7 @@
 package hr.fer.oprpp1.custom.collections;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -226,5 +227,54 @@ public class ArrayIndexedCollection implements Collection {
         Object[] newElements = new Object[elements.length * GROWTH_FACTOR];
         System.arraycopy(elements, 0, newElements, 0, size);
         elements = newElements;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The elements are returned in order of increasing index.
+     */
+    @Override
+    public ElementsGetter createElementsGetter() {
+        return new Getter(this);
+    }
+
+    /**
+     * An implementation of {@link ElementsGetter} for this class.
+     */
+    private static class Getter implements ElementsGetter {
+        /**
+         * The index of the first element which has not yet been returned by {@link #getNextElement()}.
+         */
+        private int currentIndex = 0;
+        /**
+         * The collection whose elements will be returned by this getter.
+         * <p>
+         * This could be removed by making {@link Getter} non-static,
+         * but the assignment PDF specifies that it has to be static.
+         */
+        private ArrayIndexedCollection collection;
+
+        /**
+         * Constructs a new {@link Getter} for a given {@link ArrayIndexedCollection}.
+         *
+         * @param collection the collection whose elements will be returned by this getter
+         */
+        private Getter(ArrayIndexedCollection collection) {
+            this.collection = collection;
+        }
+
+        @Override
+        public boolean hasNextElement() {
+            return currentIndex != collection.size;
+        }
+
+        @Override
+        public Object getNextElement() {
+            if (!hasNextElement())
+                throw new NoSuchElementException("There are no more elements in this collection.");
+
+            return collection.elements[currentIndex++];
+        }
     }
 }
