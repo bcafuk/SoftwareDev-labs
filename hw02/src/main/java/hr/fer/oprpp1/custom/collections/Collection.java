@@ -91,4 +91,20 @@ public interface Collection {
      * @return a new ElementsGetter
      */
     ElementsGetter createElementsGetter();
+
+    /**
+     * Adds all elements from another collection which pass some test.
+     *
+     * @param col the collection whose elements will be added
+     * @param tester the tester to filter which elements to add
+     */
+    default void addAllSatisfying(Collection col, Tester tester) {
+        ElementsGetter getter = col.createElementsGetter();
+
+        while (getter.hasNextElement()) {
+            Object element = getter.getNextElement();
+            if (tester.test(element))
+                add(element);
+        }
+    }
 }
