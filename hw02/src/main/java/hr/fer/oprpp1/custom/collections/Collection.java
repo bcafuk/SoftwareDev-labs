@@ -84,4 +84,11 @@ public interface Collection {
      * Removes all elements from the collection.
      */
     void clear();
+
+    /**
+     * Creates an {@link ElementsGetter} for the collection.
+     *
+     * @return a new ElementsGetter
+     */
+    ElementsGetter createElementsGetter();
 }
