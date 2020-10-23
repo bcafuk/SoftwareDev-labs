@@ -116,9 +116,9 @@ public class ElementsGetterDemos {
      *
      * <ul>
      *     <li>{@link #basicDemo()}</li>
-     *     <li>{@link #multipleHasNextElements()} ()}</li>
-     *     <li>{@link #noHasNextElement()} ()}</li>
-     *     <li>{@link #multipleGetters()} ()}</li>
+     *     <li>{@link #multipleHasNextElements()}</li>
+     *     <li>{@link #noHasNextElement()}</li>
+     *     <li>{@link #multipleGetters()}</li>
      * </ul>
      *
      * @param args command line arguments to the program; ignored
