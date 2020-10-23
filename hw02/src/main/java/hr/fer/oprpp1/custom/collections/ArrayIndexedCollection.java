@@ -1,6 +1,7 @@
 package hr.fer.oprpp1.custom.collections;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -29,6 +30,10 @@ public class ArrayIndexedCollection implements Collection {
      * The internal array containing the elements of the collection. Unused indices are set to {@code null}.
      */
     private Object[] elements;
+    /**
+     * A modification counter used in {@link Getter} to check for concurrent modifications.
+     */
+    private long modificationCount = 0;
 
     /**
      * Constructs an array collection with the default initial capacity of
@@ -131,8 +136,10 @@ public class ArrayIndexedCollection implements Collection {
 
         growIfNecessary();
 
-        if (position != size)
+        if (position != size) {
             System.arraycopy(elements, position, elements, position + 1, size - position);
+            modificationCount++;
+        }
 
         elements[position] = value;
         size++;
@@ -188,8 +195,11 @@ public class ArrayIndexedCollection implements Collection {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Valid indices are 0 to " + (size - 1) + ", but " + index + " was passed.");
 
-        if (index != size - 1)
+        if (index != size - 1) {
             System.arraycopy(elements, index + 1, elements, index, size - index - 1);
+            modificationCount++;
+        }
+
         size--;
         elements[size] = null;
     }
@@ -215,6 +225,7 @@ public class ArrayIndexedCollection implements Collection {
     public void clear() {
         size = 0;
         Arrays.fill(elements, null);
+        modificationCount++;
     }
 
     /**
@@ -227,6 +238,7 @@ public class ArrayIndexedCollection implements Collection {
         Object[] newElements = new Object[elements.length * GROWTH_FACTOR];
         System.arraycopy(elements, 0, newElements, 0, size);
         elements = newElements;
+        modificationCount++;
     }
 
     /**
@@ -254,6 +266,12 @@ public class ArrayIndexedCollection implements Collection {
          * but the assignment PDF specifies that it has to be static.
          */
         private ArrayIndexedCollection collection;
+        /**
+         * The {@link #modificationCount} at the moment of this {@link ElementsGetter}'s creation.
+         * <p>
+         * This is used to monitor for concurrent modifications.
+         */
+        private long savedModificationCount;
 
         /**
          * Constructs a new {@link Getter} for a given {@link ArrayIndexedCollection}.
@@ -262,10 +280,14 @@ public class ArrayIndexedCollection implements Collection {
          */
         private Getter(ArrayIndexedCollection collection) {
             this.collection = collection;
+            this.savedModificationCount = collection.modificationCount;
         }
 
         @Override
         public boolean hasNextElement() {
+            if (collection.modificationCount != savedModificationCount)
+                throw new ConcurrentModificationException("The collection has been modified since the ElementsGetter has been constructed.");
+
             return currentIndex != collection.size;
         }
 
