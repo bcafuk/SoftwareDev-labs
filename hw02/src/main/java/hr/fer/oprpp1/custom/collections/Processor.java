@@ -5,11 +5,11 @@ package hr.fer.oprpp1.custom.collections;
  *
  * @author Borna Cafuk
  */
-public class Processor {
+public interface Processor {
     /**
-     * Processes an object, the specific implementation varies by class.
+     * Processes an object.
      *
      * @param value an object to process
      */
-    public void process(Object value) {}
+    void process(Object value);
 }

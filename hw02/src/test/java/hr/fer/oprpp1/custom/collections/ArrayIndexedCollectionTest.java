@@ -412,7 +412,7 @@ class ArrayIndexedCollectionTest {
         final int elementCount = 100;
         ArrayIndexedCollection collection = createCollection(elementCount);
 
-        class CheckProcessor extends Processor {
+        class CheckProcessor implements Processor {
             public int lastVisited = -1;
 
             public void process(Object value) {

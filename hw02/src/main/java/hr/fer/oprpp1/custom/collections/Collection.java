@@ -71,7 +71,7 @@ public interface Collection {
      * @param other the collection to add the elements from; remains unchanged
      */
     default void addAll(Collection other) {
-        class AddProcessor extends Processor {
+        class AddProcessor implements Processor {
             public void process(Object value) {
                 add(value);
             }
