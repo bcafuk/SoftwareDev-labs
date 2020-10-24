@@ -74,6 +74,35 @@ public class Lexer {
         if (currentIndex == data.length)
             return new Token(TokenType.EOF, null);
 
+        if (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
+            StringBuilder sb = new StringBuilder();
+
+            while (currentIndex < data.length) {
+                if (Character.isLetter(data[currentIndex])) {
+                    sb.append(data[currentIndex++]);
+                    continue;
+                }
+
+                // Characters other than letters mark the end of the word,
+                // except for backslashes, which start an escape sequence instead.
+                if (data[currentIndex] != '\\')
+                    break;
+
+                //Escape sequence handling:
+                currentIndex++; // Skip the backslash
+
+                if (currentIndex == data.length)
+                    throw new LexerException("Invalid backslash at end of file, expected an escape sequence.");
+
+                if (!Character.isDigit(data[currentIndex]) && data[currentIndex] != '\\')
+                    throw new LexerException("Invalid escape sequence: \\" + data[currentIndex]);
+
+                sb.append(data[currentIndex++]);
+            }
+
+            return new Token(TokenType.WORD, sb.toString());
+        }
+
         // TODO: Implement the rest of the method
         throw new LexerException("Not yet implemented");
     }
