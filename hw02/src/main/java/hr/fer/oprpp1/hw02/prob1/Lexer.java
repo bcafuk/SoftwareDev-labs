@@ -1,5 +1,7 @@
 package hr.fer.oprpp1.hw02.prob1;
 
+import java.util.Objects;
+
 /**
  * Splits an input string into tokens according to the rules specified in the assignment document.
  *
@@ -23,8 +25,11 @@ public class Lexer {
      * Creates a lexer for a given string.
      *
      * @param text the text which will be tokenized by this lexer
+     * @throws NullPointerException if {@code text} is {@code null}
      */
     public Lexer(String text) {
+        Objects.requireNonNull(text, "The input text must not be null.");
+
         data = text.toCharArray();
     }
 
