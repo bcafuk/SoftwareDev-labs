@@ -9,16 +9,6 @@ public class Token {
     /**
      * The type of the token.
      */
-    public enum TokenType {
-        EOF,
-        WORD,
-        NUMBER,
-        SYMBOL,
-    }
-
-    /**
-     * The type of the token.
-     */
     private TokenType type;
     /**
      * The value the token is holding.
