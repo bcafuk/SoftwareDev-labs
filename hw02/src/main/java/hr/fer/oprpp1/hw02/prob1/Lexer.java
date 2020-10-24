@@ -121,7 +121,6 @@ public class Lexer {
             return new Token(TokenType.NUMBER, number);
         }
 
-        // TODO: Implement the rest of the method
-        throw new LexerException("Not yet implemented");
+        return new Token(TokenType.SYMBOL, data[currentIndex++]);
     }
 }
