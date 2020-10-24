@@ -1,25 +1,25 @@
 package hr.fer.oprpp1.hw02.prob1;
 
 /**
- * Represents an error that occurred when a {@link Lexer} was performing one of its operations.
+ * Represents an exception that occurred when a {@link Lexer} was performing one of its operations.
  *
  * @author Borna Cafuk
  */
-public class LexerError extends RuntimeException {
+public class LexerException extends RuntimeException {
     /**
-     * Constructs a new lexer error with the specified detail message.
+     * Constructs a new lexer exception with the specified detail message.
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      *
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public LexerError(String message) {
+    public LexerException(String message) {
         super(message);
     }
 
     /**
-     * Constructs a new runtime exception with the specified detail message and
+     * Constructs a new lexer exception with the specified detail message and
      * cause. <p>Note that the detail message associated with
      * {@code cause} is <i>not</i> automatically incorporated in
      * this runtime exception's detail message.
@@ -31,7 +31,7 @@ public class LexerError extends RuntimeException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public LexerError(String message, Throwable cause) {
+    public LexerException(String message, Throwable cause) {
         super(message, cause);
     }
 }

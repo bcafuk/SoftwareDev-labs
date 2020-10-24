@@ -32,7 +32,7 @@ public class Lexer {
      * Gets the next from the input token and returns it.
      *
      * @return the token processed from the input
-     * @throws LexerError if there is an error while getting the next token
+     * @throws LexerException if there is an error while getting the next token
      */
     public Token nextToken() {
         // TODO: Implement method
@@ -43,11 +43,11 @@ public class Lexer {
      * Gets the last token returned by {@link #nextToken()}.
      *
      * @return the last token processed from the input
-     * @throws LexerError if {@link #nextToken()} has not yet been called
+     * @throws LexerException if {@link #nextToken()} has not yet been called
      */
     public Token getToken() {
         if (token == null)
-            throw new LexerError("nextToken has not yet been called.");
+            throw new LexerException("nextToken has not yet been called.");
 
         return token;
     }
