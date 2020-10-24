@@ -103,6 +103,24 @@ public class Lexer {
             return new Token(TokenType.WORD, sb.toString());
         }
 
+        if (Character.isDigit(data[currentIndex])) {
+            StringBuilder sb = new StringBuilder();
+
+            while (currentIndex < data.length && Character.isDigit(data[currentIndex]))
+                sb.append(data[currentIndex++]);
+
+            String numberString = sb.toString();
+            long number;
+
+            try {
+                number = Long.parseLong(numberString);
+            } catch (NumberFormatException e) {
+                throw new LexerException("The number " + numberString + " is not representable as a Long.", e);
+            }
+
+            return new Token(TokenType.NUMBER, number);
+        }
+
         // TODO: Implement the rest of the method
         throw new LexerException("Not yet implemented");
     }
