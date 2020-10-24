@@ -45,7 +45,17 @@ public class Lexer {
      * @throws LexerException if there is an error while getting the next token
      */
     public Token nextToken() {
-        token = lexToken();
+        if (token != null && token.getType() == TokenType.EOF)
+            throw new LexerException("The input string has already been consumed");
+
+        while (currentIndex < data.length && Character.isWhitespace(data[currentIndex]))
+            currentIndex++;
+
+        token = switch (state) {
+            case BASIC -> lexBasicToken();
+            case EXTENDED -> lexExtendedToken();
+        };
+
         return token;
     }
 
@@ -74,12 +84,13 @@ public class Lexer {
     }
 
     /**
-     * Gets the next from the input token and returns it without storing it in {@link #token}.
+     * Gets the next from the input token using the rules for the {@link LexerState#BASIC} state
+     * and returns it without storing it in {@link #token}.
      *
      * @return the token processed from the input
      * @throws LexerException if there is an error while getting the next token
      */
-    private Token lexToken() {
+    private Token lexBasicToken() {
         if (token != null && token.getType() == TokenType.EOF)
             throw new LexerException("The input string has already been consumed");
 
@@ -137,5 +148,27 @@ public class Lexer {
         }
 
         return new Token(TokenType.SYMBOL, data[currentIndex++]);
+    }
+
+    /**
+     * Gets the next from the input token using the rules for the {@link LexerState#EXTENDED} state
+     * and returns it without storing it in {@link #token}.
+     *
+     * @return the token processed from the input
+     * @throws LexerException if there is an error while getting the next token
+     */
+    private Token lexExtendedToken() {
+        if (currentIndex == data.length)
+            return new Token(TokenType.EOF, null);
+
+        if (data[currentIndex] == '#')
+            return new Token(TokenType.SYMBOL, data[currentIndex++]);
+
+        StringBuilder sb = new StringBuilder();
+
+        while (currentIndex < data.length && !Character.isWhitespace(data[currentIndex]) && data[currentIndex] != '#')
+            sb.append(data[currentIndex++]);
+
+        return new Token(TokenType.WORD, sb.toString());
     }
 }
