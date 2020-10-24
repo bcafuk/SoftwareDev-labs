@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * @author Borna Cafuk
  */
-public class ArrayIndexedCollection implements Collection {
+public class ArrayIndexedCollection implements List {
     /**
      * The default capacity (i.e. the size of the internal array) when no capacity is specified in the constructor.
      */
@@ -106,13 +106,7 @@ public class ArrayIndexedCollection implements Collection {
         insert(value, size);
     }
 
-    /**
-     * Gets the element at the specified index.
-     *
-     * @param index the index of the element to get
-     * @return the element at the index
-     * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the array
-     */
+    @Override
     public Object get(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Valid indices are 0 to " + (size - 1) + ", but " + index + " was passed.");
@@ -120,22 +114,7 @@ public class ArrayIndexedCollection implements Collection {
         return elements[index];
     }
 
-    /**
-     * Inserts an element into the array at a specified position.
-     * <p>
-     * All elements that are currently at or after the position get shifted towards the end of the array.
-     * Afterwards, the inserted element will have the specified index.
-     * <p>
-     * Invalidates existing {@link ArrayIndexedElementsGetter}s if:
-     * <ul>
-     *     <li>the element is not inserted at the end, or</li>
-     *     <li>the element is inserted at the end an a reallocation occurs.</li>
-     * </ul>
-     *
-     * @param value    the element to insert
-     * @param position the position where to insert the element
-     * @throws NullPointerException if the element is {@code null}
-     */
+    @Override
     public void insert(Object value, int position) {
         Objects.requireNonNull(value, "null cannot be inserted into collection.");
 
@@ -153,15 +132,7 @@ public class ArrayIndexedCollection implements Collection {
         size++;
     }
 
-    /**
-     * Finds the first occurrence of an element in the array and returns its index.
-     * <p>
-     * Whether an object in the collection is equal to the parameter is determined using the
-     * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case -1 is returned.
-     *
-     * @param value the element to find
-     * @return the index of the element if it exists in the collection, -1 otherwise
-     */
+    @Override
     public int indexOf(Object value) {
         if (value == null)
             return -1;
@@ -194,15 +165,7 @@ public class ArrayIndexedCollection implements Collection {
         return true;
     }
 
-    /**
-     * Removes the element at the specified index.
-     * All elements that are currently after the index get shifted towards the start of the array.
-     * <p>
-     * Invalidates existing {@link ArrayIndexedElementsGetter}s if the element removed is not from the end.
-     *
-     * @param index the index at which to remove the element
-     * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the array
-     */
+    @Override
     public void remove(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Valid indices are 0 to " + (size - 1) + ", but " + index + " was passed.");

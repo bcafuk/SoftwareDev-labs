@@ -11,7 +11,7 @@ import java.util.Objects;
  *
  * @author Borna Cafuk
  */
-public class LinkedListIndexedCollection implements Collection {
+public class LinkedListIndexedCollection implements List {
     /**
      * An internal class representing a node of a linked list.
      */
@@ -116,13 +116,7 @@ public class LinkedListIndexedCollection implements Collection {
         modificationCount++;
     }
 
-    /**
-     * Gets the element at the specified index.
-     *
-     * @param index the index of the element to get
-     * @return the element at the index
-     * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the list
-     */
+    @Override
     public Object get(int index) {
         return getNode(index).value;
     }
@@ -164,18 +158,7 @@ public class LinkedListIndexedCollection implements Collection {
         modificationCount++;
     }
 
-    /**
-     * Inserts an element into the list at a specified position.
-     * <p>
-     * All elements that are currently at or after the position get shifted towards the end of the list.
-     * Afterwards, the inserted element will have the specified index.
-     * <p>
-     * Invalidates existing {@link LinkedListElementsGetter}s.
-     *
-     * @param value    the element to insert
-     * @param position the position where to insert the element
-     * @throws NullPointerException if the element is {@code null}
-     */
+    @Override
     public void insert(Object value, int position) {
         Objects.requireNonNull(value, "null cannot be inserted into collection.");
 
@@ -201,15 +184,7 @@ public class LinkedListIndexedCollection implements Collection {
         modificationCount++;
     }
 
-    /**
-     * Finds the first occurrence of an element in the list and returns its index.
-     * <p>
-     * Whether an object in the collection is equal to the parameter is determined using the
-     * {@link Object#equals(Object)} method. The parameter may be {@code null}, in which case -1 is returned.
-     *
-     * @param value the element to find
-     * @return the index of the element if it exists in the collection, -1 otherwise
-     */
+    @Override
     public int indexOf(Object value) {
         if (value == null)
             return -1;
@@ -267,16 +242,7 @@ public class LinkedListIndexedCollection implements Collection {
         return true;
     }
 
-    /**
-     * Removes the element at the specified index.
-     * <p>
-     * All elements that are currently after the index get shifted towards the start of the array.
-     * <p>
-     * Invalidates existing {@link LinkedListElementsGetter}s.
-     *
-     * @param index the index at which to remove the element
-     * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the list
-     */
+    @Override
     public void remove(int index) {
         remove(getNode(index));
     }
