@@ -35,13 +35,14 @@ public class Lexer {
 
     /**
      * Gets the next from the input token and returns it.
+     * The same token will also be returned by subsequent calls to {@link #getToken()}.
      *
      * @return the token processed from the input
      * @throws LexerException if there is an error while getting the next token
      */
     public Token nextToken() {
-        // TODO: Implement method
-        return null;
+        token = lexToken();
+        return token;
     }
 
     /**
@@ -55,5 +56,25 @@ public class Lexer {
             throw new LexerException("nextToken has not yet been called.");
 
         return token;
+    }
+
+    /**
+     * Gets the next from the input token and returns it without storing it in {@link #token}.
+     *
+     * @return the token processed from the input
+     * @throws LexerException if there is an error while getting the next token
+     */
+    private Token lexToken() {
+        if (token != null && token.getType() == TokenType.EOF)
+            throw new LexerException("The input string has already been consumed");
+
+        while (currentIndex < data.length && Character.isWhitespace(data[currentIndex]))
+            currentIndex++;
+
+        if (currentIndex == data.length)
+            return new Token(TokenType.EOF, null);
+
+        // TODO: Implement the rest of the method
+        throw new LexerException("Not yet implemented");
     }
 }
