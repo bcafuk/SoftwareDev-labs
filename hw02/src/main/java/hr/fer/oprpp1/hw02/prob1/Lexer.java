@@ -20,6 +20,10 @@ public class Lexer {
      * The index of the first character which has not yet been handled.
      */
     private int currentIndex = 0;
+    /**
+     * The state of the lexer.
+     */
+    private LexerState state = LexerState.BASIC;
 
     /**
      * Creates a lexer for a given string.
@@ -43,6 +47,17 @@ public class Lexer {
     public Token nextToken() {
         token = lexToken();
         return token;
+    }
+
+    /**
+     * Sets the current lexer state.
+     *
+     * @param state the state to change into
+     */
+    public void setState(LexerState state) {
+        Objects.requireNonNull(state, "The lexer state must not be null.");
+
+        this.state = state;
     }
 
     /**
