@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The contents of this class have been copied verbatim from
- * the assignment document written by doc. dr. sc. Marko Čupić.
+ * a file supplied by doc. dr. sc. Marko Čupić.
  */
 public class Prob1Test {
 
