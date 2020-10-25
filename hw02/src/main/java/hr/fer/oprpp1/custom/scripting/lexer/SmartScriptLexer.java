@@ -10,19 +10,19 @@ import java.util.Set;
  */
 public class SmartScriptLexer {
     /**
-     * The first character which has not yet been consumed from the input.
+     * The input data.
+     */
+    private char[] data;
+    /**
+     * The current token, i.e. the last token returned by {@link #nextToken()}
+     */
+    private Token token = null;
+    /**
+     * The index of the first character which has not yet been handled.
      */
     private int currentIndex = 0;
     /**
-     * The input to the lexer.
-     */
-    private char[] input;
-    /**
-     * The next token to be returned by {@link #getToken()}.
-     */
-    private Token next;
-    /**
-     * The current state of the lexer.
+     * The state of the lexer.
      */
     private LexerState state = LexerState.TEXT;
 
@@ -40,8 +40,7 @@ public class SmartScriptLexer {
     public SmartScriptLexer(String input) {
         Objects.requireNonNull(input, "The input must not be null.");
 
-        this.input = input.toCharArray();
-        next = lexToken();
+        this.data = input.toCharArray();
     }
 
     /**
@@ -52,79 +51,80 @@ public class SmartScriptLexer {
      */
     public void setState(LexerState state) {
         Objects.requireNonNull(state, "The state must not be null.");
+
         this.state = state;
     }
 
     /**
-     * Returns the next token without consuming it.
+     * Gets the last token returned by {@link #nextToken()}.
      *
-     * @return the next token, or {@code null} if there are no more tokens
-     */
-    public Token peekToken() {
-        return next;
-    }
-
-    /**
-     * Consumes the next token and returns it.
-     *
-     * @return the consumed token
-     * @throws LexerException if there are no more tokens
+     * @return the last token processed from the input
+     * @throws LexerException if {@link #nextToken()} has not yet been called
      */
     public Token getToken() {
-        if (next == null)
-            throw new LexerException("The input has been consumed ans there are no more tokens.");
+        if (token == null)
+            throw new LexerException("nextToken has not yet been called.");
 
-        Token token = next;
-        next = lexToken();
         return token;
     }
 
     /**
-     * Returns the next token from the input, depending on the {@link #state}.
+     * Gets the next from the input token and returns it.
+     * The same token will also be returned by subsequent calls to {@link #getToken()}.
      *
-     * @return the next token, or {@code null} if there are no more tokens
+     * @return the token processed from the input
+     * @throws LexerException if there is an error while getting the next token
      */
-    private Token lexToken() {
-        if (currentIndex > input.length) {
-            return null;
-        }
+    public Token nextToken() {
+        if (token != null && token.getType() == TokenType.EOF)
+            throw new LexerException("The input string has already been consumed");
 
-        if (currentIndex == input.length) {
-            currentIndex++;
-            return new Token(TokenType.EOF, null);
-        }
-
-        return switch (state) {
+        token = switch (state) {
             case TEXT -> lexTextToken();
             case TAG -> lexTagToken();
         };
+
+        return token;
     }
 
     /**
-     * Returns the next token for the state {@link LexerState#TEXT}.
+     * Gets the next from the input token using the rules for the {@link LexerState#TEXT} state
+     * and returns it without storing it in {@link #token}.
      *
-     * @return the next token
+     * @return the token processed from the input
+     * @throws LexerException if there is an error while getting the next token
      */
     private Token lexTextToken() {
-        StringBuilder sb = new StringBuilder();
+        if (token != null && token.getType() == TokenType.EOF)
+            throw new LexerException("The input string has already been consumed");
+
+        if (currentIndex == data.length)
+            return new Token(TokenType.EOF, null);
 
         if (isStringAt(currentIndex, "{$")) {
             currentIndex += 2;
             return new Token(TokenType.TAG_LEFT, null);
         }
 
-        while (currentIndex != input.length && !isStringAt(currentIndex, "{$")) {
-            if (input[currentIndex] != '\\') {
-                sb.append(input[currentIndex++]);
+        StringBuilder sb = new StringBuilder();
+
+        while (currentIndex != data.length && !isStringAt(currentIndex, "{$")) {
+            if (data[currentIndex] != '\\') {
+                sb.append(data[currentIndex++]);
                 continue;
             }
 
+
+            //Escape sequence handling:
             currentIndex++; // Skip the backslash
 
-            if (!TEXT_ESCAPABLE.contains(input[currentIndex]))
-                throw new LexerException("Invalid escape sequence: \\" + input[currentIndex]);
+            if (currentIndex == data.length)
+                throw new LexerException("Invalid backslash at end of file, expected an escape sequence.");
 
-            sb.append(input[currentIndex++]);
+            if (!TEXT_ESCAPABLE.contains(data[currentIndex]))
+                throw new LexerException("Invalid escape sequence: \\" + data[currentIndex]);
+
+            sb.append(data[currentIndex++]);
         }
 
         return new Token(TokenType.BARE_STRING, sb.toString());
@@ -132,9 +132,11 @@ public class SmartScriptLexer {
 
 
     /**
-     * Returns the next token for the state {@link LexerState#TAG}.
+     * Gets the next from the input token using the rules for the {@link LexerState#TAG} state
+     * and returns it without storing it in {@link #token}.
      *
-     * @return the next token
+     * @return the token processed from the input
+     * @throws LexerException if there is an error while getting the next token
      */
     private Token lexTagToken() {
         // TODO: Implement method
@@ -154,10 +156,10 @@ public class SmartScriptLexer {
         Objects.requireNonNull(expected, "The expected string must not be null.");
 
         for (int i = 0; i < expected.length(); i++) {
-            if (index + i < 0 || index + i >= input.length)
+            if (index + i < 0 || index + i >= data.length)
                 return false;
 
-            if (input[index + 1] != expected.charAt(i))
+            if (data[index + i] != expected.charAt(i))
                 return false;
         }
 
