@@ -293,10 +293,9 @@ public class SmartScriptLexer {
                 if (periodFound)
                     break;
                 periodFound = true;
-            }
-
-            if (!Character.isDigit(data[currentIndex]))
+            } else if (!Character.isDigit(data[currentIndex])) {
                 break;
+            }
 
             sb.append(data[currentIndex++]);
         }
