@@ -5,7 +5,7 @@ package hr.fer.oprpp1.custom.scripting.elems;
  *
  * @author Borna Cafuk
  */
-public class Element {
+public abstract class Element {
     /**
      * Converts the element into a string.
      *
