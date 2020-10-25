@@ -15,4 +15,5 @@ public enum TokenType {
     STRING,
     NUMBER,
     FUNCTION,
+    OPERATOR,
 }
