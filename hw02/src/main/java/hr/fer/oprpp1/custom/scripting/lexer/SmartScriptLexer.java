@@ -197,7 +197,7 @@ public class SmartScriptLexer {
         if (data[currentIndex] == '"')
             return new Token(TokenType.STRING, consumeString());
 
-        return null;
+        throw new LexerException("Unexpected character in input: " + data[currentIndex]);
     }
 
     /**
