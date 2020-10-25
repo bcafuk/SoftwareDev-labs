@@ -173,7 +173,7 @@ public class SmartScriptLexer {
 
         if (data[currentIndex] == '@') {
             currentIndex++; // Skip the @
-            return new Token(TokenType.FUNCTION, consumeIdentifier());
+            return new Token(TokenType.FUNCTION, "@" + consumeIdentifier());
         }
 
         if (isIdentifierStart(data[currentIndex])) {

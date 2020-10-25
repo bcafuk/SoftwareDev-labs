@@ -278,10 +278,10 @@ class SmartScriptLexerTest {
         lexer.setState(LexerState.TAG);
 
         Token[] correctData = {
-                new Token(TokenType.FUNCTION, "i"),
-                new Token(TokenType.FUNCTION, "FOR"),
-                new Token(TokenType.FUNCTION, "pi_2"),
-                new Token(TokenType.FUNCTION, "_"),
+                new Token(TokenType.FUNCTION, "@i"),
+                new Token(TokenType.FUNCTION, "@FOR"),
+                new Token(TokenType.FUNCTION, "@pi_2"),
+                new Token(TokenType.FUNCTION, "@_"),
                 new Token(TokenType.EOF, null)
         };
 
@@ -344,7 +344,7 @@ class SmartScriptLexerTest {
                 new Token(TokenType.OPERATOR, '/'),
                 new Token(TokenType.IDENTIFIER, "i"),
                 new Token(TokenType.OPERATOR, '-'),
-                new Token(TokenType.FUNCTION, "foo"),
+                new Token(TokenType.FUNCTION, "@foo"),
                 new Token(TokenType.OPERATOR, '-'),
                 new Token(TokenType.NUMBER, 15d),
                 new Token(TokenType.EOF, null)
@@ -448,9 +448,9 @@ class SmartScriptLexerTest {
                 new Token(TokenType.IDENTIFIER, "test4"),
                 new Token(TokenType.NUMBER, -4d),
                 new Token(TokenType.IDENTIFIER, "ident5_8"),
-                new Token(TokenType.FUNCTION, "foo2_1"),
+                new Token(TokenType.FUNCTION, "@foo2_1"),
                 new Token(TokenType.NUMBER, -3.0d),
-                new Token(TokenType.FUNCTION, "_"),
+                new Token(TokenType.FUNCTION, "@_"),
                 new Token(TokenType.EQUALS, null),
                 new Token(TokenType.TAG_RIGHT, null),
                 new Token(TokenType.OPERATOR, '-'),
@@ -554,9 +554,9 @@ class SmartScriptLexerTest {
         checkToken(lexer.nextToken(), new Token(TokenType.IDENTIFIER, "i"));
         checkToken(lexer.nextToken(), new Token(TokenType.IDENTIFIER, "i"));
         checkToken(lexer.nextToken(), new Token(TokenType.OPERATOR, '*'));
-        checkToken(lexer.nextToken(), new Token(TokenType.FUNCTION, "sin"));
+        checkToken(lexer.nextToken(), new Token(TokenType.FUNCTION, "@sin"));
         checkToken(lexer.nextToken(), new Token(TokenType.STRING, "0.000"));
-        checkToken(lexer.nextToken(), new Token(TokenType.FUNCTION, "decfmt"));
+        checkToken(lexer.nextToken(), new Token(TokenType.FUNCTION, "@decfmt"));
         checkToken(lexer.nextToken(), new Token(TokenType.TAG_RIGHT, null));
 
         lexer.setState(LexerState.TEXT);
