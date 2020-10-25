@@ -5,7 +5,7 @@ package hr.fer.oprpp1.custom.scripting.lexer;
  *
  * @author Borna Cafuk
  */
-public class LexerException extends RuntimeException {
+public class SmartScriptLexerException extends RuntimeException {
     /**
      * Constructs a new lexer exception with the specified detail message.
      * The cause is not initialized, and may subsequently be initialized by a
@@ -14,7 +14,7 @@ public class LexerException extends RuntimeException {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public LexerException(String message) {
+    public SmartScriptLexerException(String message) {
         super(message);
     }
 
@@ -31,7 +31,7 @@ public class LexerException extends RuntimeException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public LexerException(String message, Throwable cause) {
+    public SmartScriptLexerException(String message, Throwable cause) {
         super(message, cause);
     }
 }

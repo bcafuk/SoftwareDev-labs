@@ -5,11 +5,11 @@ package hr.fer.oprpp1.custom.scripting.lexer;
  *
  * @author Borna Cafuk
  */
-public class Token {
+public class SmartScriptToken {
     /**
      * The type of the token.
      */
-    private TokenType type;
+    private SmartScriptTokenType type;
     /**
      * The value the token is holding.
      */
@@ -21,7 +21,7 @@ public class Token {
      * @param type  the token's type
      * @param value the token's value; may be {@code null}
      */
-    public Token(TokenType type, Object value) {
+    public SmartScriptToken(SmartScriptTokenType type, Object value) {
         this.type = type;
         this.value = value;
     }
@@ -40,7 +40,7 @@ public class Token {
      *
      * @return the token's type
      */
-    public TokenType getType() {
+    public SmartScriptTokenType getType() {
         return type;
     }
 }

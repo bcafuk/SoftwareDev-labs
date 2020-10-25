@@ -5,7 +5,7 @@ package hr.fer.oprpp1.custom.scripting.lexer;
  *
  * @author Borna Cafuk
  */
-public enum LexerState {
+public enum SmartScriptLexerState {
     TEXT,
     TAG,
 }

@@ -5,7 +5,7 @@ package hr.fer.oprpp1.custom.scripting.lexer;
  *
  * @author Borna Cafuk
  */
-public enum TokenType {
+public enum SmartScriptTokenType {
     EOF,
     BARE_STRING,
     TAG_LEFT,

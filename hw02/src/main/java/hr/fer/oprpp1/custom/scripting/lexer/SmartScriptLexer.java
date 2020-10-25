@@ -3,7 +3,6 @@ package hr.fer.oprpp1.custom.scripting.lexer;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Splits an input string into tokens according to the rules specified in the assignment document.
@@ -18,7 +17,7 @@ public class SmartScriptLexer {
     /**
      * The current token, i.e. the last token returned by {@link #nextToken()}
      */
-    private Token token = null;
+    private SmartScriptToken token = null;
     /**
      * The index of the first character which has not yet been handled.
      */
@@ -26,21 +25,21 @@ public class SmartScriptLexer {
     /**
      * The state of the lexer.
      */
-    private LexerState state = LexerState.TEXT;
+    private SmartScriptLexerState state = SmartScriptLexerState.TEXT;
 
     /**
-     * A set of characters which may be ecaped by a backslash while the lexer is in the {@link LexerState#TEXT} state.
+     * A set of characters which may be ecaped by a backslash while the lexer is in the {@link SmartScriptLexerState#TEXT} state.
      */
     private static final Set<Character> TEXT_ESCAPABLE = Set.of('\\', '{');
 
     /**
-     * A set of characters which unambiguously represent operators in the {@link LexerState#TAG} state.
+     * A set of characters which unambiguously represent operators in the {@link SmartScriptLexerState#TAG} state.
      * The minus can also be the start of a number, so it is not in this set.
      */
     private static final Set<Character> TAG_OPERATORS = Set.of('+', '*', '/', '^');
 
     /**
-     * A map of escape sequences valid in strings in the {@link LexerState#TAG} state.
+     * A map of escape sequences valid in strings in the {@link SmartScriptLexerState#TAG} state.
      */
     private static final Map<Character, Character> TAG_STRING_ESCAPES = Map.of(
             '\\', '\\',
@@ -68,7 +67,7 @@ public class SmartScriptLexer {
      * @param state the state to put the lexer into
      * @throws NullPointerException if {@code state} is {@code null}
      */
-    public void setState(LexerState state) {
+    public void setState(SmartScriptLexerState state) {
         Objects.requireNonNull(state, "The state must not be null.");
 
         this.state = state;
@@ -78,11 +77,11 @@ public class SmartScriptLexer {
      * Gets the last token returned by {@link #nextToken()}.
      *
      * @return the last token processed from the input
-     * @throws LexerException if {@link #nextToken()} has not yet been called
+     * @throws SmartScriptLexerException if {@link #nextToken()} has not yet been called
      */
-    public Token getToken() {
+    public SmartScriptToken getToken() {
         if (token == null)
-            throw new LexerException("nextToken has not yet been called.");
+            throw new SmartScriptLexerException("nextToken has not yet been called.");
 
         return token;
     }
@@ -92,11 +91,11 @@ public class SmartScriptLexer {
      * The same token will also be returned by subsequent calls to {@link #getToken()}.
      *
      * @return the token processed from the input
-     * @throws LexerException if there is an error while getting the next token
+     * @throws SmartScriptLexerException if there is an error while getting the next token
      */
-    public Token nextToken() {
-        if (token != null && token.getType() == TokenType.EOF)
-            throw new LexerException("The input string has already been consumed");
+    public SmartScriptToken nextToken() {
+        if (token != null && token.getType() == SmartScriptTokenType.EOF)
+            throw new SmartScriptLexerException("The input string has already been consumed");
 
         token = switch (state) {
             case TEXT -> lexTextToken();
@@ -107,19 +106,19 @@ public class SmartScriptLexer {
     }
 
     /**
-     * Gets the next from the input token using the rules for the {@link LexerState#TEXT} state
+     * Gets the next from the input token using the rules for the {@link SmartScriptLexerState#TEXT} state
      * and returns it without storing it in {@link #token}.
      *
      * @return the token processed from the input
-     * @throws LexerException if there is an error while getting the next token
+     * @throws SmartScriptLexerException if there is an error while getting the next token
      */
-    private Token lexTextToken() {
+    private SmartScriptToken lexTextToken() {
         if (currentIndex == data.length)
-            return new Token(TokenType.EOF, null);
+            return new SmartScriptToken(SmartScriptTokenType.EOF, null);
 
         if (isStringAt(currentIndex, "{$")) {
             currentIndex += 2;
-            return new Token(TokenType.TAG_LEFT, null);
+            return new SmartScriptToken(SmartScriptTokenType.TAG_LEFT, null);
         }
 
         StringBuilder sb = new StringBuilder();
@@ -135,69 +134,69 @@ public class SmartScriptLexer {
             currentIndex++; // Skip the backslash
 
             if (currentIndex == data.length)
-                throw new LexerException("Invalid backslash at end of file, expected an escape sequence.");
+                throw new SmartScriptLexerException("Invalid backslash at end of file, expected an escape sequence.");
 
             if (!TEXT_ESCAPABLE.contains(data[currentIndex]))
-                throw new LexerException("Invalid escape sequence: \\" + data[currentIndex]);
+                throw new SmartScriptLexerException("Invalid escape sequence: \\" + data[currentIndex]);
 
             sb.append(data[currentIndex++]);
         }
 
-        return new Token(TokenType.BARE_STRING, sb.toString());
+        return new SmartScriptToken(SmartScriptTokenType.BARE_STRING, sb.toString());
     }
 
 
     /**
-     * Gets the next from the input token using the rules for the {@link LexerState#TAG} state
+     * Gets the next from the input token using the rules for the {@link SmartScriptLexerState#TAG} state
      * and returns it without storing it in {@link #token}.
      *
      * @return the token processed from the input
-     * @throws LexerException if there is an error while getting the next token
+     * @throws SmartScriptLexerException if there is an error while getting the next token
      */
-    private Token lexTagToken() {
+    private SmartScriptToken lexTagToken() {
         while (currentIndex < data.length && Character.isWhitespace(data[currentIndex]))
             currentIndex++;
 
         if (currentIndex == data.length)
-            return new Token(TokenType.EOF, null);
+            return new SmartScriptToken(SmartScriptTokenType.EOF, null);
 
         if (isStringAt(currentIndex, "$}")) {
             currentIndex += 2;
-            return new Token(TokenType.TAG_RIGHT, null);
+            return new SmartScriptToken(SmartScriptTokenType.TAG_RIGHT, null);
         }
 
         if (data[currentIndex] == '=') {
             currentIndex++; // Consume the equals sign
-            return new Token(TokenType.EQUALS, null);
+            return new SmartScriptToken(SmartScriptTokenType.EQUALS, null);
         }
 
         if (data[currentIndex] == '@') {
             currentIndex++; // Skip the @
-            return new Token(TokenType.FUNCTION, "@" + consumeIdentifier());
+            return new SmartScriptToken(SmartScriptTokenType.FUNCTION, "@" + consumeIdentifier());
         }
 
         if (isIdentifierStart(data[currentIndex])) {
-            return new Token(TokenType.IDENTIFIER, consumeIdentifier());
+            return new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, consumeIdentifier());
         }
 
         if (TAG_OPERATORS.contains(data[currentIndex]))
-            return new Token(TokenType.OPERATOR, data[currentIndex++]);
+            return new SmartScriptToken(SmartScriptTokenType.OPERATOR, data[currentIndex++]);
 
         if (data[currentIndex] == '-') {
             if (currentIndex + 1 != data.length && Character.isDigit(data[currentIndex + 1]))
-                return new Token(TokenType.NUMBER, consumeNumber());
+                return new SmartScriptToken(SmartScriptTokenType.NUMBER, consumeNumber());
 
             currentIndex++; // Skip the -
-            return new Token(TokenType.OPERATOR, '-');
+            return new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-');
         }
 
         if (Character.isDigit(data[currentIndex]))
-            return new Token(TokenType.NUMBER, consumeNumber());
+            return new SmartScriptToken(SmartScriptTokenType.NUMBER, consumeNumber());
 
         if (data[currentIndex] == '"')
-            return new Token(TokenType.STRING, consumeString());
+            return new SmartScriptToken(SmartScriptTokenType.STRING, consumeString());
 
-        throw new LexerException("Unexpected character in input: " + data[currentIndex]);
+        throw new SmartScriptLexerException("Unexpected character in input: " + data[currentIndex]);
     }
 
     /**
@@ -251,15 +250,15 @@ public class SmartScriptLexer {
      * Reads in an identifier from the input.
      *
      * @return the identifier string
-     * @throws LexerException if the input has been consumed entirely
-     * @throws LexerException if next character in the input cannot start an identifier
+     * @throws SmartScriptLexerException if the input has been consumed entirely
+     * @throws SmartScriptLexerException if next character in the input cannot start an identifier
      */
     private String consumeIdentifier() {
         if (currentIndex == data.length)
-            throw new LexerException("Tried reading an identifier at the end of the file.");
+            throw new SmartScriptLexerException("Tried reading an identifier at the end of the file.");
 
         if (!isIdentifierStart(data[currentIndex]))
-            throw new LexerException("Tried reading an identifier, found " + data[currentIndex]);
+            throw new SmartScriptLexerException("Tried reading an identifier, found " + data[currentIndex]);
 
         StringBuilder sb = new StringBuilder();
 
@@ -273,14 +272,14 @@ public class SmartScriptLexer {
      * Reads in a number from the input.
      *
      * @return the number
-     * @throws LexerException if the input has been consumed entirely
-     * @throws LexerException if the number is incorrectly formatted
+     * @throws SmartScriptLexerException if the input has been consumed entirely
+     * @throws SmartScriptLexerException if the number is incorrectly formatted
      */
     private double consumeNumber() {
         StringBuilder sb = new StringBuilder();
 
         if (currentIndex == data.length)
-            throw new LexerException("Tried reading a number at the end of the file.");
+            throw new SmartScriptLexerException("Tried reading a number at the end of the file.");
 
         if (data[currentIndex] == '-') {
             currentIndex++;
@@ -303,7 +302,7 @@ public class SmartScriptLexer {
         try {
             return Double.parseDouble(sb.toString());
         } catch (NumberFormatException e) {
-            throw new LexerException("Invalid number: " + sb.toString(), e);
+            throw new SmartScriptLexerException("Invalid number: " + sb.toString(), e);
         }
     }
 
@@ -311,17 +310,17 @@ public class SmartScriptLexer {
      * Reads in a string from the input.
      *
      * @return the string contents, without the surrounding quotation marks
-     * @throws LexerException if the input has been consumed entirely
-     * @throws LexerException if the next character in the input is not a quotation mark ({@code "})
-     * @throws LexerException if the string is unterminated
-     * @throws LexerException if there is an invalid escape sequence in the string
+     * @throws SmartScriptLexerException if the input has been consumed entirely
+     * @throws SmartScriptLexerException if the next character in the input is not a quotation mark ({@code "})
+     * @throws SmartScriptLexerException if the string is unterminated
+     * @throws SmartScriptLexerException if there is an invalid escape sequence in the string
      */
     private String consumeString() {
         if (currentIndex == data.length)
-            throw new LexerException("Tried reading a string at the end of the file.");
+            throw new SmartScriptLexerException("Tried reading a string at the end of the file.");
 
         if (data[currentIndex] != '"')
-            throw new LexerException("Tried reading a string, but found " + data[currentIndex] + " instead of a quotation mark (\").");
+            throw new SmartScriptLexerException("Tried reading a string, but found " + data[currentIndex] + " instead of a quotation mark (\").");
 
         currentIndex++; // Skip the opening quotation mark;
 
@@ -337,16 +336,16 @@ public class SmartScriptLexer {
             currentIndex++; // Skip the backslash
 
             if (currentIndex == data.length)
-                throw new LexerException("Unterminated string with backslash at end of file.");
+                throw new SmartScriptLexerException("Unterminated string with backslash at end of file.");
 
             if (!TAG_STRING_ESCAPES.containsKey(data[currentIndex]))
-                throw new LexerException("Invalid escape sequence: \\" + data[currentIndex]);
+                throw new SmartScriptLexerException("Invalid escape sequence: \\" + data[currentIndex]);
 
             sb.append(TAG_STRING_ESCAPES.get(data[currentIndex++]));
         }
 
         if (currentIndex == data.length)
-            throw new LexerException("Unterminated string in input.");
+            throw new SmartScriptLexerException("Unterminated string in input.");
 
         currentIndex++; // Skip the closing quotation mark;
 
