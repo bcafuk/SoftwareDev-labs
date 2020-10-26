@@ -58,9 +58,12 @@ class SmartScriptParserTest {
     @Test
     public void testNestedFors() {
         String source = """
-                Multiplication table:
-                {$FOR i 1 10 1$}{$FOR j 1 10 1$}{$=i$}*{$=j$} = {$=i*j$} {$END$}
-                {$END$}
+                Complex numbers:
+                {$ FOR phi 0.0 3.14 0.1 $}
+                  {$ FOR r 0.0 5.0 0.5 $}
+                    {$= r $} cis({$= phi $}) = {$= r phi @cos * "0.000" @decfmt $} + {$= r phi @sin * "0.000" @decfmt $}i
+                  {$ END $}
+                {$ END $}
                 """;
 
         assertParsesSuccessfully(source);
