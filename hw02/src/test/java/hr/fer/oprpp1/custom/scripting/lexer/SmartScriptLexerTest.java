@@ -289,6 +289,26 @@ class SmartScriptLexerTest {
     }
 
     @Test
+    public void testInvalidEmptyFunction() {
+        // An @ can not stand alone
+        SmartScriptLexer lexer = new SmartScriptLexer("  @ foo   ");
+        lexer.setState(SmartScriptLexerState.TAG);
+
+        // will throw!
+        assertThrows(SmartScriptLexerException.class, lexer::nextToken);
+    }
+
+    @Test
+    public void testInvalidNumberFunction() {
+        // A function name can not start with a number
+        SmartScriptLexer lexer = new SmartScriptLexer("  @1   ");
+        lexer.setState(SmartScriptLexerState.TAG);
+
+        // will throw!
+        assertThrows(SmartScriptLexerException.class, lexer::nextToken);
+    }
+
+    @Test
     public void testTagClosing() {
         // Let's check for a closing tag
         SmartScriptLexer lexer = new SmartScriptLexer("ident$}5");
@@ -407,7 +427,7 @@ class SmartScriptLexerTest {
     }
 
     @Test
-    public void invalidStringEscape() {
+    public void testInvalidStringEscape() {
         // \f is not a valid escape sequence
         SmartScriptLexer lexer = new SmartScriptLexer("\"\\f\"");
         lexer.setState(SmartScriptLexerState.TAG);
@@ -469,14 +489,14 @@ class SmartScriptLexerTest {
     @Test
     public void testMultipartInput() {
         // Test input which has parts which are tokenized by different rules...
-        SmartScriptLexer lexer = new SmartScriptLexer(
-                "This is sample text.\r\n" +
-                "{$ FOR i 1 10 1 $}\r\n" +
-                "  This is {$= i $}-th time this message is generated.\r\n" +
-                "{$END$}\r\n" +
-                "{$FOR i 0 10 2 $}\r\n" +
-                "  sin({$=i$}^2) = {$= i i * @sin \"0.000\" @decfmt $}\r\n" +
-                "{$END$}"
+        SmartScriptLexer lexer = new SmartScriptLexer("""
+                This is sample text.\r
+                {$ FOR i 1 10 1 $}\r
+                  This is {$= i $}-th time this message is generated.\r
+                {$END$}\r
+                {$FOR i 0 10 2 $}\r
+                  sin({$=i$}^2) = {$= i i * @sin "0.000" @decfmt $}\r
+                {$END$}"""
         );
 
         checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.BARE_STRING, "This is sample text.\r\n"));
