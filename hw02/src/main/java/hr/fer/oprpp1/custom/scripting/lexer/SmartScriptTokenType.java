@@ -13,7 +13,8 @@ public enum SmartScriptTokenType {
     IDENTIFIER,
     EQUALS,
     STRING,
-    NUMBER,
+    DOUBLE,
+    INTEGER,
     FUNCTION,
     OPERATOR,
 }

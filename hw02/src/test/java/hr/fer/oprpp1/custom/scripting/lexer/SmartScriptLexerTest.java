@@ -234,8 +234,8 @@ class SmartScriptLexerTest {
         lexer.setState(SmartScriptLexerState.TAG);
 
         SmartScriptToken[] correctData = {
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, -1234d),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, 5678.5d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, -1234),
+                new SmartScriptToken(SmartScriptTokenType.DOUBLE, 5678.5d),
                 new SmartScriptToken(SmartScriptTokenType.EOF, null)
         };
 
@@ -248,7 +248,7 @@ class SmartScriptLexerTest {
         lexer.setState(SmartScriptLexerState.TAG);
 
         // Expect the number before the second period to be lexed correctly
-        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.NUMBER, -12.75d));
+        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.DOUBLE, -12.75d));
 
         // will throw!
         assertThrows(SmartScriptLexerException.class, lexer::nextToken);
@@ -298,7 +298,7 @@ class SmartScriptLexerTest {
         SmartScriptToken[] correctData = {
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "ident"),
                 new SmartScriptToken(SmartScriptTokenType.TAG_RIGHT, null),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, 5d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, 5),
                 new SmartScriptToken(SmartScriptTokenType.EOF, null)
         };
 
@@ -340,13 +340,13 @@ class SmartScriptLexerTest {
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '^'),
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "a"),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '+'),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, 5d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, 5),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '/'),
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "i"),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-'),
                 new SmartScriptToken(SmartScriptTokenType.FUNCTION, "@foo"),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-'),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, 15d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, 15),
                 new SmartScriptToken(SmartScriptTokenType.EOF, null)
         };
 
@@ -362,8 +362,8 @@ class SmartScriptLexerTest {
         // We expect the following stream of tokens
         SmartScriptToken[] correctData = {
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-'),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, 5d),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, -4d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, 5),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, -4),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-'),
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "a"),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-'),
@@ -444,20 +444,20 @@ class SmartScriptLexerTest {
 
         SmartScriptToken[] correctData = {
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "i"),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, -5.0d),
+                new SmartScriptToken(SmartScriptTokenType.DOUBLE, -5.0d),
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "test4"),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, -4d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, -4),
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "ident5_8"),
                 new SmartScriptToken(SmartScriptTokenType.FUNCTION, "@foo2_1"),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, -3.0d),
+                new SmartScriptToken(SmartScriptTokenType.DOUBLE, -3.0d),
                 new SmartScriptToken(SmartScriptTokenType.FUNCTION, "@_"),
                 new SmartScriptToken(SmartScriptTokenType.EQUALS, null),
                 new SmartScriptToken(SmartScriptTokenType.TAG_RIGHT, null),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-'),
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "a"),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, -6.0d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, -6),
                 new SmartScriptToken(SmartScriptTokenType.OPERATOR, '^'),
-                new SmartScriptToken(SmartScriptTokenType.NUMBER, 8.0d),
+                new SmartScriptToken(SmartScriptTokenType.INTEGER, 8),
                 new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "bbb"),
                 new SmartScriptToken(SmartScriptTokenType.STRING, "1"),
                 new SmartScriptToken(SmartScriptTokenType.EOF, null)
@@ -487,9 +487,9 @@ class SmartScriptLexerTest {
         // FOR i 1 10 1
         checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "FOR"));
         checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "i"));
-        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.NUMBER, 1d));
-        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.NUMBER, 10d));
-        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.NUMBER, 1d));
+        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.INTEGER, 1));
+        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.INTEGER, 10));
+        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.INTEGER, 1));
         checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.TAG_RIGHT, null));
 
         lexer.setState(SmartScriptLexerState.TEXT);
@@ -525,9 +525,9 @@ class SmartScriptLexerTest {
         // FOR i 0 10 2
         checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "FOR"));
         checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.IDENTIFIER, "i"));
-        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.NUMBER, 0d));
-        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.NUMBER, 10d));
-        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.NUMBER, 2d));
+        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.INTEGER, 0));
+        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.INTEGER, 10));
+        checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.INTEGER, 2));
         checkToken(lexer.nextToken(), new SmartScriptToken(SmartScriptTokenType.TAG_RIGHT, null));
 
         lexer.setState(SmartScriptLexerState.TEXT);

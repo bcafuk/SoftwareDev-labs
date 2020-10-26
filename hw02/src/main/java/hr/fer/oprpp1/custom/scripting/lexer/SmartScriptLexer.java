@@ -184,14 +184,14 @@ public class SmartScriptLexer {
 
         if (data[currentIndex] == '-') {
             if (currentIndex + 1 != data.length && Character.isDigit(data[currentIndex + 1]))
-                return new SmartScriptToken(SmartScriptTokenType.NUMBER, consumeNumber());
+                return lexNumber();
 
             currentIndex++; // Skip the -
             return new SmartScriptToken(SmartScriptTokenType.OPERATOR, '-');
         }
 
         if (Character.isDigit(data[currentIndex]))
-            return new SmartScriptToken(SmartScriptTokenType.NUMBER, consumeNumber());
+            return lexNumber();
 
         if (data[currentIndex] == '"')
             return new SmartScriptToken(SmartScriptTokenType.STRING, consumeString());
@@ -269,13 +269,13 @@ public class SmartScriptLexer {
     }
 
     /**
-     * Reads in a number from the input.
+     * Reads in an integer or floating-point number from the input.
      *
      * @return the number
      * @throws SmartScriptLexerException if the input has been consumed entirely
      * @throws SmartScriptLexerException if the number is incorrectly formatted
      */
-    private double consumeNumber() {
+    private SmartScriptToken lexNumber() {
         StringBuilder sb = new StringBuilder();
 
         if (currentIndex == data.length)
@@ -300,7 +300,10 @@ public class SmartScriptLexer {
         }
 
         try {
-            return Double.parseDouble(sb.toString());
+            if (periodFound)
+                return new SmartScriptToken(SmartScriptTokenType.DOUBLE, Double.parseDouble(sb.toString()));
+            else
+                return new SmartScriptToken(SmartScriptTokenType.INTEGER, Integer.parseInt(sb.toString()));
         } catch (NumberFormatException e) {
             throw new SmartScriptLexerException("Invalid number: " + sb.toString(), e);
         }
