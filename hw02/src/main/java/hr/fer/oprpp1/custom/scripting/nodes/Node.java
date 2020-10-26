@@ -66,6 +66,13 @@ public abstract class Node {
             return false;
 
         Node node = (Node) o;
-        return children.equals(node.children);
+        if (this.children.size() != node.children.size())
+            return false;
+
+        for (int i = 0; i < this.children.size(); i++)
+            if (!this.children.get(i).equals(node.children.get(i)))
+                return false;
+
+        return true;
     }
 }
