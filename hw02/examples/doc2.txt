@@ -1,0 +1,6 @@
+Multiplication table:
+{$ FOR i 1 10 1 $}
+  {$ FOR j 1 10 1 $}
+    {$= i $} * {$= j $} = {$= i j * $}
+  {$ END $}
+{$ END $}
