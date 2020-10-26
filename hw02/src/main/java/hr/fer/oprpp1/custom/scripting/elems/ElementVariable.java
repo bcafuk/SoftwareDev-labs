@@ -19,8 +19,7 @@ public class ElementVariable extends Element {
      * @param name the variable name with which to initialize the element
      */
     public ElementVariable(String name) {
-        Objects.requireNonNull(name, "The variable name must not be null.");
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "The variable name must not be null.");
     }
 
     /**

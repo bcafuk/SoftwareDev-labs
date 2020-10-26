@@ -19,8 +19,7 @@ public class ElementFunction extends Element {
      * @param name the function name with which to initialize the element
      */
     public ElementFunction(String name) {
-        Objects.requireNonNull(name, "The function name must not be null.");
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "The function name must not be null.");
     }
 
     /**

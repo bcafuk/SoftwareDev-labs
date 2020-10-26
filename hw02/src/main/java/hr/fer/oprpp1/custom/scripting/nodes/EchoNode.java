@@ -21,9 +21,7 @@ public class EchoNode extends Node {
      * @throws NullPointerException if {@code elements} is {@code null}.
      */
     public EchoNode(Element[] elements) {
-        Objects.requireNonNull(elements, "The elements array must not be null");
-
-        this.elements = elements;
+        this.elements = Objects.requireNonNull(elements, "The elements array must not be null");
     }
 
     /**

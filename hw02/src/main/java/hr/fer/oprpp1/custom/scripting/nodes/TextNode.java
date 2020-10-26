@@ -20,9 +20,7 @@ public class TextNode extends Node {
      * @throws NullPointerException if {@code text} is {@code null}
      */
     public TextNode(String text) {
-        Objects.requireNonNull(text, "The text must not be null.");
-
-        this.text = text;
+        this.text = Objects.requireNonNull(text, "The text must not be null.");
     }
 
     /**

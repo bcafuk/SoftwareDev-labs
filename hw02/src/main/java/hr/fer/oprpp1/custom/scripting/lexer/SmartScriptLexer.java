@@ -56,9 +56,7 @@ public class SmartScriptLexer {
      * @throws NullPointerException if {@code input} is {@code null}
      */
     public SmartScriptLexer(String input) {
-        Objects.requireNonNull(input, "The input must not be null.");
-
-        this.data = input.toCharArray();
+        this.data = Objects.requireNonNull(input, "The input must not be null.").toCharArray();
     }
 
     /**
@@ -68,9 +66,7 @@ public class SmartScriptLexer {
      * @throws NullPointerException if {@code state} is {@code null}
      */
     public void setState(SmartScriptLexerState state) {
-        Objects.requireNonNull(state, "The state must not be null.");
-
-        this.state = state;
+        this.state = Objects.requireNonNull(state, "The state must not be null.");
     }
 
     /**

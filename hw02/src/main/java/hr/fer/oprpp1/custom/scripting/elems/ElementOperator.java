@@ -19,8 +19,7 @@ public class ElementOperator extends Element {
      * @param symbol the symbol with which to initialize the element
      */
     public ElementOperator(String symbol) {
-        Objects.requireNonNull(symbol, "The symbol must not be null.");
-        this.symbol = symbol;
+        this.symbol = Objects.requireNonNull(symbol, "The symbol must not be null.");
     }
 
     /**

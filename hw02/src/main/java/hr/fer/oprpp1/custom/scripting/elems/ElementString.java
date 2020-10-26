@@ -19,8 +19,7 @@ public class ElementString extends Element {
      * @param value the string with which to initialize the element
      */
     public ElementString(String value) {
-        Objects.requireNonNull(value, "The string must not be null.");
-        this.value = value;
+        this.value = Objects.requireNonNull(value, "The string must not be null.");
     }
 
     /**

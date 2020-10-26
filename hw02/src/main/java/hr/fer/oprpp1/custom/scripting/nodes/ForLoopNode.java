@@ -38,13 +38,9 @@ public class ForLoopNode extends Node {
      * @throws NullPointerException if {@code endExpession} is {@code null}
      */
     public ForLoopNode(ElementVariable variable, Element startExpression, Element endExpession, Element step) {
-        Objects.requireNonNull(variable, "The variable must not be null.");
-        Objects.requireNonNull(startExpression, "The start expression must not be null.");
-        Objects.requireNonNull(endExpession, "The end expression must not be null.");
-
-        this.variable = variable;
-        this.startExpression = startExpression;
-        this.endExpession = endExpession;
+        this.variable = Objects.requireNonNull(variable, "The variable must not be null.");
+        this.startExpression = Objects.requireNonNull(startExpression, "The start expression must not be null.");
+        this.endExpession = Objects.requireNonNull(endExpession, "The end expression must not be null.");
         this.step = step;
     }
 
