@@ -2,6 +2,12 @@ package hr.fer.oprpp1.custom.scripting.parser;
 
 import hr.fer.oprpp1.custom.scripting.nodes.DocumentNode;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -150,6 +156,22 @@ class SmartScriptParserTest {
         assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser("{$FOR i 1 10$}"));
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 6, 7})
+    public void testExtraSuccessful(int testNumber) {
+        String source = readExample(testNumber);
+
+        assertParsesSuccessfully(source);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {4, 5, 8, 9})
+    public void testExtraThrowing(int testNumber) {
+        String source = readExample(testNumber);
+
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(source));
+    }
+
     private void assertParsesSuccessfully(String source) {
         SmartScriptParser parser = new SmartScriptParser(source);
         DocumentNode document = parser.getDocumentNode();
@@ -159,5 +181,17 @@ class SmartScriptParserTest {
         DocumentNode document2 = parser2.getDocumentNode();
 
         assertEquals(document, document2);
+    }
+
+    private String readExample(int n) {
+        String filename = "extra/example" + n + ".txt";
+
+        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(filename)) {
+            if (is == null) throw new RuntimeException("The file " + filename + " is not available.");
+            byte[] data = this.getClass().getClassLoader().getResourceAsStream(filename).readAllBytes();
+            return new String(data, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            throw new RuntimeException("Error while reading the file.", ex);
+        }
     }
 }
