@@ -1,5 +1,7 @@
 package hr.fer.oprpp1.custom.scripting.elems;
 
+import java.util.Objects;
+
 /**
  * An element representing a constant real number.
  *
@@ -32,5 +34,16 @@ public class ElementConstantDouble extends Element {
     @Override
     public String asText() {
         return Double.toString(value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ElementConstantDouble))
+            return false;
+
+        ElementConstantDouble that = (ElementConstantDouble) o;
+        return Double.compare(that.value, value) == 0;
     }
 }

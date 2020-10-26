@@ -33,4 +33,15 @@ public class ElementConstantInteger extends Element {
     public String asText() {
         return Integer.toString(value);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ElementConstantInteger))
+            return false;
+
+        ElementConstantInteger that = (ElementConstantInteger) o;
+        return value == that.value;
+    }
 }

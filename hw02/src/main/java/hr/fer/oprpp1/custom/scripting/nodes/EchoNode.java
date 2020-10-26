@@ -2,6 +2,7 @@ package hr.fer.oprpp1.custom.scripting.nodes;
 
 import hr.fer.oprpp1.custom.scripting.elems.Element;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -32,5 +33,27 @@ public class EchoNode extends Node {
      */
     public Element[] getElements() {
         return elements;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{$ = ");
+
+        for (Element element : elements)
+            sb.append(element).append(' ');
+
+        sb.append("$}");
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof EchoNode))
+            return false;
+
+        EchoNode echoNode = (EchoNode) o;
+        return Arrays.equals(elements, echoNode.elements);
     }
 }

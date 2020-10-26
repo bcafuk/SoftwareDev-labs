@@ -14,4 +14,9 @@ public abstract class Element {
     public String asText() {
         return "";
     }
+
+    @Override
+    public String toString() {
+        return asText();
+    }
 }

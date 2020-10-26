@@ -33,4 +33,30 @@ public class TextNode extends Node {
     public String getText() {
         return text;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Character c : text.toCharArray()) {
+            sb.append(switch (c) {
+                case '{' -> "\\{";
+                case '\\' -> "\\\\";
+                default -> c;
+            });
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof TextNode))
+            return false;
+
+        TextNode textNode = (TextNode) o;
+        return text.equals(textNode.text);
+    }
 }

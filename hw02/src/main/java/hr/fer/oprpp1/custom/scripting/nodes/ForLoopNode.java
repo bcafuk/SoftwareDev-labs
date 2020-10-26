@@ -83,4 +83,39 @@ public class ForLoopNode extends Node {
     public Element getStep() {
         return step;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{$ FOR ");
+
+        sb.append(variable).append(' ').append(startExpression).append(' ').append(endExpession).append(' ');
+
+        if (step != null)
+            sb.append(step).append(' ');
+
+        sb.append("$}");
+
+        for (int i = 0; i < numberOfChildren(); i++)
+            sb.append(getChild(i).toString());
+
+        sb.append("{$ END $}");
+
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ForLoopNode))
+            return false;
+        if (!super.equals(o))
+            return false;
+
+        ForLoopNode loopNode = (ForLoopNode) o;
+        return variable.equals(loopNode.variable) &&
+                startExpression.equals(loopNode.startExpression) &&
+                endExpession.equals(loopNode.endExpession) &&
+                Objects.equals(step, loopNode.step);
+    }
 }

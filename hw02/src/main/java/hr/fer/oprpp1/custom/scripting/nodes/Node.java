@@ -57,4 +57,15 @@ public abstract class Node {
 
         return (Node) children.get(index);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Node))
+            return false;
+
+        Node node = (Node) o;
+        return children.equals(node.children);
+    }
 }
