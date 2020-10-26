@@ -66,6 +66,12 @@ public abstract class Node {
             return false;
 
         Node node = (Node) o;
+        if (this.children == null && node.children == null)
+            return true;
+
+        if (this.children == null || node.children == null) // One of them is null, but not both
+            return false;
+
         if (this.children.size() != node.children.size())
             return false;
 
