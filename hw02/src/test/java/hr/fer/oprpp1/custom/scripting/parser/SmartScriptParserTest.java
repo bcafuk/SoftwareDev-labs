@@ -172,7 +172,7 @@ class SmartScriptParserTest {
         assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(source));
     }
 
-    private void assertParsesSuccessfully(String source) {
+    private static void assertParsesSuccessfully(String source) {
         SmartScriptParser parser = new SmartScriptParser(source);
         DocumentNode document = parser.getDocumentNode();
         String originalDocumentBody = document.toString();
