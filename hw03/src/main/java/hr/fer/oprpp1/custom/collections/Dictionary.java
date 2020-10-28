@@ -84,7 +84,8 @@ public class Dictionary<K, V> {
      * Removes a key-value pair from the dictionary.
      *
      * @param key the key to remove from the dictionary
-     * @return the value which was associated with the given key
+     * @return the value which was associated with the given key,
+     *         or {@code null} if the key did not exist in the dictionary
      */
     public V remove(Object key) {
         Entry<K, V> entry = getEntry(key);
