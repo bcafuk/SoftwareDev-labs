@@ -11,6 +11,7 @@ import java.util.Objects;
  *
  * @param <K> the type of the keys
  * @param <V> the type of the values
+ * @author Borna Cafuk
  */
 public class Dictionary<K, V> {
     /**
