@@ -22,8 +22,18 @@ public class Vector2D {
      *
      * @param x the <em>x</em> component
      * @param y the <em>y</em> component
+     * @throws IllegalArgumentException if {@code x} or {@code y} is infinite or NaN
      */
     public Vector2D(double x, double y) {
+        if (Double.isInfinite(x))
+            throw new IllegalArgumentException("The x component can not be infinite.");
+        if (Double.isNaN(x))
+            throw new IllegalArgumentException("The x component can not be NaN.");
+        if (Double.isInfinite(y))
+            throw new IllegalArgumentException("The y component can not be infinite.");
+        if (Double.isNaN(y))
+            throw new IllegalArgumentException("The y component can not be NaN.");
+
         this.x = x;
         this.y = y;
     }
@@ -76,8 +86,14 @@ public class Vector2D {
      * Changes a vector by rotating it.
      *
      * @param angle the angle by which to rotate
+     * @throws IllegalArgumentException if {@code angle} is infinite or NaN
      */
     public void rotate(double angle) {
+        if (Double.isInfinite(angle))
+            throw new IllegalArgumentException("The angle can not be infinite.");
+        if (Double.isNaN(angle))
+            throw new IllegalArgumentException("The angle can not be NaN.");
+
         double oldX = x;
         double oldY = y;
 
@@ -90,6 +106,7 @@ public class Vector2D {
      *
      * @param angle the angle by which to rotate
      * @return a new vector representing the result of the rotation
+     * @throws IllegalArgumentException if {@code angle} is infinite or NaN
      */
     public Vector2D rotated(double angle) {
         Vector2D result = copy();
@@ -101,8 +118,14 @@ public class Vector2D {
      * Changes a vector by scaling it.
      *
      * @param scaler the factor by which to scale
+     * @throws IllegalArgumentException if {@code scaler} is infinite or NaN
      */
     public void scale(double scaler) {
+        if (Double.isInfinite(scaler))
+            throw new IllegalArgumentException("The scaler can not be infinite.");
+        if (Double.isNaN(scaler))
+            throw new IllegalArgumentException("The scaler can not be NaN.");
+
         x *= scaler;
         y *= scaler;
     }
@@ -112,6 +135,7 @@ public class Vector2D {
      *
      * @param scaler the factor by which to scale
      * @return a new vector representing the result of the scaling
+     * @throws IllegalArgumentException if {@code scaler} is infinite or NaN
      */
     public Vector2D scaled(double scaler) {
         Vector2D result = copy();
