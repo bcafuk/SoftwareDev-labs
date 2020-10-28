@@ -85,7 +85,7 @@ public class Vector2D {
     /**
      * Changes a vector by rotating it.
      *
-     * @param angle the angle by which to rotate
+     * @param angle the angle in radians by which to rotate
      * @throws IllegalArgumentException if {@code angle} is infinite or NaN
      */
     public void rotate(double angle) {
@@ -104,7 +104,7 @@ public class Vector2D {
     /**
      * Rotates a vector without changing it.
      *
-     * @param angle the angle by which to rotate
+     * @param angle the angle in radians by which to rotate
      * @return a new vector representing the result of the rotation
      * @throws IllegalArgumentException if {@code angle} is infinite or NaN
      */
