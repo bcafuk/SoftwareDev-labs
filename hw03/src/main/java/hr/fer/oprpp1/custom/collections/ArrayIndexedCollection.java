@@ -10,9 +10,10 @@ import java.util.Objects;
  * <p>
  * This collection may contain duplicate elements, but not {@code null} references.
  *
+ * @param <E> the type of objects to be stored in the collection
  * @author Borna Cafuk
  */
-public class ArrayIndexedCollection implements List {
+public class ArrayIndexedCollection<E> implements List<E> {
     /**
      * The default capacity (i.e. the size of the internal array) when no capacity is specified in the constructor.
      */
@@ -63,7 +64,7 @@ public class ArrayIndexedCollection implements List {
      * @param other the collection whose elements to insert into the new array collection
      * @throws NullPointerException if {@code other} is {@code null}
      */
-    public ArrayIndexedCollection(Collection other) {
+    public ArrayIndexedCollection(Collection<? extends E> other) {
         this(other, 1);
     }
 
@@ -77,7 +78,7 @@ public class ArrayIndexedCollection implements List {
      * @param initialCapacity the minimum initial capacity
      * @throws NullPointerException if {@code other} is {@code null}
      */
-    public ArrayIndexedCollection(Collection other, int initialCapacity) {
+    public ArrayIndexedCollection(Collection<? extends E> other, int initialCapacity) {
         this(Math.max(other.size(), initialCapacity));
 
         this.addAll(other);
@@ -102,20 +103,21 @@ public class ArrayIndexedCollection implements List {
      * @throws NullPointerException if the element is {@code null}
      */
     @Override
-    public void add(Object value) {
+    public void add(E value) {
         insert(value, size);
     }
 
     @Override
-    public Object get(int index) {
+    @SuppressWarnings("unchecked")
+    public E get(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Valid indices are 0 to " + (size - 1) + ", but " + index + " was passed.");
 
-        return elements[index];
+        return (E) elements[index];
     }
 
     @Override
-    public void insert(Object value, int position) {
+    public void insert(E value, int position) {
         Objects.requireNonNull(value, "null cannot be inserted into collection.");
 
         if (position < 0 || position > size)
@@ -217,14 +219,16 @@ public class ArrayIndexedCollection implements List {
      * The elements are returned in order of increasing index.
      */
     @Override
-    public ElementsGetter createElementsGetter() {
-        return new ArrayIndexedElementsGetter(this);
+    public ElementsGetter<E> createElementsGetter() {
+        return new ArrayIndexedElementsGetter<>(this);
     }
 
     /**
      * An implementation of {@link ElementsGetter} for this class.
+     *
+     * @param <E> the type of the elements
      */
-    private static class ArrayIndexedElementsGetter implements ElementsGetter {
+    private static class ArrayIndexedElementsGetter<E> implements ElementsGetter<E> {
         /**
          * The index of the first element which has not yet been returned by {@link #getNextElement()}.
          */
@@ -235,7 +239,7 @@ public class ArrayIndexedCollection implements List {
          * This could be removed by making {@link ArrayIndexedElementsGetter} non-static,
          * but the assignment PDF specifies that it has to be static.
          */
-        private ArrayIndexedCollection collection;
+        private ArrayIndexedCollection<E> collection;
         /**
          * The {@link #modificationCount} at the moment of this {@link ElementsGetter}'s creation.
          * <p>
@@ -248,7 +252,7 @@ public class ArrayIndexedCollection implements List {
          *
          * @param collection the collection whose elements will be returned by this getter
          */
-        private ArrayIndexedElementsGetter(ArrayIndexedCollection collection) {
+        private ArrayIndexedElementsGetter(ArrayIndexedCollection<E> collection) {
             this.collection = collection;
             this.savedModificationCount = collection.modificationCount;
         }
@@ -262,11 +266,12 @@ public class ArrayIndexedCollection implements List {
         }
 
         @Override
-        public Object getNextElement() {
+        @SuppressWarnings("unchecked")
+        public E getNextElement() {
             if (!hasNextElement())
                 throw new NoSuchElementException("There are no more elements in this collection.");
 
-            return collection.elements[currentIndex++];
+            return (E) collection.elements[currentIndex++];
         }
     }
 }

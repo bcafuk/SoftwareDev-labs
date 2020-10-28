@@ -1,11 +1,12 @@
 package hr.fer.oprpp1.custom.collections;
 
 /**
- * A collection whose elements have assigned indexes.
+ * A collection whose elements are ordered and have assigned indexes.
  *
+ * @param <E> the type of objects to be stored in the list
  * @author Borna Cafuk
  */
-public interface List extends Collection {
+public interface List<E> extends Collection<E> {
     /**
      * Gets the element at the specified index.
      *
@@ -13,7 +14,7 @@ public interface List extends Collection {
      * @return the element at the index
      * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the list
      */
-    Object get(int index);
+    E get(int index);
 
     /**
      * Inserts an element into the array at a specified position.
@@ -27,7 +28,7 @@ public interface List extends Collection {
      * @param position the position where to insert the element
      * @throws NullPointerException if the element is {@code null}
      */
-    void insert(Object value, int position);
+    void insert(E value, int position);
 
     /**
      * Finds the first occurrence of an element in the list and returns its index.

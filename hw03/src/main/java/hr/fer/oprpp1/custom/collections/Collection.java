@@ -3,9 +3,10 @@ package hr.fer.oprpp1.custom.collections;
 /**
  * A generic collection of objects.
  *
+ * @param <E> the type of objects to be stored in the collection
  * @author Borna Cafuk
  */
-public interface Collection {
+public interface Collection<E> {
     /**
      * Returns whether the collection is empty.
      *
@@ -23,11 +24,11 @@ public interface Collection {
     int size();
 
     /**
-     * Adds an object into the collection. A collection may contain multiple occurrences of an object.
+     * Adds an element into the collection. A collection may contain multiple occurrences of an object.
      *
      * @param value the object to be added
      */
-    void add(Object value);
+    void add(E value);
 
     /**
      * Tests whether the collection contains an object.
@@ -63,12 +64,8 @@ public interface Collection {
      *
      * @param processor the {@link Processor} to use
      */
-    default void forEach(Processor processor) {
-        ElementsGetter getter = createElementsGetter();
-
-        while (getter.hasNextElement()) {
-            processor.process(getter.getNextElement());
-        }
+    default void forEach(Processor<? super E> processor) {
+        createElementsGetter().processRemaining(processor);
     }
 
     /**
@@ -76,14 +73,8 @@ public interface Collection {
      *
      * @param other the collection to add the elements from; remains unchanged
      */
-    default void addAll(Collection other) {
-        class AddProcessor implements Processor {
-            public void process(Object value) {
-                add(value);
-            }
-        }
-
-        other.forEach(new AddProcessor());
+    default void addAll(Collection<? extends E> other) {
+        other.forEach(this::add);
     }
 
     /**
@@ -96,21 +87,18 @@ public interface Collection {
      *
      * @return a new ElementsGetter
      */
-    ElementsGetter createElementsGetter();
+    ElementsGetter<E> createElementsGetter();
 
     /**
      * Adds all elements from another collection which pass some test.
      *
-     * @param col the collection whose elements will be added
+     * @param col    the collection whose elements will be added
      * @param tester the tester to filter which elements to add
      */
-    default void addAllSatisfying(Collection col, Tester tester) {
-        ElementsGetter getter = col.createElementsGetter();
-
-        while (getter.hasNextElement()) {
-            Object element = getter.getNextElement();
+    default void addAllSatisfying(Collection<? extends E> col, Tester<? super E> tester) {
+        col.createElementsGetter().processRemaining(element -> {
             if (tester.test(element))
                 add(element);
-        }
+        });
     }
 }

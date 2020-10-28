@@ -9,40 +9,10 @@ import java.util.Objects;
  * <p>
  * This collection may contain duplicate elements, but not {@code null} references.
  *
+ * @param <E> the type of objects to be stored in the collection
  * @author Borna Cafuk
  */
-public class LinkedListIndexedCollection implements List {
-    /**
-     * An internal class representing a node of a linked list.
-     */
-    private static class ListNode {
-        /**
-         * Reference to the next node in the list, or {@code null} if this node is the last in the list.
-         */
-        public ListNode next;
-        /**
-         * Reference to the previous node in the list, or {@code null} if this node is the first in the list.
-         */
-        public ListNode previous;
-        /**
-         * The payload of the node, the object represented by this node.
-         */
-        public Object value;
-
-        /**
-         * Initializes a list node with all its fields.
-         *
-         * @param next     the node in the list immediately following this one
-         * @param previous the node in the list immediately preceding this one
-         * @param value    the object represented by this node
-         */
-        public ListNode(ListNode next, ListNode previous, Object value) {
-            this.next = next;
-            this.previous = previous;
-            this.value = value;
-        }
-    }
-
+public class LinkedListIndexedCollection<E> implements List<E> {
     /**
      * The number of elements currently contained in the linked list.
      */
@@ -50,11 +20,11 @@ public class LinkedListIndexedCollection implements List {
     /**
      * The first node in the list, or {@code null} if the list is empty.
      */
-    private ListNode first;
+    private ListNode<E> first;
     /**
      * The last node in the list, or {@code null} if the list is empty.
      */
-    private ListNode last;
+    private ListNode<E> last;
     /**
      * A modification counter used in {@link LinkedListElementsGetter} to check for concurrent modifications.
      */
@@ -75,7 +45,7 @@ public class LinkedListIndexedCollection implements List {
      * @param other the collection whose elements to insert into the new linked list collection
      * @throws NullPointerException if {@code other} is {@code null}
      */
-    public LinkedListIndexedCollection(Collection other) {
+    public LinkedListIndexedCollection(Collection<? extends E> other) {
         this();
 
         addAll(other);
@@ -100,10 +70,10 @@ public class LinkedListIndexedCollection implements List {
      * @throws NullPointerException if the element is {@code null}
      */
     @Override
-    public void add(Object value) {
+    public void add(E value) {
         Objects.requireNonNull(value, "null cannot be added to collection.");
 
-        ListNode newNode = new ListNode(null, last, value);
+        ListNode<E> newNode = new ListNode<>(null, last, value);
 
         if (last != null)
             last.next = newNode;
@@ -117,7 +87,7 @@ public class LinkedListIndexedCollection implements List {
     }
 
     @Override
-    public Object get(int index) {
+    public E get(int index) {
         return getNode(index).value;
     }
 
@@ -128,11 +98,11 @@ public class LinkedListIndexedCollection implements List {
      * @return the element at the index
      * @throws IndexOutOfBoundsException if the index is less than 0 or if it is beyond the end of the list
      */
-    private ListNode getNode(int index) {
+    private ListNode<E> getNode(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Valid indices are 0 to " + (size - 1) + ", but " + index + " was passed.");
 
-        ListNode currentNode;
+        ListNode<E> currentNode;
         if (index <= size / 2) {
             currentNode = last;
             for (int currentIndex = size - 1; currentIndex > index; currentIndex--)
@@ -159,7 +129,7 @@ public class LinkedListIndexedCollection implements List {
     }
 
     @Override
-    public void insert(Object value, int position) {
+    public void insert(E value, int position) {
         Objects.requireNonNull(value, "null cannot be inserted into collection.");
 
         if (position < 0 || position > size)
@@ -170,8 +140,8 @@ public class LinkedListIndexedCollection implements List {
             return;
         }
 
-        ListNode currentNode = getNode(position);
-        ListNode newNode = new ListNode(currentNode, currentNode.previous, value);
+        ListNode<E> currentNode = getNode(position);
+        ListNode<E> newNode = new ListNode<>(currentNode, currentNode.previous, value);
 
         if (currentNode.previous != null)
             currentNode.previous.next = newNode;
@@ -190,7 +160,7 @@ public class LinkedListIndexedCollection implements List {
             return -1;
 
         int index = 0;
-        for (ListNode node = first; node != null; node = node.next) {
+        for (ListNode<E> node = first; node != null; node = node.next) {
             if (value.equals(node.value))
                 return index;
             index++;
@@ -208,11 +178,11 @@ public class LinkedListIndexedCollection implements List {
      * @param value the element to find
      * @return the node with the value if it exists in the collection, {@code null} otherwise
      */
-    private ListNode findNode(Object value) {
+    private ListNode<E> findNode(Object value) {
         if (value == null)
             return null;
 
-        for (ListNode node = first; node != null; node = node.next) {
+        for (ListNode<E> node = first; node != null; node = node.next) {
             if (value.equals(node.value))
                 return node;
         }
@@ -233,7 +203,7 @@ public class LinkedListIndexedCollection implements List {
      */
     @Override
     public boolean remove(Object value) {
-        ListNode node = findNode(value);
+        ListNode<E> node = findNode(value);
 
         if (node == null)
             return false;
@@ -254,7 +224,7 @@ public class LinkedListIndexedCollection implements List {
      *
      * @param node the node to remove
      */
-    private void remove(ListNode node) {
+    private void remove(ListNode<E> node) {
         if (node.previous != null)
             node.previous.next = node.next;
         else
@@ -274,7 +244,7 @@ public class LinkedListIndexedCollection implements List {
         Object[] array = new Object[size];
 
         int index = 0;
-        for (ListNode node = first; node != null; node = node.next) {
+        for (ListNode<E> node = first; node != null; node = node.next) {
             array[index] = node.value;
             index++;
         }
@@ -288,25 +258,27 @@ public class LinkedListIndexedCollection implements List {
      * The elements are returned in order of increasing index.
      */
     @Override
-    public ElementsGetter createElementsGetter() {
-        return new LinkedListElementsGetter(this);
+    public ElementsGetter<E> createElementsGetter() {
+        return new LinkedListElementsGetter<>(this);
     }
 
     /**
      * An implementation of {@link ElementsGetter} for this class.
+     *
+     * @param <E> the type of the elements
      */
-    private static class LinkedListElementsGetter implements ElementsGetter {
+    private static class LinkedListElementsGetter<E> implements ElementsGetter<E> {
         /**
          * The node of the first element which has not yet been returned by {@link #getNextElement()}.
          */
-        private ListNode currentNode;
+        private ListNode<E> currentNode;
         /**
          * The collection whose elements will be returned by this getter.
          * <p>
          * This could be removed by making {@link LinkedListElementsGetter} non-static,
          * but the assignment PDF specifies that it has to be static.
          */
-        private LinkedListIndexedCollection collection;
+        private LinkedListIndexedCollection<E> collection;
         /**
          * The {@link #modificationCount} at the moment of this {@link ElementsGetter}'s creation.
          * <p>
@@ -319,7 +291,7 @@ public class LinkedListIndexedCollection implements List {
          *
          * @param collection the collection whose elements will be returned by this getter
          */
-        private LinkedListElementsGetter(LinkedListIndexedCollection collection) {
+        private LinkedListElementsGetter(LinkedListIndexedCollection<E> collection) {
             this.collection = collection;
             this.currentNode = collection.first;
             this.savedModificationCount = collection.modificationCount;
@@ -334,13 +306,46 @@ public class LinkedListIndexedCollection implements List {
         }
 
         @Override
-        public Object getNextElement() {
+        public E getNextElement() {
             if (!hasNextElement())
                 throw new NoSuchElementException("There are no more elements in this collection.");
 
-            Object value = currentNode.value;
+            E value = currentNode.value;
             currentNode = currentNode.next;
             return value;
+        }
+    }
+
+    /**
+     * An internal class representing a node of a linked list.
+     *
+     * @param <E> the type of the value held by the node
+     */
+    private static class ListNode<E> {
+        /**
+         * Reference to the next node in the list, or {@code null} if this node is the last in the list.
+         */
+        public ListNode<E> next;
+        /**
+         * Reference to the previous node in the list, or {@code null} if this node is the first in the list.
+         */
+        public ListNode<E> previous;
+        /**
+         * The payload of the node, the object represented by this node.
+         */
+        public E value;
+
+        /**
+         * Initializes a list node with all its fields.
+         *
+         * @param next     the node in the list immediately following this one
+         * @param previous the node in the list immediately preceding this one
+         * @param value    the object represented by this node
+         */
+        public ListNode(ListNode<E> next, ListNode<E> previous, E value) {
+            this.next = next;
+            this.previous = previous;
+            this.value = value;
         }
     }
 }
