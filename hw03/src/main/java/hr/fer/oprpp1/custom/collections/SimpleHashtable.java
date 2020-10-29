@@ -21,10 +21,20 @@ public class SimpleHashtable<K, V> {
      * The default initial number of buckets if not specified otherwise.
      */
     private static final int DEFAULT_CAPACITY = 16;
+    /**
+     * The maximum ratio of entries to buckets.
+     * Must be greater than 0.
+     */
+    private static final double LOAD_FACTOR = 0.75;
+    /**
+     * The factor by which the size of {@link #table} is increased in {@link #resize()}.
+     * Must be a power of two.
+     */
+    private static final int GROWTH_FACTOR = 2;
 
     /**
      * An array of buckets holding the data.
-     * Each slot in the array is either the head of the linked list of entries in that bucker,
+     * Each slot in the array is either the head of the linked list of entries in that bucket,
      * or {@code null} if the bucket is empty.
      */
     private TableEntry<K, V>[] table;
@@ -63,6 +73,9 @@ public class SimpleHashtable<K, V> {
      * Assigns a value to a given key.
      * If the key already exists in the hashtable, its value will be overwritten.
      * Otherwise, a new entry is added to the hashtable.
+     * <p>
+     * If adding a new element would exceed the load factor of {@value #LOAD_FACTOR},
+     * a resize to {@value #GROWTH_FACTOR} times the current number of buckets is triggered.
      *
      * @param key   the key whose value to assign
      * @param value the new value for the key
@@ -70,6 +83,9 @@ public class SimpleHashtable<K, V> {
      * @throws NullPointerException if {@code key} is {@code null}
      */
     public V put(K key, V value) {
+        if ((size + 1.0d) / table.length > LOAD_FACTOR)
+            resize();
+
         Objects.requireNonNull(key, "The key must not be null.");
 
         int bucketIndex = getBucket(key);
@@ -316,6 +332,20 @@ public class SimpleHashtable<K, V> {
     }
 
     /**
+     * Increases the number of buckets {@value GROWTH_FACTOR} times and reinserts all existing entries.
+     */
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        TableEntry<K, V>[] entries = toArray();
+
+        table = (TableEntry<K, V>[]) new TableEntry[table.length * GROWTH_FACTOR];
+        size = 0;
+
+        for (TableEntry<K, V> entry : entries)
+            put(entry.key, entry.value);
+    }
+
+    /**
      * A key-value pair stored in the hashtable.
      *
      * @param <K> the type of the key
@@ -430,7 +460,7 @@ public class SimpleHashtable<K, V> {
          * If called when {@link #nextEntry} is the last entry,
          * {@link #bucketIndex} will be set to the number of buckets in the hashmap,
          * and {@link #nextEntry} will be set to {@code null}.
-         *
+         * <p>
          * If called with {@link #bucketIndex} set to -1 and {@link #nextEntry} set to {@code null},
          * it will set {@link #nextEntry} to the first entry in the hashtable.
          */
