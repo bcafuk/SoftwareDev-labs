@@ -170,6 +170,7 @@ public class SimpleHashtable<K, V> {
             // The first entry in the bucket has the key
             V oldValue = table[bucketIndex].value;
             table[bucketIndex] = table[bucketIndex].next;
+            size--;
             return oldValue;
         }
 
@@ -180,6 +181,7 @@ public class SimpleHashtable<K, V> {
                 // An entry other than the first one has the key
                 V oldValue = prevEntry.next.value;
                 prevEntry.next = prevEntry.next.next;
+                size--;
                 return oldValue;
             }
             prevEntry = prevEntry.next;
