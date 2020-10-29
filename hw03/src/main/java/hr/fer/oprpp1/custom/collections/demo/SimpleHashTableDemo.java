@@ -7,7 +7,7 @@ import hr.fer.oprpp1.custom.collections.SimpleHashtable;
  */
 public class SimpleHashTableDemo {
     /**
-     * The contents of this method have been copied verbatim from
+     * The contents of this method have been copied from
      * the assignment document written by doc. dr. sc. Marko Čupić.
      */
     public static void main(String[] args) {
@@ -24,8 +24,22 @@ public class SimpleHashTableDemo {
         // query collection:
         Integer kristinaGrade = examMarks.get("Kristina");
         System.out.println("Kristina's exam grade is: " + kristinaGrade); // writes: 5
-        
+
         // What is collection's size? Must be four!
         System.out.println("Number of stored pairs: " + examMarks.size()); // writes: 4
+
+        for (SimpleHashtable.TableEntry<String, Integer> pair : examMarks) {
+            System.out.printf("%s => %d%n", pair.getKey(), pair.getValue());
+        }
+
+        for (SimpleHashtable.TableEntry<String, Integer> pair1 : examMarks) {
+            for (SimpleHashtable.TableEntry<String, Integer> pair2 : examMarks) {
+                System.out.printf(
+                        "(%s => %d) - (%s => %d)%n",
+                        pair1.getKey(), pair1.getValue(),
+                        pair2.getKey(), pair2.getValue()
+                );
+            }
+        }
     }
 }
