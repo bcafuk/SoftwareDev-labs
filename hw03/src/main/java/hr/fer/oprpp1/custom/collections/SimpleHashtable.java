@@ -16,7 +16,7 @@ import java.util.Objects;
  * @param <V> the type of the values
  * @author Borna Cafuk
  */
-public class SimpleHashtable<K, V> {
+public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntry<K, V>> {
     /**
      * The default initial number of buckets if not specified otherwise.
      */
@@ -158,10 +158,8 @@ public class SimpleHashtable<K, V> {
      * @return {@code true} if the hashtable contains the given key, {@code false} otherwise
      */
     public boolean containsValue(Object value) {
-        Iterator<TableEntry<K, V>> iterator = iterator();
-
-        while (iterator.hasNext())
-            if (Objects.equals(value, iterator.next().value))
+        for (TableEntry<K, V> kvTableEntry : this)
+            if (Objects.equals(value, kvTableEntry.value))
                 return true;
 
         return false;
@@ -327,7 +325,8 @@ public class SimpleHashtable<K, V> {
      *
      * @return a new iterator
      */
-    private IteratorImpl iterator() {
+    @Override
+    public Iterator<TableEntry<K, V>> iterator() {
         return new IteratorImpl();
     }
 
@@ -418,7 +417,7 @@ public class SimpleHashtable<K, V> {
     /**
      * An iterator over the entries of the hashtable.
      */
-    private class IteratorImpl implements Iterator<TableEntry<K, V>> {
+    public class IteratorImpl implements Iterator<TableEntry<K, V>> {
         /**
          * The index of the bucket to which {@link #nextEntry} belongs.
          * If there are no more elements, it will be equal to the number of buckets.
