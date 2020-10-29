@@ -71,7 +71,32 @@ public class SimpleHashtable<K, V> {
     public V put(K key, V value) {
         Objects.requireNonNull(key, "The key must not be null.");
 
-        // TODO: Implement method
+        int bucketIndex = getBucket(key);
+        TableEntry<K, V> entry = table[bucketIndex];
+
+        if (entry == null) {
+            // The bucket is empty
+            table[bucketIndex] = new TableEntry<>(key, value);
+            size++;
+            return null;
+        }
+
+        TableEntry<K, V> prevEntry = null;
+
+        while (entry != null) {
+            if (key.equals(entry.key)) {
+                // The key exists
+                V oldValue = entry.value;
+                entry.value = value;
+                return oldValue;
+            }
+            prevEntry = entry;
+            entry = entry.next;
+        }
+
+        // The bucket isn't empty, but the key doesn't exist
+        prevEntry.next = new TableEntry<>(key, value);
+        size++;
         return null;
     }
 
@@ -82,8 +107,12 @@ public class SimpleHashtable<K, V> {
      * @return the value assigned to the given key, or {@code null} if the key does not exist in the hashtable
      */
     public V get(Object key) {
-        // TODO: Implement method
-        return null;
+        TableEntry<K, V> entry = findByKey(key);
+
+        if (entry == null)
+            return null;
+
+        return entry.value;
     }
 
     /**
@@ -102,8 +131,7 @@ public class SimpleHashtable<K, V> {
      * @return {@code true} if the hashtable contains the given key, {@code false} otherwise
      */
     public boolean containsKey(Object key) {
-        // TODO: Implement method
-        return false;
+        return findByKey(key) != null;
     }
 
     /**
@@ -113,7 +141,12 @@ public class SimpleHashtable<K, V> {
      * @return {@code true} if the hashtable contains the given key, {@code false} otherwise
      */
     public boolean containsValue(Object value) {
-        // TODO: Implement method
+        Iterator<TableEntry<K, V>> iterator = iterator();
+
+        while (iterator.hasNext())
+            if (Objects.equals(value, iterator.next().value))
+                return true;
+
         return false;
     }
 
@@ -124,7 +157,35 @@ public class SimpleHashtable<K, V> {
      * @return the value which was assigned to the key
      */
     public V remove(Object key) {
-        // TODO: Implement method
+        if (key == null)
+            return null;
+
+        int bucketIndex = getBucket(key);
+
+        if (table[bucketIndex] == null)
+            // The bucket is empty
+            return null;
+
+        if (key.equals(table[bucketIndex].key)) {
+            // The first entry in the bucket has the key
+            V oldValue = table[bucketIndex].value;
+            table[bucketIndex] = table[bucketIndex].next;
+            return oldValue;
+        }
+
+        TableEntry<K, V> prevEntry = table[bucketIndex];
+
+        while (prevEntry.next != null) {
+            if (key.equals(prevEntry.next.key)) {
+                // An entry other than the first one has the key
+                V oldValue = prevEntry.next.value;
+                prevEntry.next = prevEntry.next.next;
+                return oldValue;
+            }
+            prevEntry = prevEntry.next;
+        }
+
+        // The bucket isn't empty, but the key doesn't exist
         return null;
     }
 
@@ -144,8 +205,20 @@ public class SimpleHashtable<K, V> {
      */
     @Override
     public String toString() {
-        // TODO: Implement method
-        return null;
+        StringBuilder sb = new StringBuilder("[");
+
+        Iterator<TableEntry<K, V>> iterator = iterator();
+
+        while (iterator.hasNext()) {
+            sb.append(iterator.next());
+
+            if (iterator.hasNext())
+                sb.append(", ");
+        }
+
+        sb.append(']');
+
+        return sb.toString();
     }
 
     /**
@@ -156,9 +229,16 @@ public class SimpleHashtable<K, V> {
      *
      * @return an array of the entries stored in the hashtable.
      */
+    @SuppressWarnings("unchecked")
     public TableEntry<K, V>[] toArray() {
-        // TODO: Implement method
-        return null;
+        TableEntry<K, V>[] array = (TableEntry<K, V>[]) new TableEntry[size];
+
+        Iterator<TableEntry<K, V>> iterator = iterator();
+        for (int i = 0; i < array.length; i++) {
+            array[i] = iterator.next();
+        }
+
+        return array;
     }
 
     /**
@@ -179,8 +259,10 @@ public class SimpleHashtable<K, V> {
      *
      * @param key the key for which to find the bucket
      * @return the index of the bucket
+     * @throws NullPointerException if {@code key} is {@code null}
      */
     private int getBucket(Object key) {
+        Objects.requireNonNull(key, "The key must not be null");
         return Math.abs(key.hashCode()) % table.length;
     }
 
@@ -191,7 +273,25 @@ public class SimpleHashtable<K, V> {
      * @return the entry with the given key if it exists in the hashmap, {@code null} otherwise
      */
     private TableEntry<K, V> findByKey(Object key) {
-        // TODO: Implement method
+        if (key == null)
+            return null;
+
+        int bucketIndex = getBucket(key);
+        TableEntry<K, V> entry = table[bucketIndex];
+
+        if (entry == null)
+            // The bucket is empty
+            return null;
+
+        while (entry != null) {
+            if (key.equals(entry.key))
+                // The key exists
+                return entry;
+
+            entry = entry.next;
+        }
+
+        // The bucket isn't empty, but the key doesn't exist
         return null;
     }
 
@@ -201,8 +301,7 @@ public class SimpleHashtable<K, V> {
      * @return a new iterator
      */
     private IteratorImpl iterator() {
-        // TODO: Implement method
-        return null;
+        return new IteratorImpl();
     }
 
     /**
@@ -279,22 +378,62 @@ public class SimpleHashtable<K, V> {
      * An iterator over the entries of the hashtable.
      */
     private class IteratorImpl implements Iterator<TableEntry<K, V>> {
+        /**
+         * The index of the bucket to which {@link #nextEntry} belongs.
+         * If there are no more elements, it will be equal to the number of buckets.
+         */
+        private int bucketIndex;
+        /**
+         * The next entry to be returned by {@link #next()}.
+         * If there are no more elements, it will be {@code null}.
+         */
+        private TableEntry<K, V> nextEntry;
+
+        private IteratorImpl() {
+            bucketIndex = -1;
+            nextEntry = null;
+            advance();
+        }
+
         @Override
         public boolean hasNext() {
-            // TODO: Implement method
-            return false;
+            return nextEntry != null;
         }
 
         @Override
         public TableEntry<K, V> next() {
-            // TODO: Implement method
-            return null;
+            TableEntry<K, V> entry = nextEntry;
+            advance();
+            return entry;
         }
 
         @Override
         public void remove() {
             // TODO: Implement method
             throw new UnsupportedOperationException("remove");
+        }
+
+        /**
+         * Advances the internal state ({@link #bucketIndex} and {@link #nextEntry}) to the next entry in the hashtable.
+         * <p>
+         * If called when {@link #nextEntry} is the last entry,
+         * {@link #bucketIndex} will be set to the number of buckets in the hashmap,
+         * and {@link #nextEntry} will be set to {@code null}.
+         *
+         * If called with {@link #bucketIndex} set to -1 and {@link #nextEntry} set to {@code null},
+         * it will set {@link #nextEntry} to the first entry in the hashtable.
+         */
+        private void advance() {
+            if (nextEntry != null)
+                nextEntry = nextEntry.next;
+
+            while (nextEntry == null) {
+                bucketIndex++;
+                if (bucketIndex >= table.length)
+                    break;
+
+                nextEntry = table[bucketIndex];
+            }
         }
     }
 }
