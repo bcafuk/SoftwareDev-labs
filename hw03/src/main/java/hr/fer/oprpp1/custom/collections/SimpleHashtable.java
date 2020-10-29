@@ -1,5 +1,6 @@
 package hr.fer.oprpp1.custom.collections;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -241,6 +242,14 @@ public class SimpleHashtable<K, V> {
         }
 
         return array;
+    }
+
+    /**
+     * Removes all entries from the hashtable.
+     */
+    public void clear() {
+        Arrays.fill(table, null);
+        size = 0;
     }
 
     /**
