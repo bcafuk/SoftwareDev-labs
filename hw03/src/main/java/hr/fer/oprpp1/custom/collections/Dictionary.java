@@ -31,7 +31,7 @@ public class Dictionary<K, V> {
     /**
      * Gets the number of entries currently stored in the dictionary.
      *
-     * @return the number of key-value contained in the dictionary
+     * @return the number of key-value pairs contained in the dictionary
      */
     public int size() {
         return entries.size();
