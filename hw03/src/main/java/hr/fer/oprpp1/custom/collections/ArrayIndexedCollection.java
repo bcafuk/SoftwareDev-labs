@@ -30,7 +30,7 @@ public class ArrayIndexedCollection<E> implements List<E> {
     /**
      * The internal array containing the elements of the collection. Unused indices are set to {@code null}.
      */
-    private Object[] elements;
+    private E[] elements;
     /**
      * A modification counter used in {@link ArrayIndexedElementsGetter} to check for concurrent modifications.
      */
@@ -50,12 +50,13 @@ public class ArrayIndexedCollection<E> implements List<E> {
      * @param initialCapacity the initial capacity; must be 1 or greater
      * @throws IllegalArgumentException if the specified initial capacity is less than 1
      */
+    @SuppressWarnings("unchecked")
     public ArrayIndexedCollection(int initialCapacity) {
         if (initialCapacity < 1)
             throw new IllegalArgumentException("The initial size of the collection must be at least 1, but " + initialCapacity + "was given.");
 
         size = 0;
-        elements = new Object[initialCapacity];
+        elements = (E[]) new Object[initialCapacity];
     }
 
     /**
@@ -108,12 +109,11 @@ public class ArrayIndexedCollection<E> implements List<E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public E get(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Valid indices are 0 to " + (size - 1) + ", but " + index + " was passed.");
 
-        return (E) elements[index];
+        return elements[index];
     }
 
     @Override
@@ -203,11 +203,12 @@ public class ArrayIndexedCollection<E> implements List<E> {
      * <p>
      * Invalidates existing {@link ArrayIndexedElementsGetter}s if a reallocation occurs.
      */
+    @SuppressWarnings("unchecked")
     private void growIfNecessary() {
         if (size < elements.length)
             return;
 
-        Object[] newElements = new Object[elements.length * GROWTH_FACTOR];
+        E[] newElements = (E[]) new Object[elements.length * GROWTH_FACTOR];
         System.arraycopy(elements, 0, newElements, 0, size);
         elements = newElements;
         modificationCount++;
@@ -266,12 +267,11 @@ public class ArrayIndexedCollection<E> implements List<E> {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public E getNextElement() {
             if (!hasNextElement())
                 throw new NoSuchElementException("There are no more elements in this collection.");
 
-            return (E) collection.elements[currentIndex++];
+            return collection.elements[currentIndex++];
         }
     }
 }
