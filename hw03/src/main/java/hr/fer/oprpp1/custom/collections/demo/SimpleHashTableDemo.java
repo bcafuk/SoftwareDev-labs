@@ -2,6 +2,9 @@ package hr.fer.oprpp1.custom.collections.demo;
 
 import hr.fer.oprpp1.custom.collections.SimpleHashtable;
 
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+
 /**
  * A demonstration of {@link SimpleHashtable}.
  */
@@ -10,7 +13,7 @@ public class SimpleHashTableDemo {
      * The contents of this method have been copied from
      * the assignment document written by doc. dr. sc. Marko Čupić.
      */
-    public static void main(String[] args) {
+    public static void basicDemo() {
         // create collection:
         SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>(2);
 
@@ -41,5 +44,61 @@ public class SimpleHashTableDemo {
                 );
             }
         }
+
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iter = examMarks.iterator();
+        while (iter.hasNext()) {
+            SimpleHashtable.TableEntry<String, Integer> pair = iter.next();
+            if (pair.getKey().equals("Ivana")) {
+                iter.remove(); // sam iterator kontrolirano uklanja trenutni element
+            }
+        }
+    }
+
+    /**
+     * The contents of this method have been copied from
+     * the assignment document written by doc. dr. sc. Marko Čupić.
+     */
+    public static void throwingRemove() {
+        // create collection:
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>(2);
+
+        // fill data:
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 2);
+        examMarks.put("Jasna", 2);
+        examMarks.put("Kristina", 5);
+        examMarks.put("Ivana", 5); // overwrites old grade for Ivana
+
+        try {
+            Iterator<SimpleHashtable.TableEntry<String, Integer>> iter = examMarks.iterator();
+            while (iter.hasNext()) {
+                SimpleHashtable.TableEntry<String, Integer> pair = iter.next();
+                if (pair.getKey().equals("Ivana")) {
+                    iter.remove();
+                    iter.remove();
+                }
+            }
+        } catch (IllegalStateException e) {
+            System.out.println(e.toString());
+        }
+
+        examMarks.put("Ivana", 5);
+
+        try {
+            Iterator<SimpleHashtable.TableEntry<String, Integer>> iter = examMarks.iterator();
+            while (iter.hasNext()) {
+                SimpleHashtable.TableEntry<String, Integer> pair = iter.next();
+                if (pair.getKey().equals("Ivana")) {
+                    examMarks.remove("Ivana");
+                }
+            }
+        } catch (ConcurrentModificationException e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    public static void main(String[] args) {
+        basicDemo();
+        throwingRemove();
     }
 }
