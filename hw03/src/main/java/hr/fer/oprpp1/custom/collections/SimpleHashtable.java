@@ -429,6 +429,12 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
          * If there are no more elements, it will be {@code null}.
          */
         private TableEntry<K, V> nextEntry;
+        /**
+         * The last entry returned by {@link #next()}.
+         * If {@link #remove()} has been called after the last call to {@link #next()}, it will be {@code null}.
+         * If {@link #next()} has not yet been called, it will also be {@code null}.
+         */
+        private TableEntry<K, V> currentEntry = null;
 
         private IteratorImpl() {
             bucketIndex = -1;
@@ -443,15 +449,18 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
         @Override
         public TableEntry<K, V> next() {
-            TableEntry<K, V> entry = nextEntry;
+            currentEntry = nextEntry;
             advance();
-            return entry;
+            return currentEntry;
         }
 
         @Override
         public void remove() {
-            // TODO: Implement method
-            throw new UnsupportedOperationException("remove");
+            if (currentEntry == null)
+                throw new IllegalStateException("remove() has already been called.");
+
+            SimpleHashtable.this.remove(currentEntry.key);
+            currentEntry = null;
         }
 
         /**
