@@ -1,9 +1,6 @@
 package hr.fer.oprpp1.custom.collections;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A table that maps keys to values. A map cannot contain duplicate keys; each key can map to at most one value.
@@ -43,6 +40,10 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
      * The number of entries currently stored in the hash table.
      */
     private int size = 0;
+    /**
+     * A modification counter used in {@link IteratorImpl} to check for concurrent modifications.
+     */
+    private long modificationCount = 0;
 
     /**
      * Constructs a new hashtable with the default of {@value DEFAULT_CAPACITY} buckets.
@@ -77,6 +78,8 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
      * <p>
      * If adding a new element would exceed the load factor of {@value #LOAD_FACTOR},
      * a resize to {@value #GROWTH_FACTOR} times the current number of buckets is triggered.
+     * <p>
+     * Invalidates existing iterators the key does not exist in the hashtable or if the load factor is reached.
      *
      * @param key   the key whose value to assign
      * @param value the new value for the key
@@ -96,6 +99,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             // The bucket is empty
             table[bucketIndex] = new TableEntry<>(key, value);
             size++;
+            modificationCount++;
             return null;
         }
 
@@ -115,6 +119,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
         // The bucket isn't empty, but the key doesn't exist
         prevEntry.next = new TableEntry<>(key, value);
         size++;
+        modificationCount++;
         return null;
     }
 
@@ -168,9 +173,11 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
     /**
      * Removes the entry with the given key from the hashtable.
+     * <p>
+     * Invalidates existing iterators if the key exists in the hashtable.
      *
      * @param key the key of the entry to remove
-     * @return the value which was assigned to the key
+     * @return the value which was assigned to the key, or {@code null} if the key doesn't exist in the hashtable
      */
     public V remove(Object key) {
         if (key == null)
@@ -187,6 +194,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             V oldValue = table[bucketIndex].value;
             table[bucketIndex] = table[bucketIndex].next;
             size--;
+            modificationCount++;
             return oldValue;
         }
 
@@ -198,6 +206,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
                 V oldValue = prevEntry.next.value;
                 prevEntry.next = prevEntry.next.next;
                 size--;
+                modificationCount++;
                 return oldValue;
             }
             prevEntry = prevEntry.next;
@@ -261,10 +270,13 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
     /**
      * Removes all entries from the hashtable.
+     * <p>
+     * Invalidates existing iterators.
      */
     public void clear() {
         Arrays.fill(table, null);
         size = 0;
+        modificationCount++;
     }
 
     /**
@@ -333,12 +345,15 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
     /**
      * Increases the number of buckets {@value GROWTH_FACTOR} times and reinserts all existing entries.
+     * <p>
+     * Invalidates existing iterators.
      */
     @SuppressWarnings("unchecked")
     private void resize() {
         TableEntry<K, V>[] entries = toArray();
 
         table = (TableEntry<K, V>[]) new TableEntry[table.length * GROWTH_FACTOR];
+        modificationCount++;
         size = 0;
 
         for (TableEntry<K, V> entry : entries)
@@ -435,6 +450,13 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
          * If {@link #next()} has not yet been called, it will also be {@code null}.
          */
         private TableEntry<K, V> currentEntry = null;
+        /**
+         * The {@link #modificationCount} at the moment of this {@link IteratorImpl}'s creation.
+         * This is also updated every time {@link #remove()} returns.
+         * <p>
+         * This is used to monitor for concurrent modifications.
+         */
+        private long expectedModificationCount = modificationCount;
 
         private IteratorImpl() {
             bucketIndex = -1;
@@ -442,11 +464,26 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             advance();
         }
 
+        /**
+         * {@inheritDoc}
+         *
+         * @throws ConcurrentModificationException if the hashtable has been modified through a different iterator or
+         *                                         by directly calling {@link SimpleHashtable} methods
+         */
         @Override
         public boolean hasNext() {
+            if (modificationCount != expectedModificationCount)
+                throw new ConcurrentModificationException("The hashtable has been modified.");
+
             return nextEntry != null;
         }
 
+        /**
+         * {@inheritDoc}
+         *
+         * @throws ConcurrentModificationException if the hashtable has been modified through a different iterator or
+         *                                         by directly calling {@link SimpleHashtable} methods
+         */
         @Override
         public TableEntry<K, V> next() {
             currentEntry = nextEntry;
@@ -454,12 +491,21 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             return currentEntry;
         }
 
+        /**
+         * {@inheritDoc}
+         *
+         * @throws ConcurrentModificationException if the hashtable has been modified through a different iterator or
+         *                                         by directly calling {@link SimpleHashtable} methods
+         */
         @Override
         public void remove() {
             if (currentEntry == null)
                 throw new IllegalStateException("remove() has already been called.");
+            if (modificationCount != expectedModificationCount)
+                throw new ConcurrentModificationException("The hashtable has been modified.");
 
             SimpleHashtable.this.remove(currentEntry.key);
+            expectedModificationCount++;
             currentEntry = null;
         }
 
@@ -476,6 +522,8 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
          * @throws NoSuchElementException if called when there are no more entries in the hashtable
          */
         private void advance() {
+            if (modificationCount != expectedModificationCount)
+                throw new ConcurrentModificationException("The hashtable has been modified.");
             if (bucketIndex >= table.length)
                 throw new NoSuchElementException("All entries have been iterated over.");
 

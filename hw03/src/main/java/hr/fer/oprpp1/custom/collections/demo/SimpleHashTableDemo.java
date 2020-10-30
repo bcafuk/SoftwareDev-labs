@@ -48,10 +48,10 @@ public class SimpleHashTableDemo {
         Iterator<SimpleHashtable.TableEntry<String, Integer>> iter = examMarks.iterator();
         while (iter.hasNext()) {
             SimpleHashtable.TableEntry<String, Integer> pair = iter.next();
-            if (pair.getKey().equals("Ivana")) {
-                iter.remove(); // sam iterator kontrolirano uklanja trenutni element
-            }
+            System.out.printf("%s => %d%n", pair.getKey(), pair.getValue());
+            iter.remove();
         }
+        System.out.printf("Veličina: %d%n", examMarks.size());
     }
 
     /**
