@@ -2,6 +2,7 @@ package hr.fer.oprpp1.custom.collections;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -462,8 +463,13 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
          * <p>
          * If called with {@link #bucketIndex} set to -1 and {@link #nextEntry} set to {@code null},
          * it will set {@link #nextEntry} to the first entry in the hashtable.
+         *
+         * @throws NoSuchElementException if called when there are no more entries in the hashtable
          */
         private void advance() {
+            if (bucketIndex >= table.length)
+                throw new NoSuchElementException("All entries have been iterated over.");
+
             if (nextEntry != null)
                 nextEntry = nextEntry.next;
 
