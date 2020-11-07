@@ -9,6 +9,15 @@ import java.util.Objects;
  */
 public class StudentRecord {
     /**
+     * The lowest possible final grade.
+     */
+    public static final int MIN_GRADE = 1;
+    /**
+     * The highest possible final grade.
+     */
+    public static final int MAX_GRADE = 5;
+
+    /**
      * The student's unique 10-digit identifier used in the Republic of Croatia.
      * <p>
      * JMBAG stands for jedinstveni matični broj akademskog građanina (unique master academic citizen number).
@@ -34,9 +43,13 @@ public class StudentRecord {
      * @param lastName   the student's last name
      * @param firstName  the student's first name
      * @param finalGrade the student's final grade
-     * @throws NullPointerException if any of {@code jmbag}, {@code firstName}, or {@code finalGrade} is {@code null}
+     * @throws NullPointerException     if any of {@code jmbag}, {@code firstName}, or {@code finalGrade} is {@code null}
+     * @throws IllegalArgumentException if the final grade is not between {@value MIN_GRADE} and {@value MAX_GRADE}
      */
     public StudentRecord(String jmbag, String lastName, String firstName, int finalGrade) {
+        if (finalGrade < MIN_GRADE || finalGrade > MAX_GRADE)
+            throw new IllegalArgumentException("Final grade was expected to be between " + MIN_GRADE + " and " + MAX_GRADE + ", but was " + finalGrade);
+
         this.jmbag = Objects.requireNonNull(jmbag, "jmbag must not be null.");
         this.lastName = Objects.requireNonNull(lastName, "lastName must not be null.");
         this.firstName = Objects.requireNonNull(firstName, "firstName must not be null.");
