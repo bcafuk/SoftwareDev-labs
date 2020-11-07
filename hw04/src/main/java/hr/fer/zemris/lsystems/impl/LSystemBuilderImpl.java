@@ -5,8 +5,13 @@ import hr.fer.oprpp1.math.Vector2D;
 import hr.fer.zemris.lsystems.LSystem;
 import hr.fer.zemris.lsystems.LSystemBuilder;
 import hr.fer.zemris.lsystems.Painter;
+import hr.fer.zemris.lsystems.impl.commands.*;
 
+import java.awt.*;
 import java.util.Objects;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LSystemBuilderImpl implements LSystemBuilder {
     private Dictionary<Character, String> productions = new Dictionary<>();
@@ -79,29 +84,106 @@ public class LSystemBuilderImpl implements LSystemBuilder {
 
     @Override
     public LSystem build() {
-        // TODO: Implement method
-        return null;
+        return new LSystemImpl();
     }
 
     private static Command parseCommand(String action) {
-        // TODO: Implement method
-        return null;
+        Scanner s = new Scanner(action);
+
+        String commandName = s.next();
+        return switch (commandName) {
+            case "draw" -> new DrawCommand(s.nextDouble());
+            case "skip" -> new SkipCommand(s.nextDouble());
+            case "scale" -> new ScaleCommand(s.nextDouble());
+            case "rotate" -> new RotateCommand(s.nextDouble());
+            case "push" -> new PushCommand();
+            case "pop" -> new PopCommand();
+            case "color" -> new ColorCommand(new Color(s.nextInt(16)));
+            default -> throw new IllegalArgumentException("Unknown command " + commandName);
+        };
     }
 
     private void parseAndApplyDirective(String directive) {
-        // TODO: Implement method
+        Scanner s = new Scanner(directive);
+        if (!s.hasNext())
+            return;
+
+        String directiveName = s.next();
+        switch (directiveName) {
+            case "origin" -> setOrigin(s.nextDouble(), s.nextDouble());
+            case "angle" -> setAngle(s.nextDouble());
+            case "unitLength" -> setUnitLength(s.nextDouble());
+            case "unitLengthDegreeScaler" -> setUnitLengthDegreeScaler(parseFraction(restOfLine(s)));
+            case "axiom" -> setAxiom(s.next());
+            case "command" -> registerCommand(nextChar(s), restOfLine(s));
+            case "production" -> registerProduction(nextChar(s), restOfLine(s));
+            default -> throw new IllegalArgumentException("Unknown directive " + directiveName);
+        }
+    }
+
+    private static char nextChar(Scanner s) {
+        return s.skip("\\s*").next("\\S").charAt(0);
+    }
+
+    private static String restOfLine(Scanner s) {
+        return s.skip("\\s*").nextLine();
+    }
+
+    private static double parseFraction(String str) {
+        Pattern p = Pattern.compile("\\s*(\\d+(?:\\.\\d+)?)(?:\\s*/\\s*(\\d+(?:\\.\\d+)?))?");
+        Matcher m = p.matcher(str);
+
+        if (!m.matches())
+            throw new IllegalArgumentException("The string " + str + " does not contain a fraction.");
+
+        String numerator = m.group(1);
+        String denominator = m.group(2);
+
+        if (denominator == null)
+            return Double.parseDouble(numerator);
+
+        return Double.parseDouble(numerator) / Double.parseDouble(denominator);
     }
 
     private class LSystemImpl implements LSystem {
         @Override
         public String generate(int level) {
-            // TODO: Implement method
-            return null;
+            if (level == 0)
+                return axiom;
+
+            return substitute(generate(level - 1));
+        }
+
+        private String substitute(String s) {
+            StringBuilder sb = new StringBuilder();
+
+            for (char c : s.toCharArray()) {
+                String production = productions.get(c);
+
+                if (production == null)
+                    sb.append(c);
+                else
+                    sb.append(production);
+            }
+
+            return sb.toString();
         }
 
         @Override
         public void draw(int level, Painter painter) {
-            // TODO: Implement method
+            Context ctx = new Context();
+            TurtleState initialState = new TurtleState(origin, new Vector2D(1, 0).rotated(angle / 180 * Math.PI),
+                    Color.BLACK, unitLength * Math.pow(unitLengthDegreeScaler, level));
+
+            ctx.pushState(initialState);
+
+            String commandString = generate(level);
+
+            for (char c : commandString.toCharArray()) {
+                Command command = commands.get(c);
+                if (command != null)
+                    commands.get(c).execute(ctx, painter);
+            }
         }
     }
 }

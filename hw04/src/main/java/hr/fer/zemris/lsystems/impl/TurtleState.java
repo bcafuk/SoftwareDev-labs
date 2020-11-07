@@ -42,8 +42,8 @@ public class TurtleState {
      * @param effectiveScale the turtle's effective scale (see {@link #effectiveScale})
      */
     public TurtleState(Vector2D position, Vector2D direction, Color color, double effectiveScale) {
-        this.position = position;
-        this.direction = direction;
+        this.position = position.copy();
+        this.direction = direction.copy();
         this.color = color;
         this.effectiveScale = effectiveScale;
     }
@@ -54,7 +54,7 @@ public class TurtleState {
      * @return a new turtle
      */
     public TurtleState copy() {
-        return new TurtleState(position.copy(), direction.copy(), color, effectiveScale);
+        return new TurtleState(position, direction, color, effectiveScale);
     }
 
     /**
