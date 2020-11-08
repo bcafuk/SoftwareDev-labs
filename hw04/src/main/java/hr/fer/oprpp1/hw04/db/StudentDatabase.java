@@ -1,9 +1,6 @@
 package hr.fer.oprpp1.hw04.db;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,12 +35,16 @@ public class StudentDatabase {
      * </ul>
      *
      * @param rows an array of strings representing the records to be stored in the database
+     * @throws NullPointerException     if {@code rows} is {@code null}
+     * @throws NullPointerException     if a row is {@code null}
      * @throws IllegalArgumentException if a row does not contain exactly {@value #FIELD_COUNT} fields
      * @throws NumberFormatException    if a final grade cannot be parsed into an integer
      * @throws IllegalArgumentException if the final grade is not between {@value StudentRecord#MIN_GRADE} and {@value StudentRecord#MAX_GRADE}
      * @throws IllegalArgumentException if there are two rows with the same JMBAG
      */
     public StudentDatabase(String[] rows) {
+        Objects.requireNonNull(rows, "rows must not be null.");
+
         records = new ArrayList<>(rows.length);
         jmbagIndex = new HashMap<>(rows.length);
 
@@ -73,8 +74,11 @@ public class StudentDatabase {
      *
      * @param filter the filter to use
      * @return a filtered list of entries
+     * @throws NullPointerException if {@code filter} is {@code null}
      */
     public List<StudentRecord> filter(IFilter filter) {
+        Objects.requireNonNull(filter, "The filter must not be null.");
+
         return records.stream()
                       .filter(filter::accepts)
                       .collect(Collectors.toList());
@@ -85,11 +89,14 @@ public class StudentDatabase {
      *
      * @param row the row to be parsed
      * @return the resulting record
+     * @throws NullPointerException     if {@code row} is {@code null}
      * @throws IllegalArgumentException if the row does not contain exactly {@value #FIELD_COUNT} fields
      * @throws NumberFormatException    if the final grade cannot be parsed into an integer
      * @throws IllegalArgumentException if the final grade is not between {@value StudentRecord#MIN_GRADE} and {@value StudentRecord#MAX_GRADE}
      */
     private static StudentRecord parseRow(String row) {
+        Objects.requireNonNull(row, "The row must not be null.");
+
         // The row is expected to have exactly FIELD_COUNT fields, but
         // one more is used as the limit so that excess fields can be easily detected.
         String[] fields = row.split("\t", FIELD_COUNT + 1);
