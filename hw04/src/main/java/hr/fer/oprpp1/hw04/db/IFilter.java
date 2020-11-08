@@ -8,5 +8,11 @@ package hr.fer.oprpp1.hw04.db;
  */
 @FunctionalInterface
 public interface IFilter {
+    /**
+     * Checks whether the filter accepts a given record.
+     *
+     * @param record the record to check
+     * @return {@code true} if the filter accepts {@code record}, {@code false} if it does not
+     */
     boolean accepts(StudentRecord record);
 }
