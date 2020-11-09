@@ -22,10 +22,10 @@ class ConditionalExpressionTest {
     }
 
     @Test
-    void testValueFor() {
+    void testSatisfies() {
         ConditionalExpression expression = new ConditionalExpression(FieldValueGetters.JMBAG, "0000000001", ComparisonOperators.EQUALS);
 
-        assertTrue(expression.valueFor(new StudentRecord("0000000001", "Last", "First", 5)));
-        assertFalse(expression.valueFor(new StudentRecord("0000000002", "Last", "First", 5)));
+        assertTrue(expression.satisfies(new StudentRecord("0000000001", "Last", "First", 5)));
+        assertFalse(expression.satisfies(new StudentRecord("0000000002", "Last", "First", 5)));
     }
 }

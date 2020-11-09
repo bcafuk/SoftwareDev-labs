@@ -37,12 +37,12 @@ public class ConditionalExpression {
     }
 
     /**
-     * Gets the value of the expression for a given record.
+     * Checks whether a given record satisfies the expression.
      *
      * @param record the record for which to check the value
      * @return {@code true} if the record satisfies the expression, {@code false} otherwise
      */
-    public boolean valueFor(StudentRecord record) {
+    public boolean satisfies(StudentRecord record) {
         return comparisonOperator.satisfied(fieldGetter.get(record), stringLiteral);
     }
 
