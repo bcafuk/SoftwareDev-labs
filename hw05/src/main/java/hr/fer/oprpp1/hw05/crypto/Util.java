@@ -37,7 +37,7 @@ public final class Util {
         Objects.requireNonNull(keyText, "The hexadecimal string must not be null.");
 
         if (keyText.length() % 2 == 1)
-            throw new IllegalArgumentException("The length of the key text must be even, but was " + keyText.length() + ".");
+            throw new IllegalArgumentException("The length of the hexadecimal string must be even, but was " + keyText.length() + ".");
 
         byte[] byteArray = new byte[keyText.length() / 2];
 
