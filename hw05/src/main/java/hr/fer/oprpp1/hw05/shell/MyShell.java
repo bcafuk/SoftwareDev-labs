@@ -43,7 +43,7 @@ public class MyShell {
         env.writeln(GREETING_MESSAGE);
 
         while (true) {
-            String input = promptAndRead(env).trim();
+            String input = Util.trimWhitespace(promptAndRead(env));
 
             if (input.isEmpty())
                 continue;
