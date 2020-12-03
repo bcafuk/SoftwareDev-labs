@@ -36,6 +36,7 @@ public class MyShell {
         SortedMap<String, ShellCommand> commands = new TreeMap<>();
         registerCommand(commands, new ExitShellCommand());
         registerCommand(commands, new CharsetsShellCommand());
+        registerCommand(commands, new HelpShellCommand());
         // TODO: Implement commands.
 
         Environment env = new StreamEnvironment(System.in, System.out, commands);
