@@ -4,17 +4,16 @@ import hr.fer.oprpp1.hw05.shell.Environment;
 import hr.fer.oprpp1.hw05.shell.ShellStatus;
 
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * A command which prints supported character sets.
  */
 public class CharsetsShellCommand implements ShellCommand {
-    private static final List<String> DESCRIPTION = Collections.unmodifiableList(List.of(
+    private static final List<String> DESCRIPTION = List.of(
             "Prints the character sets supported on the machine",
             "usage: charsets"
-    ));
+    );
 
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
