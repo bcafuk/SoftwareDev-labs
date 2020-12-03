@@ -1,7 +1,6 @@
 package hr.fer.oprpp1.hw05.shell;
 
-import hr.fer.oprpp1.hw05.shell.commands.ExitShellCommand;
-import hr.fer.oprpp1.hw05.shell.commands.ShellCommand;
+import hr.fer.oprpp1.hw05.shell.commands.*;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -36,6 +35,7 @@ public class MyShell {
     public static void main(String[] args) {
         SortedMap<String, ShellCommand> commands = new TreeMap<>();
         registerCommand(commands, new ExitShellCommand());
+        registerCommand(commands, new CharsetsShellCommand());
         // TODO: Implement commands.
 
         Environment env = new StreamEnvironment(System.in, System.out, commands);
