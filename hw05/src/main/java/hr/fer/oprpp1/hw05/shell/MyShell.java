@@ -1,5 +1,6 @@
 package hr.fer.oprpp1.hw05.shell;
 
+import hr.fer.oprpp1.hw05.shell.commands.ExitShellCommand;
 import hr.fer.oprpp1.hw05.shell.commands.ShellCommand;
 
 import java.util.SortedMap;
@@ -34,6 +35,7 @@ public class MyShell {
      */
     public static void main(String[] args) {
         SortedMap<String, ShellCommand> commands = new TreeMap<>();
+        registerCommand(commands, new ExitShellCommand());
         // TODO: Implement commands.
 
         Environment env = new StreamEnvironment(System.in, System.out, commands);
@@ -103,5 +105,15 @@ public class MyShell {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Puts a new command into a map using {@link ShellCommand#getCommandName()} as the key.
+     *
+     * @param commands   the map of commands to put the new command into
+     * @param newCommand the new command to put into the map
+     */
+    private static void registerCommand(SortedMap<String, ShellCommand> commands, ShellCommand newCommand) {
+        commands.put(newCommand.getCommandName(), newCommand);
     }
 }
