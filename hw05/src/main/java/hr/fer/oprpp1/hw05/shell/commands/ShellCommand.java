@@ -16,6 +16,7 @@ public interface ShellCommand {
      * @param arguments a string containing the command's arguments
      * @return the expected status of the shell after the command is run; that is,
      *         whether the shell should terminate after the command
+     * @throws NullPointerException if {@code env} or {@code arguments} is {@code null}
      */
     ShellStatus executeCommand(Environment env, String arguments);
 

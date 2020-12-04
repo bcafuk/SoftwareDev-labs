@@ -12,6 +12,7 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Writes a file's contents to the environment.
@@ -26,6 +27,9 @@ public class CatShellCommand implements ShellCommand {
 
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
+        Objects.requireNonNull(env, "The environment must not be null.");
+        Objects.requireNonNull(arguments, "The argument string must not be null.");
+
         List<String> parsedArguments;
         try {
             parsedArguments = ArgumentParser.parseAll(arguments);

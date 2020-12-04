@@ -6,6 +6,7 @@ import hr.fer.oprpp1.hw05.shell.ShellStatus;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -35,6 +36,9 @@ public class SymbolShellCommand implements ShellCommand {
 
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
+        Objects.requireNonNull(env, "The environment must not be null.");
+        Objects.requireNonNull(arguments, "The argument string must not be null.");
+
         List<String> parsedArguments;
         try {
             parsedArguments = ArgumentParser.parseAll(arguments);

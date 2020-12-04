@@ -20,6 +20,9 @@ public class HelpShellCommand implements ShellCommand {
 
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
+        Objects.requireNonNull(env, "The environment must not be null.");
+        Objects.requireNonNull(arguments, "The argument string must not be null.");
+
         List<String> parsedArguments;
         try {
             parsedArguments = ArgumentParser.parseAll(arguments);
