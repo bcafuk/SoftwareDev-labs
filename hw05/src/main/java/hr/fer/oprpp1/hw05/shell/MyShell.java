@@ -34,6 +34,7 @@ public class MyShell {
      */
     public static void main(String[] args) {
         SortedMap<String, ShellCommand> commands = new TreeMap<>();
+        registerCommand(commands, new SymbolShellCommand());
         registerCommand(commands, new ExitShellCommand());
         registerCommand(commands, new CharsetsShellCommand());
         registerCommand(commands, new HelpShellCommand());
