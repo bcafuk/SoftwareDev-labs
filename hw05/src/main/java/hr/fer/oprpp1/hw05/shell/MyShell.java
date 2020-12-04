@@ -39,6 +39,7 @@ public class MyShell {
         registerCommand(commands, new CharsetsShellCommand());
         registerCommand(commands, new CatShellCommand());
         registerCommand(commands, new LsShellCommand());
+        registerCommand(commands, new TreeShellCommand());
         registerCommand(commands, new HelpShellCommand());
         // TODO: Implement commands.
 
