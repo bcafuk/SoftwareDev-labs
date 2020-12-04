@@ -11,6 +11,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -70,12 +71,12 @@ public class CatShellCommand implements ShellCommand {
         try (BufferedReader stream = Files.newBufferedReader(path, cs)) {
             stream.lines()
                   .forEach(env::writeln);
+        } catch (AccessDeniedException e) {
+            env.writeln("Access denied");
         } catch (NoSuchFileException e) {
             env.writeln("No such file: " + parsedArguments.get(0));
-            return ShellStatus.CONTINUE;
         } catch (IOException | UncheckedIOException e) {
             env.writeln("I/O exception: " + e.toString());
-            return ShellStatus.CONTINUE;
         }
 
         return ShellStatus.CONTINUE;

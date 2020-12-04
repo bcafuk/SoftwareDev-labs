@@ -5,13 +5,10 @@ import hr.fer.oprpp1.hw05.shell.Environment;
 import hr.fer.oprpp1.hw05.shell.ShellStatus;
 import hr.fer.oprpp1.hw05.shell.Util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -60,12 +57,13 @@ public class HexdumpShellCommand implements ShellCommand {
             while (printHexLine(env, stream, offset))
                 offset += BYTES_PER_LINE;
 
+        } catch (AccessDeniedException e) {
+            env.writeln("Access denied");
         } catch (NoSuchFileException e) {
             env.writeln("No such file: " + parsedArguments.get(0));
         } catch (IOException | UncheckedIOException e) {
             env.writeln("I/O exception: " + e.toString());
         }
-        // TODO: Handle AccessDeniedException.
 
         return ShellStatus.CONTINUE;
     }
