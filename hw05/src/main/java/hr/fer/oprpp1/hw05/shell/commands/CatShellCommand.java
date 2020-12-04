@@ -67,7 +67,7 @@ public class CatShellCommand implements ShellCommand {
             stream.lines()
                   .forEach(env::writeln);
         } catch (NoSuchFileException e) {
-            env.writeln("No such file: " + parsedArguments.get(1));
+            env.writeln("No such file: " + parsedArguments.get(0));
             return ShellStatus.CONTINUE;
         } catch (IOException | UncheckedIOException e) {
             env.writeln("I/O exception: " + e.toString());
