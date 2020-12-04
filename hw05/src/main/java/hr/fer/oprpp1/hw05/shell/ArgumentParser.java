@@ -131,6 +131,7 @@ public class ArgumentParser {
      *
      * @param argumentString the string to parse
      * @return a list containing all arguments
+     * @throws IllegalArgumentException if the format of a quoted argument is invalid
      */
     public static List<String> parseAll(String argumentString) {
         ArgumentParser parser = new ArgumentParser(argumentString);

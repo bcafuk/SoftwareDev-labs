@@ -20,7 +20,13 @@ public class HelpShellCommand implements ShellCommand {
 
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
-        List<String> parsedArguments = ArgumentParser.parseAll(arguments);
+        List<String> parsedArguments;
+        try {
+            parsedArguments = ArgumentParser.parseAll(arguments);
+        } catch (IllegalArgumentException e) {
+            env.writeln("Invalid argument format");
+            return ShellStatus.CONTINUE;
+        }
 
         if (parsedArguments.size() == 0)
             listCommands(env);
