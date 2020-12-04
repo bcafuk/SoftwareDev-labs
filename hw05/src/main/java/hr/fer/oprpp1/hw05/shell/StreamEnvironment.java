@@ -30,19 +30,19 @@ public class StreamEnvironment implements Environment {
      *
      * @see Environment#getMultilineSymbol()
      */
-    private Character multilineSymbol = '|';
+    private char multilineSymbol = '|';
     /**
      * The symbol used to indicate the first line of prompts.
      *
      * @see Environment#getPromptSymbol()
      */
-    private Character promptSymbol = '>';
+    private char promptSymbol = '>';
     /**
      * The symbol used to indicate that more lines of input follow.
      *
      * @see Environment#getMorelinesSymbol()
      */
-    private Character morelinesSymbol = '\\';
+    private char morelinesSymbol = '\\';
 
     /**
      * Constructs an environment which reads and writes using streams.
@@ -84,32 +84,32 @@ public class StreamEnvironment implements Environment {
     }
 
     @Override
-    public Character getMultilineSymbol() {
+    public char getMultilineSymbol() {
         return multilineSymbol;
     }
 
     @Override
-    public void setMultilineSymbol(Character symbol) {
+    public void setMultilineSymbol(char symbol) {
         multilineSymbol = symbol;
     }
 
     @Override
-    public Character getPromptSymbol() {
+    public char getPromptSymbol() {
         return promptSymbol;
     }
 
     @Override
-    public void setPromptSymbol(Character symbol) {
+    public void setPromptSymbol(char symbol) {
         promptSymbol = symbol;
     }
 
     @Override
-    public Character getMorelinesSymbol() {
+    public char getMorelinesSymbol() {
         return morelinesSymbol;
     }
 
     @Override
-    public void setMorelinesSymbol(Character symbol) {
+    public void setMorelinesSymbol(char symbol) {
         morelinesSymbol = symbol;
     }
 }

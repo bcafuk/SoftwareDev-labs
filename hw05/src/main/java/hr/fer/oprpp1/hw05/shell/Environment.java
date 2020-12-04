@@ -48,7 +48,7 @@ public interface Environment {
      *
      * @return the multiline symbol
      */
-    Character getMultilineSymbol();
+    char getMultilineSymbol();
 
     /**
      * Sets the multiline symbol.
@@ -56,7 +56,7 @@ public interface Environment {
      * @param symbol the new multiline symbol
      * @see #getMultilineSymbol()
      */
-    void setMultilineSymbol(Character symbol);
+    void setMultilineSymbol(char symbol);
 
     /**
      * Gets the prompt symbol.
@@ -65,7 +65,7 @@ public interface Environment {
      *
      * @return the prompt symbol
      */
-    Character getPromptSymbol();
+    char getPromptSymbol();
 
     /**
      * Sets the prompt symbol.
@@ -73,7 +73,7 @@ public interface Environment {
      * @param symbol the new prompt symbol
      * @see #getPromptSymbol()
      */
-    void setPromptSymbol(Character symbol);
+    void setPromptSymbol(char symbol);
 
     /**
      * Gets the more lines symbol.
@@ -82,7 +82,7 @@ public interface Environment {
      *
      * @return the more lines symbol
      */
-    Character getMorelinesSymbol();
+    char getMorelinesSymbol();
 
     /**
      * Sets the more lines symbol.
@@ -90,5 +90,5 @@ public interface Environment {
      * @param symbol the new more lines symbol
      * @see #getMorelinesSymbol()
      */
-    void setMorelinesSymbol(Character symbol);
+    void setMorelinesSymbol(char symbol);
 }
