@@ -42,7 +42,7 @@ public class MyShell {
         registerCommand(commands, new TreeShellCommand());
         registerCommand(commands, new CopyShellCommand());
         registerCommand(commands, new MkdirShellCommand());
-        // TODO: Implement hexdump command.
+        registerCommand(commands, new HexdumpShellCommand());
         registerCommand(commands, new HelpShellCommand());
 
         Environment env = new StreamEnvironment(System.in, System.out, commands);
