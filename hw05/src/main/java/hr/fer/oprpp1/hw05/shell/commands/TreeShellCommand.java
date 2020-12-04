@@ -3,6 +3,7 @@ package hr.fer.oprpp1.hw05.shell.commands;
 import hr.fer.oprpp1.hw05.shell.ArgumentParser;
 import hr.fer.oprpp1.hw05.shell.Environment;
 import hr.fer.oprpp1.hw05.shell.ShellStatus;
+import hr.fer.oprpp1.hw05.shell.Util;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -44,13 +45,9 @@ public class TreeShellCommand implements ShellCommand {
             return ShellStatus.CONTINUE;
         }
 
-        Path path;
-        try {
-            path = Paths.get(parsedArguments.get(0));
-        } catch (InvalidPathException e) {
-            env.writeln("Invalid path: " + parsedArguments.get(0));
+        Path path = Util.getPath(parsedArguments.get(0), env);
+        if (path == null)
             return ShellStatus.CONTINUE;
-        }
 
         if (!Files.isDirectory(path)) {
             env.writeln(parsedArguments.get(0) + " is not a directory.");

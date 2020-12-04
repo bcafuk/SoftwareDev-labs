@@ -3,14 +3,13 @@ package hr.fer.oprpp1.hw05.shell.commands;
 import hr.fer.oprpp1.hw05.shell.ArgumentParser;
 import hr.fer.oprpp1.hw05.shell.Environment;
 import hr.fer.oprpp1.hw05.shell.ShellStatus;
+import hr.fer.oprpp1.hw05.shell.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,13 +46,9 @@ public class CopyShellCommand implements ShellCommand {
             return ShellStatus.CONTINUE;
         }
 
-        Path source;
-        try {
-            source = Paths.get(parsedArguments.get(0));
-        } catch (InvalidPathException e) {
-            env.writeln("Invalid path: " + parsedArguments.get(0));
+        Path source = Util.getPath(parsedArguments.get(0), env);
+        if (source == null)
             return ShellStatus.CONTINUE;
-        }
 
         if (!Files.exists(source)) {
             env.writeln(parsedArguments.get(0) + " does not exist");
@@ -65,13 +60,9 @@ public class CopyShellCommand implements ShellCommand {
             return ShellStatus.CONTINUE;
         }
 
-        Path destination;
-        try {
-            destination = Paths.get(parsedArguments.get(1));
-        } catch (InvalidPathException e) {
-            env.writeln("Invalid path: " + parsedArguments.get(1));
+        Path destination = Util.getPath(parsedArguments.get(1), env);
+        if (destination == null)
             return ShellStatus.CONTINUE;
-        }
 
         if (Files.isDirectory(destination)) {
             Path newDestination = destination.resolve(source.toAbsolutePath().normalize().getFileName());

@@ -1,5 +1,10 @@
 package hr.fer.oprpp1.hw05.shell;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
+
 /**
  * A utility class to be used by the shell and its commands.
  *
@@ -38,5 +43,26 @@ public final class Util {
             beginIndex++;
 
         return s.substring(beginIndex, endIndex);
+    }
+
+    /**
+     * Gets a path from a string.
+     * If getting the path fails, a message is printed to the environment and {@code null} is returned.
+     *
+     * @param pathString the string to convert to a {@link Path}
+     * @param env        the environment to use for printing in case of failure
+     * @return the resulting path, or {@code null} if {@code pathString} is not a valid path
+     * @throws NullPointerException if {@code pathString} or {@code env} is {@code null}
+     */
+    public static Path getPath(String pathString, Environment env) {
+        Objects.requireNonNull(pathString, "The path string must not be null.");
+        Objects.requireNonNull(env, "The environment must not be null.");
+
+        try {
+            return Paths.get(pathString);
+        } catch (InvalidPathException e) {
+            env.writeln("Invalid path: " + pathString);
+            return null;
+        }
     }
 }
