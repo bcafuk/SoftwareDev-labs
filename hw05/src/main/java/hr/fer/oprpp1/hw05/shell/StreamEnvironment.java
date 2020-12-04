@@ -59,11 +59,17 @@ public class StreamEnvironment implements Environment {
 
     @Override
     public String readLine() throws ShellIOException {
+        String line;
         try {
-            return input.readLine();
+            line = input.readLine();
         } catch (IOException e) {
-            throw new ShellIOException("The input does not contain any more lines.", e);
+            throw new ShellIOException("IO exception: " + e.toString(), e);
         }
+
+        if (line == null)
+            throw new ShellIOException("The input does not contain any more lines.");
+
+        return line;
     }
 
     @Override
