@@ -135,44 +135,44 @@ public class Crypto {
         Path inputFile = Paths.get(inputFileName);
         Path outputFile = Paths.get(outputFileName);
 
-        try (InputStream input = Files.newInputStream(inputFile)) {
-            try (OutputStream output = Files.newOutputStream(outputFile)) {
-                byte[] password;
-                byte[] iv;
-                try (Scanner scanner = new Scanner(System.in)) {
-                    System.out.println("Please provide password as hex-encoded text (16 bytes, i.e. 32 hex-digits):\n> ");
+        try (InputStream input = Files.newInputStream(inputFile);
+             OutputStream output = Files.newOutputStream(outputFile)
+        ) {
+            byte[] password;
+            byte[] iv;
+            try (Scanner scanner = new Scanner(System.in)) {
+                System.out.println("Please provide password as hex-encoded text (16 bytes, i.e. 32 hex-digits):\n> ");
 
-                    if (!scanner.hasNextLine())
-                        throw new CryptoException("No password was provided.");
-                    String passwordHex = scanner.nextLine().trim();
-                    if (passwordHex.length() != 32)
-                        throw new CryptoException("The password length should be 32 characters, but " + passwordHex.length() + " were provided.");
+                if (!scanner.hasNextLine())
+                    throw new CryptoException("No password was provided.");
+                String passwordHex = scanner.nextLine().trim();
+                if (passwordHex.length() != 32)
+                    throw new CryptoException("The password length should be 32 characters, but " + passwordHex.length() + " were provided.");
 
-                    try {
-                        password = Util.hextobyte(passwordHex);
-                    } catch (IllegalArgumentException e) {
-                        throw new CryptoException("The password provided is not valid", e);
-                    }
-
-                    System.out.println("Please provide initialization vector as hex-encoded text (32 hex-digits):\n> ");
-
-                    if (!scanner.hasNextLine())
-                        throw new CryptoException("No initialization vector was provided.");
-                    String ivHex = scanner.nextLine().trim();
-                    if (ivHex.length() != 32)
-                        throw new CryptoException("The initialization vector length should be 32 characters, but " + ivHex.length() + " were provided.");
-
-                    try {
-                        iv = Util.hextobyte(ivHex);
-                    } catch (IllegalArgumentException e) {
-                        throw new CryptoException("The initialization vector provided is not valid", e);
-                    }
+                try {
+                    password = Util.hextobyte(passwordHex);
+                } catch (IllegalArgumentException e) {
+                    throw new CryptoException("The password provided is not valid", e);
                 }
 
-                crypt(encrypt, input, output, password, iv);
+                System.out.println("Please provide initialization vector as hex-encoded text (32 hex-digits):\n> ");
 
-                System.out.print("Encryption completed. Generated file " + outputFileName + " based on file " + inputFileName + ".");
+                if (!scanner.hasNextLine())
+                    throw new CryptoException("No initialization vector was provided.");
+                String ivHex = scanner.nextLine().trim();
+                if (ivHex.length() != 32)
+                    throw new CryptoException("The initialization vector length should be 32 characters, but " + ivHex.length() + " were provided.");
+
+                try {
+                    iv = Util.hextobyte(ivHex);
+                } catch (IllegalArgumentException e) {
+                    throw new CryptoException("The initialization vector provided is not valid", e);
+                }
             }
+
+            crypt(encrypt, input, output, password, iv);
+
+            System.out.print("Encryption completed. Generated file " + outputFileName + " based on file " + inputFileName + ".");
         } catch (IOException e) {
             throw new CryptoException("IO error", e);
         }
