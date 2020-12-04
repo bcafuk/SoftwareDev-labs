@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * A command to be executed by the shell.
+ *
+ * @author Borna Cafuk
  */
 public interface ShellCommand {
     /**

@@ -9,6 +9,8 @@ import java.util.Objects;
 
 /**
  * A command which prints supported character sets.
+ *
+ * @author Borna Cafuk
  */
 public class CharsetsShellCommand implements ShellCommand {
     private static final List<String> DESCRIPTION = List.of(
