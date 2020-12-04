@@ -43,7 +43,7 @@ public final class Util {
 
         for (int i = 0; i < keyText.length(); i += 2) {
             int value = digitToValue(keyText.charAt(i)) * 16 + digitToValue(keyText.charAt(i + 1));
-            byteArray[i / 2] = (byte) ((value < 128) ? value : value - 256);
+            byteArray[i / 2] = (byte) value;
         }
 
         return byteArray;
@@ -71,7 +71,7 @@ public final class Util {
         StringBuilder sb = new StringBuilder();
 
         for (byte b : bytearray) {
-            int value = (b >= 0) ? b : b + 256;
+            int value = b & 0xFF;
             sb.append(valueToDigit(value / 16))
               .append(valueToDigit(value % 16));
         }
