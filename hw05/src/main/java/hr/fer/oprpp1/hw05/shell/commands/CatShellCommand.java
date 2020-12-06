@@ -29,6 +29,11 @@ public class CatShellCommand implements ShellCommand {
             "usage: cat path [charset]"
     );
 
+    /**
+     * The size of the character buffer used to read in data from the file.
+     */
+    private static final int BUFFER_SIZE = 1024;
+
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
         Objects.requireNonNull(env, "The environment must not be null.");
@@ -68,9 +73,18 @@ public class CatShellCommand implements ShellCommand {
             }
         }
 
-        try (BufferedReader stream = Files.newBufferedReader(path, cs)) {
-            stream.lines()
-                  .forEach(env::writeln);
+        try (BufferedReader reader = Files.newBufferedReader(path, cs)) {
+            char[] buffer = new char[BUFFER_SIZE];
+
+            while (true) {
+                int charsRead = reader.read(buffer);
+
+                if (charsRead == -1)
+                    break;
+
+                env.write(String.valueOf(buffer, 0, charsRead));
+            }
+            env.writeln("");
         } catch (AccessDeniedException e) {
             env.writeln("Access denied");
         } catch (NoSuchFileException e) {
