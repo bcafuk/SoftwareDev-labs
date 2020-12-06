@@ -25,6 +25,11 @@ public class CopyShellCommand implements ShellCommand {
             "       copy source_file destination_directory"
     );
 
+    /**
+     * The size of the buffer used to transfer data between the files.
+     */
+    private static final int BUFFER_SIZE = 4096;
+
     private static final String AFFIRMATIVE_RESPONSE = "y";
     private static final String NEGATIVE_RESPONSE = "n";
 
@@ -90,7 +95,17 @@ public class CopyShellCommand implements ShellCommand {
 
         try (InputStream input = Files.newInputStream(source);
              OutputStream output = Files.newOutputStream(destination)) {
-            input.transferTo(output);
+            byte[] buffer = new byte[BUFFER_SIZE];
+
+            while (true) {
+                int bytesRead = input.read(buffer);
+
+                if (bytesRead == -1)
+                    break;
+
+                output.write(buffer, 0, bytesRead);
+            }
+
             env.writeln("File copied");
         } catch (IOException e) {
             env.writeln("I/O exception: " + e.toString());
