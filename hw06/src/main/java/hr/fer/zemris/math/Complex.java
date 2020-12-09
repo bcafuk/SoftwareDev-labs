@@ -1,7 +1,15 @@
 package hr.fer.zemris.math;
 
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * A complex number.
+ * <p>
+ * This class is immutable, all operations create new objects and do not change any of their operands.
+ *
+ * @author Borna Cafuk
+ */
 public class Complex {
     /**
      * The complex number 0.
@@ -25,10 +33,19 @@ public class Complex {
     public static final Complex IM_NEG = new Complex(0, -1);
 
     /**
+     * The number's real part.
+     */
+    private final double re;
+    /**
+     * The number's imaginary part.
+     */
+    private final double im;
+
+    /**
      * Creates a new object representing the complex number 0.
      */
     public Complex() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        this(0, 0);
     }
 
     /**
@@ -39,7 +56,13 @@ public class Complex {
      * @throws IllegalArgumentException if {@code re} or {@code im} is not finite (&plusmn;infinity or NaN)
      */
     public Complex(double re, double im) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        if (!Double.isFinite(re))
+            throw new IllegalArgumentException("The real part has to be finite, but was " + re);
+        if (!Double.isFinite(im))
+            throw new IllegalArgumentException("The imaginary part has to be finite, but was " + im);
+
+        this.re = re;
+        this.im = im;
     }
 
     /**
@@ -49,7 +72,7 @@ public class Complex {
      * @see <a href="https://en.wikipedia.org/wiki/Complex_number#Modulus_and_argument">Modulus and argument of a complex number on Wikipedia</a>
      */
     public double module() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        return Math.hypot(re, im);
     }
 
     /**
@@ -60,7 +83,11 @@ public class Complex {
      * @throws NullPointerException if {@code c} is {@code null}
      */
     public Complex multiply(Complex c) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        Objects.requireNonNull(c, "The parameter must not be null");
+
+        double re = this.re * c.re - this.im * c.im;
+        double im = this.re * c.im + this.im * c.re;
+        return new Complex(re, im);
     }
 
     /**
@@ -68,10 +95,19 @@ public class Complex {
      *
      * @param c the complex number by which to divide {@code this}
      * @return <i>{@code this}</i> / <i>{@code c}</i>
-     * @throws NullPointerException if {@code c} is {@code null}
+     * @throws NullPointerException     if {@code c} is {@code null}
+     * @throws IllegalArgumentException if {@code c} is 0
      */
     public Complex divide(Complex c) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        Objects.requireNonNull(c, "The parameter must not be null");
+
+        double cModulo2 = c.re * c.re + c.im * c.im;
+        if (cModulo2 == 0.0)
+            throw new IllegalArgumentException("The denominator must not be 0");
+
+        double re = (this.re * c.re + this.im * c.im) / cModulo2;
+        double im = (this.im * c.re - this.re * c.im) / cModulo2;
+        return new Complex(re, im);
     }
 
     /**
@@ -82,7 +118,9 @@ public class Complex {
      * @throws NullPointerException if {@code c} is {@code null}
      */
     public Complex add(Complex c) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        Objects.requireNonNull(c, "The parameter must not be null");
+
+        return new Complex(this.re + c.re, this.im + c.im);
     }
 
     /**
@@ -93,7 +131,9 @@ public class Complex {
      * @throws NullPointerException if {@code c} is {@code null}
      */
     public Complex sub(Complex c) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        Objects.requireNonNull(c, "The parameter must not be null");
+
+        return new Complex(this.re - c.re, this.im - c.im);
     }
 
     /**
@@ -102,7 +142,7 @@ public class Complex {
      * @return &minus;<i>{@code this}</i>
      */
     public Complex negate() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        return new Complex(-this.re, -this.im);
     }
 
     /**
@@ -113,7 +153,33 @@ public class Complex {
      * @throws IllegalArgumentException if {@code n} is less than 0
      */
     public Complex power(int n) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        if (n < 0)
+            throw new IllegalArgumentException("The exponent must be non-negative, but was " + n);
+
+        // This method utilises recursion to calculate the power in O(log n) time.
+        // Simple iteration would instead be O(n).
+
+        if (n == 0) {
+            // z^0 = 1
+            // Note: it was an intentional and conscious decision to make 0^0 = 1.
+            return ONE;
+        }
+
+        if (n == 1) {
+            // z^1 = z
+            // This isn't strictly necessary, but why not take a shortcut if the return value is already available?
+            return this;
+        }
+
+        if (n % 2 == 1) {
+            // For odd values of n:
+            // z^n = (z*z) * z^((n-1)/2) * z
+            return this.multiply(this).power(n / 2).multiply(this);
+        } else {
+            // For even values of n:
+            // z^n = (z*z) * z^(n/2)
+            return this.multiply(this).power(n / 2);
+        }
     }
 
     /**
@@ -125,16 +191,34 @@ public class Complex {
      * @see <a href="https://en.wikipedia.org/wiki/Nth_root#nth_roots">nth roots of a complex number on Wikipedia</a>
      */
     public List<Complex> root(int n) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        if (n <= 0)
+            throw new IllegalArgumentException("The exponent must be positive, but was " + n);
+
+        Complex[] roots = new Complex[n];
+
+        double modulus = Math.pow(Math.hypot(this.re, this.im), 1.0 / n);
+        double initialArgument = Math.atan2(this.im, this.re);
+
+        for (int i = 0; i < n; i++) {
+            double argument = (initialArgument + 2 * i * Math.PI) / n;
+            roots[i] = new Complex(modulus * Math.cos(argument), modulus * Math.sin(argument));
+        }
+
+        return List.of(roots);
     }
 
     /**
-     * Returns the value of the complex number as a string of the format <code><i>re</i>+<i>im</i>i</code>
+     * Returns the value of the complex number as a string of the format <code><i>re</i>&plusmn;<i>im</i>i</code>
      *
      * @return a string representation of the number
      */
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        return switch ((int) Math.signum(im)) {
+            case -1 -> re + "" + im + "i";
+            case 0 -> re + "+0.0i";
+            case 1 -> re + "+" + im + "i";
+            default -> throw new IllegalStateException();
+        };
     }
 }
