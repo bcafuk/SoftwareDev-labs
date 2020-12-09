@@ -1,5 +1,8 @@
 package hr.fer.zemris.math;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * Represents a complex polynomial in its standard form, i.e.
  * <i>f</i>(<i>z</i>) = <i>z</i><sub><i>n</i></sub> <i>z</i><sup><i>n</i></sup> +
@@ -10,6 +13,12 @@ package hr.fer.zemris.math;
  */
 public class ComplexPolynomial {
     /**
+     * An array of coefficients in the order received in the constructor.
+     * It will always have a length of at least 1.
+     */
+    private final Complex[] factors;
+
+    /**
      * Creates a new polynomial.
      *
      * @param factors an array of coefficients, starting from the constant term, and in ascending order of the
@@ -18,7 +27,14 @@ public class ComplexPolynomial {
      * @throws NullPointerException {@code factors} or any element of {@code factors} is {@code null}
      */
     public ComplexPolynomial(Complex... factors) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Objects.requireNonNull(factors, "The factors must not be null");
+        for (Complex factor : factors)
+            Objects.requireNonNull(factor, "All of the factors must not be null");
+
+        if (factors.length == 0)
+            this.factors = new Complex[]{Complex.ZERO};
+        else
+            this.factors = Arrays.copyOf(factors, factors.length);
     }
 
     /**
@@ -27,7 +43,7 @@ public class ComplexPolynomial {
      * @return the order of the polynomial
      */
     public short order() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return (short) (factors.length - 1);
     }
 
     /**
@@ -39,7 +55,16 @@ public class ComplexPolynomial {
      * @see <a href="https://en.wikipedia.org/wiki/Polynomial#Multiplication">Polynomial multiplication on Wikipedia</a>
      */
     public ComplexPolynomial multiply(ComplexPolynomial p) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Objects.requireNonNull(p, "p must not be null");
+
+        Complex[] newFactors = new Complex[this.order() + p.order() + 1];
+        Arrays.fill(newFactors, Complex.ZERO);
+
+        for (int i = 0; i < this.factors.length; i++)
+            for (int j = 0; j < p.factors.length; j++)
+                newFactors[i + j] = newFactors[i + j].add(this.factors[i].multiply(p.factors[j]));
+
+        return new ComplexPolynomial(newFactors);
     }
 
     /**
@@ -49,7 +74,12 @@ public class ComplexPolynomial {
      * @see <a href="https://en.wikipedia.org/wiki/Power_rule#Complex_power_functions">Power rule on Wikipedia</a>
      */
     public ComplexPolynomial derive() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Complex[] newFactors = new Complex[order()];
+
+        for (int i = 0; i < newFactors.length; i++)
+            newFactors[i] = factors[i + 1].multiply(new Complex(i + 1, 0));
+
+        return new ComplexPolynomial(newFactors);
     }
 
     /**
@@ -60,11 +90,30 @@ public class ComplexPolynomial {
      * @throws NullPointerException if {@code z} is {@code null}
      */
     public Complex apply(Complex z) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Objects.requireNonNull(z, "z must not be null");
+
+        Complex value = Complex.ZERO;
+        for (int i = 0; i < factors.length; i++)
+            value = value.add(z.power(i).multiply(factors[i]));
+
+        return value;
     }
 
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = factors.length - 1; i >= 0; i--) {
+            sb.append('(')
+              .append(factors[i])
+              .append(')');
+
+            if (i != 0)
+                sb.append("*z^")
+                  .append(i)
+                  .append(" + ");
+        }
+
+        return sb.toString();
     }
 }
