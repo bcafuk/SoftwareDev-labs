@@ -52,7 +52,7 @@ public final class NewtonRaphson {
         ComplexPolynomial f = polynomial.toComplexPolynom();
         ComplexPolynomial fDerived = f.derive();
 
-        int offset = 0;
+        int offset = ymin * width;
         for (int y = ymin; y < ymax; y++) {
             if (cancel.get())
                 return;
