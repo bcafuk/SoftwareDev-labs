@@ -5,6 +5,8 @@ import hr.fer.zemris.math.Complex;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A class used to read polynomial definitions from the user.
@@ -12,6 +14,26 @@ import java.util.*;
  * @author Borna Cafuk
  */
 public final class NewtonInput {
+    /**
+     * A piece of a regular expression to be used in {@link #REAL_PATTERN}, {@link #IMAGINARY_PATTERN},
+     * and {@link #COMPLEX_PATTERN}.
+     */
+    static private final String NUMBER_REGEX = "\\d+(?:\\.\\d+)?";
+    /**
+     * A regex used in the {@link #parseComplex(String)} method to parse purely real numbers.
+     */
+    static private final Pattern REAL_PATTERN = Pattern.compile("[+-]?" + NUMBER_REGEX);
+    /**
+     * A regex used in the {@link #parseComplex(String)} method to parse purely imaginary numbers.
+     */
+    static private final Pattern IMAGINARY_PATTERN = Pattern.compile("([+-]?)i((?:" + NUMBER_REGEX + ")?)");
+    /**
+     * A regex used in the {@link #parseComplex(String)} method to parse complex numbers with both their real and
+     * imaginary parts specified.
+     */
+    static private final Pattern COMPLEX_PATTERN = Pattern.compile(
+            "([+-]?" + NUMBER_REGEX + ") ?([+-]) ?i((?:" + NUMBER_REGEX + ")?)");
+
     /**
      * Don't let anyone instantiate this class.
      */
@@ -76,6 +98,35 @@ public final class NewtonInput {
     public static Complex parseComplex(String s) {
         Objects.requireNonNull(s, "Cannot parse null string");
 
-        throw new UnsupportedOperationException("Not yet implemented");
+        String reString = "0";
+        String opString = "+";
+        String imString = "0";
+
+        Matcher realMatcher = REAL_PATTERN.matcher(s);
+        Matcher imaginaryMatcher = IMAGINARY_PATTERN.matcher(s);
+        Matcher complexMatcher = COMPLEX_PATTERN.matcher(s);
+
+        if (realMatcher.matches()) {
+            reString = s;
+        } else if (imaginaryMatcher.matches()) {
+            opString = imaginaryMatcher.group(1);
+            imString = imaginaryMatcher.group(2);
+        } else if (complexMatcher.matches()) {
+            reString = complexMatcher.group(1);
+            opString = complexMatcher.group(2);
+            imString = complexMatcher.group(3);
+        } else {
+            throw new NumberFormatException();
+        }
+
+        double re = Double.parseDouble(reString);
+        double imSign = switch (opString) {
+            case "+", "" -> 1.0;
+            case "-" -> -1.0;
+            default -> throw new NumberFormatException();
+        };
+        double im = imString.isEmpty() ? 1 : Double.parseDouble(imString);
+
+        return new Complex(re, imSign * im);
     }
 }
