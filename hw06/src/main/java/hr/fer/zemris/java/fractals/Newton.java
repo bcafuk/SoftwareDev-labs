@@ -16,8 +16,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * An application to draw a fractal based on Newton-Raphson iteration.
  * <p>
  * This version of the application calculates the pixel values on a single thread.
+ * See {@link NewtonParallel} for a multi-threaded version.
  *
  * @author Borna Cafuk
+ * @see NewtonParallel
  */
 public class Newton {
     /**
