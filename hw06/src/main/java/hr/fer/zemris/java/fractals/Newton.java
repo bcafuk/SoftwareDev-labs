@@ -9,6 +9,7 @@ import hr.fer.zemris.math.Complex;
 import hr.fer.zemris.math.ComplexRootedPolynomial;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -68,9 +69,10 @@ public class Newton {
          * Constructs a producer for the given polynomial.
          *
          * @param polynomial the polynomial for which to draw a fractal
+         * @throws NullPointerException if {@code polynomial} is {@code null}
          */
         public NewtonProducer(ComplexRootedPolynomial polynomial) {
-            this.polynomial = polynomial;
+            this.polynomial = Objects.requireNonNull(polynomial, "The polynomial must not be null");
         }
 
         @Override
