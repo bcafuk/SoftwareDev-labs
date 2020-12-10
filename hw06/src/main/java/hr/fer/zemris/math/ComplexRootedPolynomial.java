@@ -38,6 +38,15 @@ public class ComplexRootedPolynomial {
     }
 
     /**
+     * Returns the order of the polynomial.
+     *
+     * @return the order of the polynomial
+     */
+    public short order() {
+        return (short) (roots.length);
+    }
+
+    /**
      * Evaluates the polynomial <i>f</i>(<i>z</i>) for a given <i>z</i>.
      *
      * @param z the value for which to evaluate the polynomial
