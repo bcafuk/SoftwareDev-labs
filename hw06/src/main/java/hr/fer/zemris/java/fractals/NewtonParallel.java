@@ -45,10 +45,8 @@ public class NewtonParallel {
 
         ArgumentParser<ArgumentType> argumentParser = new ArgumentParser<>();
 
-        argumentParser.registerType("--workers", ArgumentType.WORKERS);
-        argumentParser.registerType("-w", ArgumentType.WORKERS);
-        argumentParser.registerType("--tracks", ArgumentType.TRACKS);
-        argumentParser.registerType("-t", ArgumentType.TRACKS);
+        argumentParser.registerType("workers", "w", ArgumentType.WORKERS);
+        argumentParser.registerType("tracks", "t", ArgumentType.TRACKS);
 
         Map<ArgumentType, Integer> arguments = null;
         try {

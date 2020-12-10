@@ -11,37 +11,43 @@ import java.util.Objects;
  */
 public class ArgumentParser<T> {
     /**
-     * All registered argument name strings and their keys.
+     * Registered argument name strings and their keys for the form {@code --name=value}.
      */
-    private final Map<String, T> types = new HashMap<>();
+    private final Map<String, T> longTypes = new HashMap<>();
+    /**
+     * Registered argument name strings and their keys for the form {@code -name value}.
+     */
+    private final Map<String, T> shortTypes = new HashMap<>();
 
     /**
      * Registers a new argument type.
      *
-     * @param name the argument name
-     * @param key  the type key
-     * @throws NullPointerException     if {@code name} is {@code null}
-     * @throws IllegalArgumentException if {@code name} has already been registered
+     * @param longName  the argument name for the long format ({@code --name=value}),
+     *                  or {@code null} if no long name should be registered
+     * @param shortName the argument name for the short format ({@code -name value}),
+     *                  or {@code null} if no short name should be registered
+     * @param key       the type key
+     * @throws IllegalArgumentException if {@code longName} or {@code shortName} has already been registered
      */
-    public void registerType(String name, T key) {
-        Objects.requireNonNull(name, "The argument name must not be null");
+    public void registerType(String longName, String shortName, T key) {
+        if (longTypes.containsKey(longName))
+            throw new IllegalArgumentException("Duplicate name " + longName);
+        if (shortTypes.containsKey(shortName))
+            throw new IllegalArgumentException("Duplicate name " + shortName);
 
-        if (types.containsKey(name))
-            throw new IllegalArgumentException("Duplicate name " + name);
-
-        types.put(name, key);
+        if (longName != null)
+            longTypes.put(longName, key);
+        if (shortName != null)
+            shortTypes.put(shortName, key);
     }
 
     /**
      * Parses an argument array.
-     * <p>
-     * The elements of the array should follow this pattern:
-     * argument names at even indices, followed by a string parsable to an integer at the next (odd) index.
      *
      * @param args the array of arguments and their values
      * @return a map of type keys and their values
      * @throws NullPointerException     if {@code args} or any of its elements is {@code null};
-     * @throws IllegalArgumentException if {@code args} is of odd length
+     * @throws IllegalArgumentException if {@code args} contains an argument without a value
      * @throws IllegalArgumentException if {@code args} contains an argument name which wasn't registered
      * @throws IllegalArgumentException if {@code args} contains two names corresponding to the same type
      * @throws IllegalArgumentException if {@code args} contains a value not parsable to an integer
@@ -51,30 +57,42 @@ public class ArgumentParser<T> {
 
         Map<T, Integer> parsedArguments = new HashMap<>();
 
-        for (int i = 0; i < args.length; i += 2) {
-            String name = Objects.requireNonNull(args[i], "The argument name must not be null");
+        for (int i = 0; i < args.length; i++) {
+            String argument = Objects.requireNonNull(args[i], "The argument must not be null");
 
-            if (args.length <= i + 1)
-                throw new IllegalArgumentException("Missing argument value for " + name);
+            T key;
+            String valueString;
 
-            T key = types.get(name);
+            if (argument.startsWith("--")) {
+                int equalsIndex = argument.indexOf('=');
+                if (equalsIndex == -1)
+                    throw new IllegalArgumentException("Missing = in " + argument);
+
+                String name = argument.substring(2, equalsIndex);
+                key = longTypes.get(name);
+                valueString = argument.substring(equalsIndex + 1);
+            } else if (argument.startsWith("-")) {
+                if (args.length < i + 1)
+                    throw new IllegalArgumentException("Missing value for " + argument);
+                i++;
+
+                String name = argument.substring(1);
+                key = shortTypes.get(name);
+                valueString = Objects.requireNonNull(args[i], "The argument value must not be null.");
+            } else {
+                throw new IllegalArgumentException("Unexpected " + argument);
+            }
 
             if (key == null)
-                throw new IllegalArgumentException("Unknown argument type " + name);
+                throw new IllegalArgumentException("Unknown argument type in " + argument);
             if (parsedArguments.containsKey(key))
                 throw new IllegalArgumentException("Duplicate argument for key " + key.toString());
 
-            String valueString = Objects.requireNonNull(args[i + 1], "The argument value must not be null");
-            int value;
-
             try {
-                value = Integer.parseInt(valueString);
+                parsedArguments.put(key, Integer.parseInt(valueString));
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("The value of " + name + " (" + valueString +
-                        ") cannot be parsed as an integer", e);
+                throw new IllegalArgumentException("The value " + valueString + " cannot be parsed as an integer", e);
             }
-
-            parsedArguments.put(key, value);
         }
 
         return parsedArguments;
