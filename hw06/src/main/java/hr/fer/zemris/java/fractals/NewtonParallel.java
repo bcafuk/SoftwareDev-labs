@@ -45,9 +45,6 @@ public class NewtonParallel {
 
         ArgumentParser<ArgumentType> argumentParser = new ArgumentParser<>();
 
-        argumentParser.addDefault(ArgumentType.WORKERS, numberOfAvailableProcessors);
-        argumentParser.addDefault(ArgumentType.TRACKS, 4 * numberOfAvailableProcessors);
-
         argumentParser.registerType("--workers", ArgumentType.WORKERS);
         argumentParser.registerType("-w", ArgumentType.WORKERS);
         argumentParser.registerType("--tracks", ArgumentType.TRACKS);
@@ -61,8 +58,8 @@ public class NewtonParallel {
             runtime.exit(1);
         }
 
-        int workerCount = arguments.get(ArgumentType.WORKERS);
-        int trackCount = arguments.get(ArgumentType.WORKERS);
+        int workerCount = arguments.getOrDefault(ArgumentType.WORKERS, numberOfAvailableProcessors);
+        int trackCount = arguments.getOrDefault(ArgumentType.TRACKS, 4 * numberOfAvailableProcessors);
 
         if (workerCount <= 0) {
             System.err.println("The number of workers has to be greater than 0.");

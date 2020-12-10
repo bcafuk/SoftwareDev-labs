@@ -14,10 +14,6 @@ public class ArgumentParser<T> {
      * All registered argument name strings and their keys.
      */
     private final Map<String, T> types = new HashMap<>();
-    /**
-     * Default values for argument types.
-     */
-    private final Map<T, Integer> defaults = new HashMap<>();
 
     /**
      * Registers a new argument type.
@@ -37,25 +33,10 @@ public class ArgumentParser<T> {
     }
 
     /**
-     * Adds a default value for the argument type.
-     *
-     * @param key          the type key
-     * @param defaultValue the default value
-     */
-    public void addDefault(T key, int defaultValue) {
-        if (defaults.containsKey(key))
-            throw new IllegalArgumentException("A default already exists for " + key.toString());
-
-        defaults.put(key, defaultValue);
-    }
-
-    /**
      * Parses an argument array.
      * <p>
      * The elements of the array should follow this pattern:
      * argument names at even indices, followed by a string parsable to an integer at the next (odd) index.
-     * <p>
-     * After parsing, the array is filled with the default values if they haven't been explicitly set in {@code args}.
      *
      * @param args the array of arguments and their values
      * @return a map of type keys and their values
@@ -95,10 +76,6 @@ public class ArgumentParser<T> {
 
             parsedArguments.put(key, value);
         }
-
-        for (var defaultEntry : defaults.entrySet())
-            if (!parsedArguments.containsKey(defaultEntry.getKey()))
-                parsedArguments.put(defaultEntry.getKey(), defaultEntry.getValue());
 
         return parsedArguments;
     }
