@@ -64,8 +64,12 @@ public final class NewtonRaphson {
 
                 int iter = 0;
                 do {
+                    Complex numerator = f.apply(zCurr);
+                    Complex denominator = fDerived.apply(zCurr);
+                    Complex fraction = numerator.divide(denominator);
+
                     zPrev = zCurr;
-                    zCurr = zCurr.sub(f.apply(zCurr).divide(fDerived.apply(zCurr)));
+                    zCurr = zCurr.sub(fraction);
                     iter++;
                 } while (iter < iterMax && zCurr.sub(zPrev).module() > convTresh);
 
