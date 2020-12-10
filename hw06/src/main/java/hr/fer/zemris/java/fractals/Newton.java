@@ -1,6 +1,7 @@
 package hr.fer.zemris.java.fractals;
 
 import hr.fer.zemris.java.fractals.newtonRaphson.NewtonRaphson;
+import hr.fer.zemris.java.fractals.util.RootInput;
 import hr.fer.zemris.java.fractals.viewer.FractalViewer;
 import hr.fer.zemris.java.fractals.viewer.IFractalProducer;
 import hr.fer.zemris.java.fractals.viewer.IFractalResultObserver;
@@ -28,7 +29,7 @@ public class Newton {
 
         List<Complex> roots = null;
         try {
-            roots = NewtonInput.readPolynomial(System.in, System.out);
+            roots = RootInput.readPolynomial(System.in, System.out);
         } catch (IllegalStateException e) {
             System.err.println(e.getMessage());
             System.exit(1);

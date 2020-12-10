@@ -1,4 +1,4 @@
-package hr.fer.zemris.java.fractals;
+package hr.fer.zemris.java.fractals.util;
 
 import hr.fer.zemris.math.Complex;
 
@@ -9,11 +9,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A class used to read polynomial definitions from the user.
+ * A class used to read the roots of a polynomial from the user.
  *
  * @author Borna Cafuk
  */
-public final class NewtonInput {
+public final class RootInput {
     /**
      * A piece of a regular expression to be used in {@link #REAL_PATTERN}, {@link #IMAGINARY_PATTERN},
      * and {@link #COMPLEX_PATTERN}.
@@ -37,7 +37,7 @@ public final class NewtonInput {
     /**
      * Don't let anyone instantiate this class.
      */
-    private NewtonInput() {}
+    private RootInput() {}
 
     /**
      * Interactively read a list of roots from a stream.
