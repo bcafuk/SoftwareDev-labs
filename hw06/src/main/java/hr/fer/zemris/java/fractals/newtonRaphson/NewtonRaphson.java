@@ -93,48 +93,32 @@ public final class NewtonRaphson {
      * @param imMin the imaginary part corresponding to {@code yMax}
      * @param imMax the imaginary part corresponding to {@code yMin}
      * @return the complex number corresponding to the ({@code x}, {@code y}) coordinates on the specified viewport
+     * @throws IllegalArgumentException if {@code xMin} = {@code xMax}, if {@code yMin} = {@code yMax}, or if
+     *                                  any of the {@code double} parameters are not finite (&plusmn;infinity or NaN)
      */
     private static Complex mapToComplexPlane(int x, int y, int xMin, int xMax, int yMin, int yMax,
                                              double reMin, double reMax, double imMin, double imMax) {
-        double re = lerp(unlerp(x, xMin, xMax), reMin, reMax);
-        double im = lerp(unlerp(y, yMax, yMin), imMin, imMax);
+        double re = map(x, xMin, xMax, reMin, reMax);
+        double im = map(y, yMax, yMin, imMin, imMax);
 
         return new Complex(re, im);
     }
 
     /**
-     * Linearly interpolates between {@code lo} and {@code hi}.
+     * Maps a number from one interval to another linearly.
      * <p>
-     * <dl>
-     *     <dt>For {@code a} = 0:</dt>
-     *     <dd>{@code lo} is returned.</dd>
-     *     <dt>For {@code a} = 1:</dt>
-     *     <dd>{@code hi} is returned.</dd>
-     *     <dt>For {@code a} &isin; (0, 1):</dt>
-     *     <dd>{@code lo} and {@code hi} are linearly interpolated.</dd>
-     *     <dt>For {@code a} &notin; [0, 1]:</dt>
-     *     <dd>{@code lo} and {@code hi} are linearly extrapolated.</dd>
-     * </dl>
+     * {@code t} = {@code loFrom} maps the output to {@code loTo} and
+     * {@code t} = {@code hiFrom} maps it to {@code hiTo}.
+     * For all other values, linear inter- or extrapolation is performed.
      *
-     * @param a  the interpolation parameter
-     * @param lo the data point corresponding to {@code a} = 0
-     * @param hi the data point corresponding to {@code a} = 1
-     * @return the result of the interpolation
+     * @param t      the number to be mapped
+     * @param loFrom the bound of the input interval corresponding to {@code loTo} in the output interval
+     * @param hiFrom the bound of the input interval corresponding to {@code hiTo} in the output interval
+     * @param loTo   the bound of the output interval corresponding to {@code loFrom} in the input interval
+     * @param hiTo   the bound of the output interval corresponding to {@code hiFrom} in the input interval
+     * @return the result of the mapping
      */
-    private static double lerp(double a, double lo, double hi) {
-        return (1 - a) * lo + a * hi;
-    }
-
-    /**
-     * Calculates the inverse of linear interpolation.
-     *
-     * @param b  the result of the interpolation
-     * @param lo the data point corresponding to {@code a} = 0
-     * @param hi the data point corresponding to {@code a} = 1
-     * @return the interpolation parameter {@code a}
-     * @see #lerp(double, double, double)
-     */
-    private static double unlerp(double b, double lo, double hi) {
-        return (b - lo) / (hi - lo);
+    private static double map(double t, double loFrom, double hiFrom, double loTo, double hiTo) {
+        return (t - loFrom) / (hiFrom - loFrom) * (hiTo - loTo) + loTo;
     }
 }
