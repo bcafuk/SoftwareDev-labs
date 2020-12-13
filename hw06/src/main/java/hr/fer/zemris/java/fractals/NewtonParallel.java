@@ -228,6 +228,8 @@ public class NewtonParallel {
             final int effectiveTrackCount = Math.min(trackCount, height);
             int trackHeight = height / effectiveTrackCount;
 
+            System.out.format("Drawing image... (%d threads, %d jobs)%n", workerCount, trackCount);
+
             final BlockingQueue<CalculationJob> queue = new LinkedBlockingQueue<>();
 
             Runnable threadJob = () -> {
