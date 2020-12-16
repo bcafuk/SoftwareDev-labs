@@ -62,7 +62,7 @@ public class CalcLayout implements LayoutManager2 {
     /**
      * Finds a component in the grid.
      * <p>
-     * Components are compared by reference (using {@code =}).
+     * Components are compared by reference (using {@code ==}).
      *
      * @param comp the component to look for
      * @return the position of the component, or {@code null} if it was not found
@@ -168,7 +168,17 @@ public class CalcLayout implements LayoutManager2 {
 
     @Override
     public Dimension preferredLayoutSize(Container parent) {
-        return processLayoutSize(parent, Component::getPreferredSize, Integer::max);
+        Dimension preferredSize = processLayoutSize(parent, Component::getPreferredSize, Integer::max);
+
+        if (preferredSize != null) {
+            return preferredSize;
+        } else {
+            Insets insets = parent.getInsets();
+
+            return new Dimension(insets.left + insets.right + (COLUMNS - 1) * spacing,
+                    insets.top + insets.bottom + (ROWS - 1) * spacing);
+        }
+
     }
 
     @Override
@@ -200,7 +210,11 @@ public class CalcLayout implements LayoutManager2 {
 
         Insets insets = parent.getInsets();
 
-        Dimension componentDimension = getter.apply(components[0][0]);
+        Dimension componentDimension;
+        if (components[0][0] != null)
+            componentDimension = getter.apply(components[0][0]);
+        else
+            componentDimension = null;
 
         if (componentDimension != null) {
             componentDimension = new Dimension(
