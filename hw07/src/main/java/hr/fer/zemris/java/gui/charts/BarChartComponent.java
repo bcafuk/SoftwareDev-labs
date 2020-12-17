@@ -192,7 +192,21 @@ public class BarChartComponent extends JComponent {
      * @param frame the frame of pixels just outside the chart area
      */
     private void paintChartArea(Graphics g, Frame frame) {
-        // TODO: Implement drawing
+        g.setColor(getForeground());
+
+        for (int x = model.getxMin(); x <= model.getxMax(); x++) {
+            int barLeft = getAreaX(frame, x) + COLUMN_SPACING;
+            int barRight = getAreaX(frame, x + 1) - COLUMN_SPACING;
+
+            Integer y = model.getData().get(x - model.getxMin());
+
+            if (y == null || y == 0)
+                continue;
+
+            int barTop = getAreaY(frame, y);
+
+            g.fillRect(barLeft, barTop, barRight - barLeft, frame.bottom - barTop);
+        }
     }
 
     /**
