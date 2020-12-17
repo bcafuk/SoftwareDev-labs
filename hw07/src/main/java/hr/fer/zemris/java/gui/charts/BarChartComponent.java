@@ -76,7 +76,10 @@ public class BarChartComponent extends JComponent {
 
         Frame frame = getChartAreaFrame();
 
-        paintAxes(g, frame);
+        g.setColor(axisColor == null ? getForeground() : axisColor);
+        paintxAxis(g, frame);
+        paintyAxis(g, frame);
+
         paintChartArea(g, frame);
     }
 
@@ -96,19 +99,6 @@ public class BarChartComponent extends JComponent {
         int bottom = getHeight() - fm.getHeight() * 2 - TICK_LENGTH - 2 * AXIS_SPACING - 1;
 
         return new Frame(left, right, top, bottom);
-    }
-
-    /**
-     * Paints the chart axes.
-     *
-     * @param g     the {@link Graphics} object to draw to
-     * @param frame the frame of pixels just outside the chart area
-     */
-    private void paintAxes(Graphics g, Frame frame) {
-        g.setColor(axisColor == null ? getForeground() : axisColor);
-
-        paintxAxis(g, frame);
-        paintyAxis(g, frame);
     }
 
     /**
