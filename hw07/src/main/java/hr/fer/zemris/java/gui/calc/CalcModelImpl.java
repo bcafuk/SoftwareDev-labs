@@ -46,6 +46,9 @@ public class CalcModelImpl implements CalcModel {
         if (currentString.isEmpty())
             return isNegative ? "-0" : "0";
 
+        if (currentString.equals("NaN"))
+            return currentString;
+
         return isNegative ? NEGATIVE_SYMBOL + currentString : currentString;
     }
 
@@ -73,6 +76,8 @@ public class CalcModelImpl implements CalcModel {
 
     @Override
     public void clear() {
+        isEditable = true;
+        isNegative = false;
         currentValue = 0.0;
         currentString = "";
 
@@ -85,6 +90,7 @@ public class CalcModelImpl implements CalcModel {
         isNegative = false;
         currentValue = 0.0;
         currentString = "";
+        frozenString = null;
         activeOperand = null;
         pendingOperation = null;
 
@@ -110,6 +116,7 @@ public class CalcModelImpl implements CalcModel {
             throw new CalculatorInputException("The number already contains a decimal point");
 
         currentString += DECIMAL_POINT;
+        frozenString = null;
 
         notifyListeners();
     }
@@ -141,6 +148,7 @@ public class CalcModelImpl implements CalcModel {
     private void updateValue() {
         double absoluteValue = currentString.isEmpty() ? 0 : Double.parseDouble(currentString);
         currentValue = isNegative ? -absoluteValue : absoluteValue;
+        frozenString = null;
 
         notifyListeners();
     }
