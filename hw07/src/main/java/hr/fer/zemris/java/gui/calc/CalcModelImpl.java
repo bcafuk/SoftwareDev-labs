@@ -64,7 +64,7 @@ public class CalcModelImpl implements CalcModel {
 
         double sign = Math.copySign(1.0, value);
         this.isNegative = sign < 0.0;
-        this.currentString = Double.toString(Math.abs(value));
+        this.currentString = Util.formatDouble(Math.abs(value));
 
         this.isEditable = false;
         notifyListeners();

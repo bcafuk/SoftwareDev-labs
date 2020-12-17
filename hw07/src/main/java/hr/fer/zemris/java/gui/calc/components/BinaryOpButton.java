@@ -1,5 +1,6 @@
 package hr.fer.zemris.java.gui.calc.components;
 
+import hr.fer.zemris.java.gui.calc.Util;
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
 import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 
@@ -57,7 +58,7 @@ public class BinaryOpButton extends CalculatorButton {
             else
                 model.setActiveOperand(model.getValue());
 
-            model.freezeValue(Double.toString(model.getActiveOperand()));
+            model.freezeValue(Util.formatDouble(model.getActiveOperand()));
             model.setPendingBinaryOperation(isInverted.getAsBoolean() ? inverseOp : regularOp);
             model.clear();
         });
