@@ -14,8 +14,12 @@ public class BarChartComponent extends JComponent {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private static final int ARROW_OVERHANG = 9;
     private static final int ARROW_LENGTH = 8;
     private static final double ARROW_ANGLE = Math.toRadians(25);
+    private static final int TICK_LENGTH = 4;
+    private static final int AXIS_SPACING = 1;
+    private static final int COLUMN_SPACING = 1;
 
     /**
      * The bar chart model to draw.
@@ -51,10 +55,12 @@ public class BarChartComponent extends JComponent {
      * @return the bounds of the chart area
      */
     private Rectangle getAreaBounds() {
-        int left = 16;
-        int right = getWidth() - ARROW_LENGTH - 1;
-        int top = ARROW_LENGTH;
-        int bottom = getHeight() - 16;
+        FontMetrics fm = getFontMetrics(getFont());
+
+        int left = fm.getHeight() + fm.stringWidth(Integer.toString(model.getyMax())) + TICK_LENGTH + 2 * AXIS_SPACING;
+        int right = getWidth() - ARROW_OVERHANG;
+        int top = ARROW_OVERHANG - 1;
+        int bottom = getHeight() - fm.getHeight() * 2 - TICK_LENGTH - 2 * AXIS_SPACING - 1;
 
         return new Rectangle(left + 1, top + 1, right - left - 1, bottom - top - 1);
     }
@@ -66,25 +72,48 @@ public class BarChartComponent extends JComponent {
      * @param bounds the bounds of the chart area
      */
     private void paintAxes(Graphics g, Rectangle bounds) {
+        FontMetrics fm = getFontMetrics(getFont());
+
         int left = bounds.x - 1;
         int right = bounds.x + bounds.width;
         int top = bounds.y - 1;
         int bottom = bounds.y + bounds.height;
 
-        int arrowOffsetAxial = (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE)) - ARROW_LENGTH;
+        int arrowOffsetAxial =ARROW_OVERHANG - (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE));
         int arrowOffsetLateral = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
 
         g.setColor(getForeground());
 
         // x axis
-        g.drawLine(left, bottom, right + ARROW_LENGTH, bottom);
-        g.drawLine(right + ARROW_LENGTH, bottom, right - arrowOffsetAxial, bottom - arrowOffsetLateral);
-        g.drawLine(right + ARROW_LENGTH, bottom, right - arrowOffsetAxial, bottom + arrowOffsetLateral);
+        g.drawLine(left, bottom, right + ARROW_OVERHANG, bottom);
+        g.drawLine(right + ARROW_OVERHANG, bottom,right + arrowOffsetAxial, bottom - arrowOffsetLateral);
+        g.drawLine(right + ARROW_OVERHANG, bottom,right + arrowOffsetAxial, bottom + arrowOffsetLateral);
+
+        int xAxisLabelBaseline = getHeight() - fm.getDescent() - 1;
+        int columnLabelBaseline = xAxisLabelBaseline - fm.getHeight() - AXIS_SPACING;
+
+        g.drawString(model.getxAxisLabel(),
+                (left + right - fm.stringWidth(model.getxAxisLabel())) / 2, xAxisLabelBaseline);
+
+        g.drawLine(left, bottom, left, bottom + TICK_LENGTH);
+
+        int barCount = model.getxMax() - model.getxMin() + 1;
+        double barWidth = (double) (right - left - 1) / barCount;
+        for (int i = 0; i < barCount; i++) {
+            int barLeft = left + (int) Math.round(i * barWidth);
+            int barRight = left + (int) Math.round((i + 1) * barWidth);
+
+            g.drawLine(barRight, bottom, barRight, bottom + TICK_LENGTH);
+
+            String columnLabel = Integer.toString(i + model.getxMin());
+            g.drawString(columnLabel,
+                    (barLeft + barRight - fm.stringWidth(columnLabel)) / 2, columnLabelBaseline);
+        }
 
         // y axis
-        g.drawLine(left, bottom, left, top - ARROW_LENGTH);
-        g.drawLine(left, top - ARROW_LENGTH, left - arrowOffsetLateral, top + arrowOffsetAxial);
-        g.drawLine(left, top - ARROW_LENGTH, left + arrowOffsetLateral, top + arrowOffsetAxial);
+        g.drawLine(left, bottom, left, top - ARROW_OVERHANG);
+        g.drawLine(left, top - ARROW_OVERHANG,left - arrowOffsetLateral, top - arrowOffsetAxial);
+        g.drawLine(left, top - ARROW_OVERHANG,left + arrowOffsetLateral, top - arrowOffsetAxial);
     }
 
     /**
