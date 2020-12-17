@@ -1,7 +1,10 @@
 package hr.fer.zemris.java.gui.calc;
 
+import hr.fer.zemris.java.gui.calc.components.CalculatorButton;
+import hr.fer.zemris.java.gui.calc.components.DisplayLabel;
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
 import hr.fer.zemris.java.gui.layouts.CalcLayout;
+import hr.fer.zemris.java.gui.layouts.RCPosition;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +17,6 @@ import java.util.Stack;
  * @author Borna Cafuk
  */
 public class Calculator extends JFrame {
-    /**
-     * The size of the font in components where it is made larger
-     */
-    public static final float LARGE_FONT = 30.0f;
-
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -35,12 +33,12 @@ public class Calculator extends JFrame {
      * Constructs a new window.
      */
     public Calculator() {
-        setSize(613, 266);
-        // TODO: See if pack() will work
+        setSize(630, 305);
         setTitle("Java Calculator v1.0");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         initGUI();
+        // TODO: See if pack() will work
     }
 
     /**
@@ -49,6 +47,17 @@ public class Calculator extends JFrame {
     private void initGUI() {
         Container cp = getContentPane();
         cp.setLayout(new CalcLayout(5));
+
+        JLabel display = new DisplayLabel(model);
+        cp.add(display, new RCPosition(1, 1));
+
+        JButton clearButton = new CalculatorButton("clr");
+        clearButton.addActionListener(e -> model.clear());
+        cp.add(clearButton, new RCPosition(1, 7));
+
+        JButton equalsButton = new CalculatorButton("reset");
+        clearButton.addActionListener(e -> model.clearAll());
+        cp.add(equalsButton, new RCPosition(2, 7));
 
         // TODO: Initialize GUI
     }
