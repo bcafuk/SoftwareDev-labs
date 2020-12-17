@@ -16,8 +16,7 @@ public class CalcModelTest {
 	private CalcModel model;
 	
 	private static CalcModel newCalcModel() {
-		// Zamijenite ovo tako da vraća primjerak Vaše implementacije modela.
-		return new DummyCalcModel();
+		return new CalcModelImpl();
 	}
 
 	@BeforeEach
@@ -381,7 +380,7 @@ public class CalcModelTest {
 		public void setPendingBinaryOperation(DoubleBinaryOperator op) {
 			notimp();
 		}
-		
+
 		@Override
 		public void freezeValue(String value) {
 			notimp();
