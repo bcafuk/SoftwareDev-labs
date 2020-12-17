@@ -5,7 +5,6 @@ import hr.fer.zemris.java.gui.calc.components.CalculatorButton;
 import hr.fer.zemris.java.gui.calc.components.DigitButton;
 import hr.fer.zemris.java.gui.calc.components.DisplayLabel;
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
-import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 import hr.fer.zemris.java.gui.layouts.CalcLayout;
 import hr.fer.zemris.java.gui.layouts.RCPosition;
 
@@ -116,14 +115,7 @@ public class Calculator extends JFrame {
         cp.add(signButton, new RCPosition(5, 4));
 
         JButton decimalButton = new CalculatorButton(".");
-        decimalButton.addActionListener(e -> {
-            if (model.isEditable())
-                try {
-                    model.insertDecimalPoint();
-                } catch (CalculatorInputException ex) {
-                    System.err.println(ex.toString());
-                }
-        });
+        decimalButton.addActionListener(e -> model.insertDecimalPoint());
         cp.add(decimalButton, new RCPosition(5, 5));
     }
 

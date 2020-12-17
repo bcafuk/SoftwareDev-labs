@@ -1,6 +1,7 @@
 package hr.fer.zemris.java.gui.calc.components;
 
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
+import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
@@ -46,6 +47,9 @@ public class BinaryOpButton extends CalculatorButton {
         Objects.requireNonNull(isInverted, "The isInverted supplier must not be null");
 
         addActionListener(e -> {
+            if (model.hasFrozenValue())
+                throw new CalculatorInputException("The calculator has a frozen value");
+
             DoubleBinaryOperator pendingOp = model.getPendingBinaryOperation();
 
             if (pendingOp != null && model.isActiveOperandSet())

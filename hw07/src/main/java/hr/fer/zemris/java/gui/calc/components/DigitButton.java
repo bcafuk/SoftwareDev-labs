@@ -30,13 +30,6 @@ public class DigitButton extends CalculatorButton {
 
         setFont(getFont().deriveFont(FONT_SIZE));
 
-        addActionListener(e -> {
-            if (model.isEditable())
-                try {
-                    model.insertDigit(digit);
-                } catch (CalculatorInputException ex) {
-                    System.err.println(ex.toString());
-                }
-        });
+        addActionListener(e -> model.insertDigit(digit));
     }
 }
