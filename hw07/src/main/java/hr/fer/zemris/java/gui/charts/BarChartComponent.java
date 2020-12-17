@@ -15,20 +15,45 @@ public class BarChartComponent extends JComponent {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * How far the axes extend beyond the chart area.
+     */
     private static final int ARROW_OVERHANG = 9;
     /**
      * The length of the lines comprising the tips of the arrows.
      */
     private static final int ARROW_LENGTH = 8;
+    /**
+     * The angle between the axis and the lines comprising the tips of the arrows.
+     */
     private static final double ARROW_ANGLE = Math.toRadians(25);
-    private static final int ARROW_OFFSET_LATERAL = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
-    private static final int ARROW_OFFSET_AXIAL =
-            ARROW_OVERHANG - (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE));
 
+    /**
+     * The length of the tick lines.
+     */
     private static final int TICK_LENGTH = 4;
+    /**
+     * The size of the spacing between adjacent axis elements.
+     * <p>
+     * This determines the spacing between the axis label and the data labels;
+     * and between the data labels and the tick marks.
+     */
     private static final int AXIS_SPACING = 1;
 
+    /**
+     * The amount by which the data columns are shrunk on either side.
+     */
     private static final int COLUMN_SPACING = 1;
+
+    /**
+     * How far one needs to move perpendicular to the direction of the axis to get to the side of the arrow tip.
+     */
+    private static final int ARROW_OFFSET_LATERAL = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
+    /**
+     * How far one needs to move in the direction of the axis to get to the back of the arrow tip.
+     */
+    private static final int ARROW_OFFSET_AXIAL =
+            ARROW_OVERHANG - (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE));
 
     /**
      * The bar chart model to draw.
