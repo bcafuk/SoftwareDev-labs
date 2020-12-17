@@ -382,6 +382,17 @@ public class CalcModelTest {
 			notimp();
 		}
 		
+		@Override
+		public void freezeValue(String value) {
+			notimp();
+		}
+
+		@Override
+		public boolean hasFrozenValue() {
+			notimp();
+			return false;
+		}
+
 		private void notimp() {
 			throw new UnsupportedOperationException("Method is not implemented yet!");
 		}
