@@ -33,12 +33,10 @@ public class Calculator extends JFrame {
      * Constructs a new window.
      */
     public Calculator() {
-        setSize(630, 305);
         setTitle("Java Calculator v1.0");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
         initGUI();
-        // TODO: See if pack() will work
+        pack();
     }
 
     /**
