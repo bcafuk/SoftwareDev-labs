@@ -57,7 +57,9 @@ public class BarChartComponent extends JComponent {
     private Rectangle getAreaBounds() {
         FontMetrics fm = getFontMetrics(getFont());
 
-        int left = fm.getHeight() + fm.stringWidth(Integer.toString(model.getyMax())) + TICK_LENGTH + 2 * AXIS_SPACING;
+        int yDataLabelsWidth = fm.stringWidth(Integer.toString(model.getyMax()));
+
+        int left = fm.getHeight() + yDataLabelsWidth + TICK_LENGTH + 2 * AXIS_SPACING;
         int right = getWidth() - ARROW_OVERHANG;
         int top = ARROW_OVERHANG - 1;
         int bottom = getHeight() - fm.getHeight() * 2 - TICK_LENGTH - 2 * AXIS_SPACING - 1;
@@ -114,6 +116,19 @@ public class BarChartComponent extends JComponent {
         g.drawLine(left, bottom, left, top - ARROW_OVERHANG);
         g.drawLine(left, top - ARROW_OVERHANG,left - arrowOffsetLateral, top - arrowOffsetAxial);
         g.drawLine(left, top - ARROW_OVERHANG,left + arrowOffsetLateral, top - arrowOffsetAxial);
+
+        int lineCount = (model.getyMax() - model.getyMin()) / model.getyStep();
+        double lineHeight = (double) (bottom - top - 1) / lineCount;
+        for (int i = 0; i <= lineCount; i++) {
+            int lineY = bottom - (int) Math.round(i * lineHeight);
+
+            g.drawLine(left, lineY, left - TICK_LENGTH, lineY);
+
+            String rowLabel = Integer.toString(i * model.getyStep() + model.getyMin());
+            int rowLabelWidth = fm.stringWidth(rowLabel);
+            g.drawString(rowLabel,
+                    left - TICK_LENGTH - AXIS_SPACING - rowLabelWidth, lineY + fm.getAscent() / 2);
+        }
     }
 
     /**
