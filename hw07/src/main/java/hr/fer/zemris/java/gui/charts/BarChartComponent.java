@@ -16,6 +16,9 @@ public class BarChartComponent extends JComponent {
     private static final long serialVersionUID = 1L;
 
     private static final int ARROW_OVERHANG = 9;
+    /**
+     * The length of the lines comprising the tips of the arrows.
+     */
     private static final int ARROW_LENGTH = 8;
     private static final double ARROW_ANGLE = Math.toRadians(25);
     private static final int ARROW_OFFSET_LATERAL = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
@@ -36,6 +39,10 @@ public class BarChartComponent extends JComponent {
      * The color to use for the axes, or {@code null} to use the foreground color.
      */
     private Color axisColor = null;
+    /**
+     * The color to use for the gridlines, or {@code null} to use the foreground color.
+     */
+    private Color gridlineColor = null;
 
     /**
      * Constructs a component for the given bar chart.
@@ -65,6 +72,25 @@ public class BarChartComponent extends JComponent {
         this.axisColor = axisColor;
     }
 
+    /**
+     * Gets the color used for drawing the gridlines, or {@code null} if none is set.
+     *
+     * @return the gridline color, or {@code null} if none is set
+     */
+    public Color getGridlineColor() {
+        return gridlineColor;
+    }
+
+    /**
+     * Sets the color used for drawing the gridlines.
+     *
+     * @param gridlineColor the color to be used for drawing the gridlines,
+     *                      or {@code null} if the foreground color should be used
+     */
+    public void setGridlineColor(Color gridlineColor) {
+        this.gridlineColor = gridlineColor;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         Objects.requireNonNull(g, "The graphics object must not be null");
@@ -80,6 +106,10 @@ public class BarChartComponent extends JComponent {
         paintxAxis(g, frame);
         paintyAxis(g, frame);
 
+        g.setColor(gridlineColor == null ? getForeground() : gridlineColor);
+        paintGridlines(g, frame);
+
+        g.setColor(getForeground());
         paintChartArea(g, frame);
     }
 
@@ -200,14 +230,30 @@ public class BarChartComponent extends JComponent {
     }
 
     /**
+     * Paints the gridlines.
+     *
+     * @param g     the {@link Graphics} object to draw to
+     * @param frame the frame of pixels just outside the chart area
+     */
+    private void paintGridlines(Graphics g, Frame frame) {
+        for (int x = model.getxMin(); x <= model.getxMax(); x++) {
+            int barRight = getAreaX(frame, x + 1) - COLUMN_SPACING;
+            g.drawLine(barRight, frame.top + 1, barRight, frame.bottom - 1);
+        }
+
+        for (int y = model.getyMin() + model.getyStep(); y <= model.getyMax(); y += model.getyStep()) {
+            int lineY = getAreaY(frame, y);
+            g.drawLine(frame.left + 1, lineY, frame.right - 1, lineY);
+        }
+    }
+
+    /**
      * Paints the chart area (data bars).
      *
      * @param g     the {@link Graphics} object to draw to
      * @param frame the frame of pixels just outside the chart area
      */
     private void paintChartArea(Graphics g, Frame frame) {
-        g.setColor(getForeground());
-
         for (int x = model.getxMin(); x <= model.getxMax(); x++) {
             int barLeft = getAreaX(frame, x) + COLUMN_SPACING;
             int barRight = getAreaX(frame, x + 1) - COLUMN_SPACING;
