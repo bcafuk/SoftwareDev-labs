@@ -84,7 +84,19 @@ public class Calculator extends JFrame {
         resetButton.addActionListener(e -> model.clearAll());
         cp.add(resetButton, new RCPosition(2, 7));
 
-        // TODO: Push & pop
+        JButton pushButton = new CalculatorButton("push");
+        pushButton.addActionListener(e -> stack.push(model.getValue()));
+        cp.add(pushButton, new RCPosition(3, 7));
+
+        JButton popButton = new CalculatorButton("pop");
+        popButton.addActionListener(e -> {
+            if (stack.empty())
+                JOptionPane.showMessageDialog(this, "The stack is empty.",
+                        "Calculator error", JOptionPane.WARNING_MESSAGE);
+            else
+                model.setValue(stack.pop());
+        });
+        cp.add(popButton, new RCPosition(4, 7));
     }
 
     /**
