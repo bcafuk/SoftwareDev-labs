@@ -2,6 +2,7 @@ package hr.fer.zemris.java.gui.charts;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.io.Serial;
 import java.util.Objects;
 
@@ -91,7 +92,6 @@ public class BarChartComponent extends JComponent {
 
         int xAxisLabelBaseline = getHeight() - fm.getDescent() - 1;
         int columnLabelBaseline = xAxisLabelBaseline - fm.getHeight() - AXIS_SPACING;
-
         g.drawString(model.getxAxisLabel(),
                 (frame.left + frame.right - fm.stringWidth(model.getxAxisLabel())) / 2, xAxisLabelBaseline);
 
@@ -116,6 +116,10 @@ public class BarChartComponent extends JComponent {
         g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
                 frame.left + arrowOffsetLateral, frame.top - arrowOffsetAxial);
 
+        int yAxisLabelBaseline = fm.getAscent() - 1;
+        drawVerticalString(g, model.getyAxisLabel(),
+                yAxisLabelBaseline, (frame.top + frame.bottom + fm.stringWidth(model.getyAxisLabel())) / 2);
+
         for (int y = model.getyMin(); y <= model.getyMax(); y += model.getyStep()) {
             int lineY = getAreaY(frame, y);
 
@@ -126,6 +130,25 @@ public class BarChartComponent extends JComponent {
             g.drawString(rowLabel,
                     frame.left - TICK_LENGTH - AXIS_SPACING - rowLabelWidth, lineY + fm.getAscent() / 2);
         }
+    }
+
+    /**
+     * Draws a string to the {@code g}, but instead of the text going from left to right, it goes from bottom to top.
+     *
+     * @param g    the {@link Graphics} object to draw to
+     * @param text the text to be written
+     * @param x    the <i>x</i> coorinate of the baseline
+     * @param y    the <i>y</i> coorinate of the bottom edge of the text
+     */
+    private void drawVerticalString(Graphics g, String text, int x, int y) {
+        Graphics2D g2d = (Graphics2D) g.create();
+
+        AffineTransform at = AffineTransform.getQuadrantRotateInstance(3);
+        g2d.setTransform(at);
+
+        g2d.drawString(text, -y, x);
+
+        g2d.dispose();
     }
 
     /**
