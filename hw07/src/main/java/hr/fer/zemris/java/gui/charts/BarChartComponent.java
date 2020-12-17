@@ -18,8 +18,13 @@ public class BarChartComponent extends JComponent {
     private static final int ARROW_OVERHANG = 9;
     private static final int ARROW_LENGTH = 8;
     private static final double ARROW_ANGLE = Math.toRadians(25);
+    private static final int ARROW_OFFSET_LATERAL = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
+    private static final int ARROW_OFFSET_AXIAL =
+            ARROW_OVERHANG - (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE));
+
     private static final int TICK_LENGTH = 4;
     private static final int AXIS_SPACING = 1;
+
     private static final int COLUMN_SPACING = 1;
 
     /**
@@ -76,55 +81,84 @@ public class BarChartComponent extends JComponent {
      * @param frame the frame of pixels just outside the chart area
      */
     private void paintAxes(Graphics g, Frame frame) {
-        FontMetrics fm = getFontMetrics(getFont());
-
-        int arrowOffsetAxial = ARROW_OVERHANG - (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE));
-        int arrowOffsetLateral = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
-
         g.setColor(getForeground());
 
-        // x axis
+        paintxAxis(g, frame);
+        paintyAxis(g, frame);
+    }
+
+    /**
+     * Paints the <i>x</i> axis to {@code g} in the current color.
+     *
+     * @param g     the {@link Graphics} object to draw to
+     * @param frame the frame of pixels just outside the chart area
+     */
+    private void paintxAxis(Graphics g, Frame frame) {
+        FontMetrics fm = getFontMetrics(getFont());
+
+        // Axis line
         g.drawLine(frame.left, frame.bottom, frame.right + ARROW_OVERHANG, frame.bottom);
-        g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
-                frame.right + arrowOffsetAxial, frame.bottom - arrowOffsetLateral);
-        g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
-                frame.right + arrowOffsetAxial, frame.bottom + arrowOffsetLateral);
 
-        int xAxisLabelBaseline = getHeight() - fm.getDescent() - 1;
-        int columnLabelBaseline = xAxisLabelBaseline - fm.getHeight() - AXIS_SPACING;
+        // Arrow tip
+        g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
+                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL, frame.bottom - BarChartComponent.ARROW_OFFSET_LATERAL);
+        g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
+                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL, frame.bottom + BarChartComponent.ARROW_OFFSET_LATERAL);
+
+        // Axis label
+        int axisLabelBaseline = getHeight() - fm.getDescent() - 1;
         g.drawString(model.getxAxisLabel(),
-                (frame.left + frame.right - fm.stringWidth(model.getxAxisLabel())) / 2, xAxisLabelBaseline);
+                (frame.left + frame.right - fm.stringWidth(model.getxAxisLabel())) / 2, axisLabelBaseline);
 
+        // The left most tick line
         g.drawLine(frame.left, frame.bottom,
                 frame.left, frame.bottom + TICK_LENGTH);
 
+        int columnLabelBaseline = axisLabelBaseline - fm.getHeight() - AXIS_SPACING;
         for (int x = model.getxMin(); x <= model.getxMax(); x++) {
             int barLeft = getAreaX(frame, x);
             int barRight = getAreaX(frame, x + 1) - 1;
 
+            // Tick mark
             g.drawLine(barRight, frame.bottom, barRight, frame.bottom + TICK_LENGTH);
 
+            // Column label
             String columnLabel = Integer.toString(x);
             g.drawString(columnLabel,
                     (barLeft + barRight - fm.stringWidth(columnLabel)) / 2, columnLabelBaseline);
         }
+    }
 
-        // y axis
+    /**
+     * Paints the <i>y</i> axis to {@code g} in the current color.
+     *
+     * @param g     the {@link Graphics} object to draw to
+     * @param frame the frame of pixels just outside the chart area
+     */
+    private void paintyAxis(Graphics g, Frame frame) {
+        FontMetrics fm = getFontMetrics(getFont());
+
+        // Axis line
         g.drawLine(frame.left, frame.bottom, frame.left, frame.top - ARROW_OVERHANG);
-        g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
-                frame.left - arrowOffsetLateral, frame.top - arrowOffsetAxial);
-        g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
-                frame.left + arrowOffsetLateral, frame.top - arrowOffsetAxial);
 
-        int yAxisLabelBaseline = fm.getAscent() - 1;
+        // Arrow tip
+        g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
+                frame.left - BarChartComponent.ARROW_OFFSET_LATERAL, frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
+        g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
+                frame.left + BarChartComponent.ARROW_OFFSET_LATERAL, frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
+
+        // Axis label
+        int axisLabelBaseline = fm.getAscent() - 1;
         drawVerticalString(g, model.getyAxisLabel(),
-                yAxisLabelBaseline, (frame.top + frame.bottom + fm.stringWidth(model.getyAxisLabel())) / 2);
+                axisLabelBaseline, (frame.top + frame.bottom + fm.stringWidth(model.getyAxisLabel())) / 2);
 
         for (int y = model.getyMin(); y <= model.getyMax(); y += model.getyStep()) {
             int lineY = getAreaY(frame, y);
 
+            // Tick mark
             g.drawLine(frame.left, lineY, frame.left - TICK_LENGTH, lineY);
 
+            // Y data label
             String rowLabel = Integer.toString(y);
             int rowLabelWidth = fm.stringWidth(rowLabel);
             g.drawString(rowLabel,
