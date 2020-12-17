@@ -59,6 +59,7 @@ public class CalcModelImpl implements CalcModel {
 
     @Override
     public void setValue(double value) {
+        frozenString = null;
         currentValue = value;
 
         double sign = Math.copySign(1.0, value);
