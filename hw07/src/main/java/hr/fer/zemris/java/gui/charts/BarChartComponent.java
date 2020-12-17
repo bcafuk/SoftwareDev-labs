@@ -81,15 +81,15 @@ public class BarChartComponent extends JComponent {
         int top = bounds.y - 1;
         int bottom = bounds.y + bounds.height;
 
-        int arrowOffsetAxial =ARROW_OVERHANG - (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE));
+        int arrowOffsetAxial = ARROW_OVERHANG - (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE));
         int arrowOffsetLateral = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
 
         g.setColor(getForeground());
 
         // x axis
         g.drawLine(left, bottom, right + ARROW_OVERHANG, bottom);
-        g.drawLine(right + ARROW_OVERHANG, bottom,right + arrowOffsetAxial, bottom - arrowOffsetLateral);
-        g.drawLine(right + ARROW_OVERHANG, bottom,right + arrowOffsetAxial, bottom + arrowOffsetLateral);
+        g.drawLine(right + ARROW_OVERHANG, bottom, right + arrowOffsetAxial, bottom - arrowOffsetLateral);
+        g.drawLine(right + ARROW_OVERHANG, bottom, right + arrowOffsetAxial, bottom + arrowOffsetLateral);
 
         int xAxisLabelBaseline = getHeight() - fm.getDescent() - 1;
         int columnLabelBaseline = xAxisLabelBaseline - fm.getHeight() - AXIS_SPACING;
@@ -99,32 +99,28 @@ public class BarChartComponent extends JComponent {
 
         g.drawLine(left, bottom, left, bottom + TICK_LENGTH);
 
-        int barCount = model.getxMax() - model.getxMin() + 1;
-        double barWidth = (double) (right - left - 1) / barCount;
-        for (int i = 0; i < barCount; i++) {
-            int barLeft = left + (int) Math.round(i * barWidth);
-            int barRight = left + (int) Math.round((i + 1) * barWidth);
+        for (int x = model.getxMin(); x <= model.getxMax(); x++) {
+            int barLeft = getAreaX(bounds, x);
+            int barRight = getAreaX(bounds, x + 1);
 
             g.drawLine(barRight, bottom, barRight, bottom + TICK_LENGTH);
 
-            String columnLabel = Integer.toString(i + model.getxMin());
+            String columnLabel = Integer.toString(x);
             g.drawString(columnLabel,
                     (barLeft + barRight - fm.stringWidth(columnLabel)) / 2, columnLabelBaseline);
         }
 
         // y axis
         g.drawLine(left, bottom, left, top - ARROW_OVERHANG);
-        g.drawLine(left, top - ARROW_OVERHANG,left - arrowOffsetLateral, top - arrowOffsetAxial);
-        g.drawLine(left, top - ARROW_OVERHANG,left + arrowOffsetLateral, top - arrowOffsetAxial);
+        g.drawLine(left, top - ARROW_OVERHANG, left - arrowOffsetLateral, top - arrowOffsetAxial);
+        g.drawLine(left, top - ARROW_OVERHANG, left + arrowOffsetLateral, top - arrowOffsetAxial);
 
-        int lineCount = (model.getyMax() - model.getyMin()) / model.getyStep();
-        double lineHeight = (double) (bottom - top - 1) / lineCount;
-        for (int i = 0; i <= lineCount; i++) {
-            int lineY = bottom - (int) Math.round(i * lineHeight);
+        for (int y = model.getyMin(); y <= model.getyMax(); y += model.getyStep()) {
+            int lineY = getAreaY(bounds, y);
 
             g.drawLine(left, lineY, left - TICK_LENGTH, lineY);
 
-            String rowLabel = Integer.toString(i * model.getyStep() + model.getyMin());
+            String rowLabel = Integer.toString(y);
             int rowLabelWidth = fm.stringWidth(rowLabel);
             g.drawString(rowLabel,
                     left - TICK_LENGTH - AXIS_SPACING - rowLabelWidth, lineY + fm.getAscent() / 2);
@@ -139,5 +135,39 @@ public class BarChartComponent extends JComponent {
      */
     private void paintChartArea(Graphics g, Rectangle bounds) {
         // TODO: Implement drawing
+    }
+
+    /**
+     * Transforms an <i>x</i>-coordinate from chart-space to screen-space.
+     *
+     * @param bounds the bounds of the chart area
+     * @param x      the chart-space <i>x</i> coordinate
+     * @return the screen-space <i>x</i> coordinate
+     */
+    private int getAreaX(Rectangle bounds, int x) {
+        int left = bounds.x - 1;
+        int right = bounds.x + bounds.width;
+
+        int barCount = model.getxMax() - model.getxMin() + 1;
+        double barWidth = (double) (right - left - 1) / barCount;
+
+        return left + (int) Math.round((x - model.getxMin()) * barWidth);
+    }
+
+    /**
+     * Transforms a <i>y</i>-coordinate from chart-space to screen-space.
+     *
+     * @param bounds the bounds of the chart area
+     * @param y      the chart-space <i>y</i> coordinate
+     * @return the screen-space <i>y</i> coordinate
+     */
+    private int getAreaY(Rectangle bounds, int y) {
+        int top = bounds.y - 1;
+        int bottom = bounds.y + bounds.height;
+
+        int lineCount = model.getyMax() - model.getyMin();
+        double lineHeight = (double) (bottom - top - 1) / lineCount;
+
+        return bottom - (int) Math.round((y - model.getyMin()) * lineHeight);
     }
 }
