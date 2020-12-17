@@ -14,6 +14,9 @@ public class BarChartComponent extends JComponent {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private static final int ARROW_LENGTH = 8;
+    private static final double ARROW_ANGLE = Math.toRadians(25);
+
     /**
      * The bar chart model to draw.
      */
@@ -48,8 +51,12 @@ public class BarChartComponent extends JComponent {
      * @return the bounds of the chart area
      */
     private Rectangle getAreaBounds() {
-        // TODO: Implement proper calculation
-        return new Rectangle(32, 32, getWidth() - 64, getHeight() - 64);
+        int left = 16;
+        int right = getWidth() - ARROW_LENGTH - 1;
+        int top = ARROW_LENGTH;
+        int bottom = getHeight() - 16;
+
+        return new Rectangle(left + 1, top + 1, right - left - 1, bottom - top - 1);
     }
 
     /**
@@ -59,7 +66,25 @@ public class BarChartComponent extends JComponent {
      * @param bounds the bounds of the chart area
      */
     private void paintAxes(Graphics g, Rectangle bounds) {
-        // TODO: Implement drawing
+        int left = bounds.x - 1;
+        int right = bounds.x + bounds.width;
+        int top = bounds.y - 1;
+        int bottom = bounds.y + bounds.height;
+
+        int arrowOffsetAxial = (int) Math.round(ARROW_LENGTH * Math.cos(ARROW_ANGLE)) - ARROW_LENGTH;
+        int arrowOffsetLateral = (int) Math.round(ARROW_LENGTH * Math.sin(ARROW_ANGLE));
+
+        g.setColor(getForeground());
+
+        // x axis
+        g.drawLine(left, bottom, right + ARROW_LENGTH, bottom);
+        g.drawLine(right + ARROW_LENGTH, bottom, right - arrowOffsetAxial, bottom - arrowOffsetLateral);
+        g.drawLine(right + ARROW_LENGTH, bottom, right - arrowOffsetAxial, bottom + arrowOffsetLateral);
+
+        // y axis
+        g.drawLine(left, bottom, left, top - ARROW_LENGTH);
+        g.drawLine(left, top - ARROW_LENGTH, left - arrowOffsetLateral, top + arrowOffsetAxial);
+        g.drawLine(left, top - ARROW_LENGTH, left + arrowOffsetLateral, top + arrowOffsetAxial);
     }
 
     /**
