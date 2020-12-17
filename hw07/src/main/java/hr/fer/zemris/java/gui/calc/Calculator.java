@@ -1,5 +1,6 @@
 package hr.fer.zemris.java.gui.calc;
 
+import hr.fer.zemris.java.gui.calc.components.BinaryOpButton;
 import hr.fer.zemris.java.gui.calc.components.CalculatorButton;
 import hr.fer.zemris.java.gui.calc.components.DigitButton;
 import hr.fer.zemris.java.gui.calc.components.DisplayLabel;
@@ -12,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serial;
 import java.util.Stack;
+import java.util.function.DoubleBinaryOperator;
 
 /**
  * A calculator window.
@@ -53,6 +55,31 @@ public class Calculator extends JFrame {
         JLabel display = new DisplayLabel(model);
         cp.add(display, new RCPosition(1, 1));
 
+        initOtherButtons();
+        initNumpad();
+        initOperatorButtons();
+    }
+
+    /**
+     * Adds the non-digit, non-operator buttons to the calculator.
+     */
+    private void initOtherButtons() {
+        Container cp = getContentPane();
+
+        JButton equalsButton = new CalculatorButton("=");
+        equalsButton.addActionListener(e -> {
+            DoubleBinaryOperator pendingOp = model.getPendingBinaryOperation();
+
+            if (pendingOp != null && model.isActiveOperandSet())
+                model.setValue(pendingOp.applyAsDouble(model.getActiveOperand(), model.getValue()));
+            else
+                model.setValue(model.getValue());
+
+            model.clearActiveOperand();
+            model.setPendingBinaryOperation(null);
+        });
+        cp.add(equalsButton, new RCPosition(1, 6));
+
         JButton clearButton = new CalculatorButton("clr");
         clearButton.addActionListener(e -> model.clear());
         cp.add(clearButton, new RCPosition(1, 7));
@@ -61,9 +88,7 @@ public class Calculator extends JFrame {
         resetButton.addActionListener(e -> model.clearAll());
         cp.add(resetButton, new RCPosition(2, 7));
 
-        initNumpad();
-
-        // TODO: Initialize GUI
+        // TODO: Push & pop
     }
 
     /**
@@ -100,6 +125,27 @@ public class Calculator extends JFrame {
                 }
         });
         cp.add(decimalButton, new RCPosition(5, 5));
+    }
+
+    /**
+     * Adds the operator buttons to the calculator, as well as the inverting checkbox.
+     */
+    private void initOperatorButtons() {
+        Container cp = getContentPane();
+
+        JCheckBox invertOperations = new JCheckBox("Inv");
+        cp.add(invertOperations, new RCPosition(5, 7));
+
+        cp.add(new BinaryOpButton(model, "/", (a, b) -> a / b), new RCPosition(2, 6));
+        cp.add(new BinaryOpButton(model, "*", (a, b) -> a * b), new RCPosition(3, 6));
+        cp.add(new BinaryOpButton(model, "-", (a, b) -> a - b), new RCPosition(4, 6));
+        cp.add(new BinaryOpButton(model, "+", (a, b) -> a + b), new RCPosition(5, 6));
+
+        cp.add(new BinaryOpButton(model, "x ^ n",
+                        Math::pow, (a, b) -> Math.pow(a, 1.0 / b), invertOperations::isSelected),
+                new RCPosition(5, 1));
+
+        // TODO: Unary operators
     }
 
     /**
