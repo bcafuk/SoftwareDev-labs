@@ -33,12 +33,36 @@ public class BarChartComponent extends JComponent {
     private final BarChart model;
 
     /**
+     * The color to use for the axes, or {@code null} to use the foreground color.
+     */
+    private Color axisColor = null;
+
+    /**
      * Constructs a component for the given bar chart.
      *
      * @param model the bar chart to draw
      */
     public BarChartComponent(BarChart model) {
         this.model = Objects.requireNonNull(model, "The model must not be null");
+    }
+
+    /**
+     * Gets the color used for drawing the axes, or {@code null} if none is set.
+     *
+     * @return the axis color, or {@code null} if none is set
+     */
+    public Color getAxisColor() {
+        return axisColor;
+    }
+
+    /**
+     * Sets the color used for drawing the axes.
+     *
+     * @param axisColor the color to be used for drawing the axes,
+     *                  or {@code null} if the foreground color should be used
+     */
+    public void setAxisColor(Color axisColor) {
+        this.axisColor = axisColor;
     }
 
     @Override
@@ -81,7 +105,7 @@ public class BarChartComponent extends JComponent {
      * @param frame the frame of pixels just outside the chart area
      */
     private void paintAxes(Graphics g, Frame frame) {
-        g.setColor(getForeground());
+        g.setColor(axisColor == null ? getForeground() : axisColor);
 
         paintxAxis(g, frame);
         paintyAxis(g, frame);
