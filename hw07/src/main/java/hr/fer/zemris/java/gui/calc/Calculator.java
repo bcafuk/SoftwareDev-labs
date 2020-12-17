@@ -1,9 +1,6 @@
 package hr.fer.zemris.java.gui.calc;
 
-import hr.fer.zemris.java.gui.calc.components.BinaryOpButton;
-import hr.fer.zemris.java.gui.calc.components.CalculatorButton;
-import hr.fer.zemris.java.gui.calc.components.DigitButton;
-import hr.fer.zemris.java.gui.calc.components.DisplayLabel;
+import hr.fer.zemris.java.gui.calc.components.*;
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
 import hr.fer.zemris.java.gui.layouts.CalcLayout;
 import hr.fer.zemris.java.gui.layouts.RCPosition;
@@ -133,11 +130,26 @@ public class Calculator extends JFrame {
         cp.add(new BinaryOpButton(model, "-", (a, b) -> a - b), new RCPosition(4, 6));
         cp.add(new BinaryOpButton(model, "+", (a, b) -> a + b), new RCPosition(5, 6));
 
-        cp.add(new BinaryOpButton(model, "x ^ n",
+        cp.add(new UnaryOpButton(model, "1/x", a -> 1.0 / a),
+                new RCPosition(2, 1));
+
+        cp.add(new UnaryOpButton(model, "log", Math::log10, a -> Math.pow(10.0, a), invertOperations::isSelected),
+                new RCPosition(3, 1));
+        cp.add(new UnaryOpButton(model, "ln", Math::log, Math::exp, invertOperations::isSelected),
+                new RCPosition(4, 1));
+
+        cp.add(new BinaryOpButton(model, "x^n",
                         Math::pow, (a, b) -> Math.pow(a, 1.0 / b), invertOperations::isSelected),
                 new RCPosition(5, 1));
 
-        // TODO: Unary operators
+        cp.add(new UnaryOpButton(model, "sin", Math::sin, Math::asin, invertOperations::isSelected),
+                new RCPosition(2, 2));
+        cp.add(new UnaryOpButton(model, "cos", Math::cos, Math::acos, invertOperations::isSelected),
+                new RCPosition(3, 2));
+        cp.add(new UnaryOpButton(model, "tan", Math::tan, Math::atan, invertOperations::isSelected),
+                new RCPosition(4, 2));
+        cp.add(new UnaryOpButton(model, "ctg", a -> 1 / Math.tan(a), a -> Math.atan(1 / a), invertOperations::isSelected),
+                new RCPosition(5, 2));
     }
 
     /**
