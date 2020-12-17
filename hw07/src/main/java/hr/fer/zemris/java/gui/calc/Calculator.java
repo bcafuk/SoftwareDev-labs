@@ -1,8 +1,10 @@
 package hr.fer.zemris.java.gui.calc;
 
 import hr.fer.zemris.java.gui.calc.components.CalculatorButton;
+import hr.fer.zemris.java.gui.calc.components.DigitButton;
 import hr.fer.zemris.java.gui.calc.components.DisplayLabel;
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
+import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 import hr.fer.zemris.java.gui.layouts.CalcLayout;
 import hr.fer.zemris.java.gui.layouts.RCPosition;
 
@@ -55,11 +57,49 @@ public class Calculator extends JFrame {
         clearButton.addActionListener(e -> model.clear());
         cp.add(clearButton, new RCPosition(1, 7));
 
-        JButton equalsButton = new CalculatorButton("reset");
-        clearButton.addActionListener(e -> model.clearAll());
-        cp.add(equalsButton, new RCPosition(2, 7));
+        JButton resetButton = new CalculatorButton("reset");
+        resetButton.addActionListener(e -> model.clearAll());
+        cp.add(resetButton, new RCPosition(2, 7));
+
+        initNumpad();
 
         // TODO: Initialize GUI
+    }
+
+    /**
+     * Adds the numpad to the calculator.
+     */
+    private void initNumpad() {
+        Container cp = getContentPane();
+
+        cp.add(new DigitButton(model, 0), new RCPosition(5, 3));
+        cp.add(new DigitButton(model, 1), new RCPosition(4, 3));
+        cp.add(new DigitButton(model, 2), new RCPosition(4, 4));
+        cp.add(new DigitButton(model, 3), new RCPosition(4, 5));
+        cp.add(new DigitButton(model, 4), new RCPosition(3, 3));
+        cp.add(new DigitButton(model, 5), new RCPosition(3, 4));
+        cp.add(new DigitButton(model, 6), new RCPosition(3, 5));
+        cp.add(new DigitButton(model, 7), new RCPosition(2, 3));
+        cp.add(new DigitButton(model, 8), new RCPosition(2, 4));
+        cp.add(new DigitButton(model, 9), new RCPosition(2, 5));
+
+        JButton signButton = new CalculatorButton("+/-");
+        signButton.addActionListener(e -> {
+            if (model.isEditable())
+                model.swapSign();
+        });
+        cp.add(signButton, new RCPosition(5, 4));
+
+        JButton decimalButton = new CalculatorButton(".");
+        decimalButton.addActionListener(e -> {
+            if (model.isEditable())
+                try {
+                    model.insertDecimalPoint();
+                } catch (CalculatorInputException ex) {
+                    System.err.println(ex.toString());
+                }
+        });
+        cp.add(decimalButton, new RCPosition(5, 5));
     }
 
     /**
