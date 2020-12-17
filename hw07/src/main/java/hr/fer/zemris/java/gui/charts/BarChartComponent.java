@@ -128,8 +128,8 @@ public class BarChartComponent extends JComponent {
         Frame frame = getChartAreaFrame();
 
         g.setColor(axisColor == null ? getForeground() : axisColor);
-        paintxAxis(g, frame);
-        paintyAxis(g, frame);
+        paintXAxis(g, frame);
+        paintYAxis(g, frame);
 
         g.setColor(gridlineColor == null ? getForeground() : gridlineColor);
         paintGridlines(g, frame);
@@ -162,7 +162,7 @@ public class BarChartComponent extends JComponent {
      * @param g     the {@link Graphics} object to draw to
      * @param frame the frame of pixels just outside the chart area
      */
-    private void paintxAxis(Graphics g, Frame frame) {
+    private void paintXAxis(Graphics g, Frame frame) {
         FontMetrics fm = getFontMetrics(getFont());
 
         // Axis line
@@ -170,9 +170,11 @@ public class BarChartComponent extends JComponent {
 
         // Arrow tip
         g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
-                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL, frame.bottom - BarChartComponent.ARROW_OFFSET_LATERAL);
+                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL,
+                frame.bottom - BarChartComponent.ARROW_OFFSET_LATERAL);
         g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
-                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL, frame.bottom + BarChartComponent.ARROW_OFFSET_LATERAL);
+                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL,
+                frame.bottom + BarChartComponent.ARROW_OFFSET_LATERAL);
 
         // Axis label
         int axisLabelBaseline = getHeight() - fm.getDescent() - 1;
@@ -204,7 +206,7 @@ public class BarChartComponent extends JComponent {
      * @param g     the {@link Graphics} object to draw to
      * @param frame the frame of pixels just outside the chart area
      */
-    private void paintyAxis(Graphics g, Frame frame) {
+    private void paintYAxis(Graphics g, Frame frame) {
         FontMetrics fm = getFontMetrics(getFont());
 
         // Axis line
@@ -212,9 +214,11 @@ public class BarChartComponent extends JComponent {
 
         // Arrow tip
         g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
-                frame.left - BarChartComponent.ARROW_OFFSET_LATERAL, frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
+                frame.left - BarChartComponent.ARROW_OFFSET_LATERAL,
+                frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
         g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
-                frame.left + BarChartComponent.ARROW_OFFSET_LATERAL, frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
+                frame.left + BarChartComponent.ARROW_OFFSET_LATERAL,
+                frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
 
         // Axis label
         int axisLabelBaseline = fm.getAscent() - 1;
@@ -240,8 +244,8 @@ public class BarChartComponent extends JComponent {
      *
      * @param g    the {@link Graphics} object to draw to
      * @param text the text to be written
-     * @param x    the <i>x</i> coorinate of the baseline
-     * @param y    the <i>y</i> coorinate of the bottom edge of the text
+     * @param x    the <i>x</i> coordinate of the baseline
+     * @param y    the <i>y</i> coordinate of the bottom edge of the text
      */
     private void drawVerticalString(Graphics g, String text, int x, int y) {
         Graphics2D g2d = (Graphics2D) g.create();
