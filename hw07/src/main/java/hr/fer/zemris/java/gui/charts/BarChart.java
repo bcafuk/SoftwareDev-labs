@@ -50,10 +50,8 @@ public class BarChart {
      *                                  <li>{@code yMin} < 0,</li>
      *                                  <li>{@code yMax} &le; {@code yMin},</li>
      *                                  <li>{@code yMin} &le; 0,</li>
-     *                                  <li>{@code dataPoints} is empty,</li>
-     *                                  <li>any of the data points' <i>y</i> value is less than {@code yMin}, or</li>
-     *                                  <li>if {@code dataPoints} contains multiple points
-     *                                  with the same <i>x</i> value</li>
+     *                                  <li>{@code dataPoints} is empty, or</li>
+     *                                  <li>any of the data points' <i>y</i> value is less than {@code yMin}</li>
      *                                  </ul>
      */
     public BarChart(List<XYValue> dataPoints, String xAxisLabel, String yAxisLabel, int yMin, int yMax, int yStep) {
