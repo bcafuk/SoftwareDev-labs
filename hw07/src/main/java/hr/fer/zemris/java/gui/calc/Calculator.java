@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serial;
 import java.util.Stack;
+import java.util.function.BiConsumer;
 import java.util.function.DoubleBinaryOperator;
 
 /**
@@ -132,34 +133,37 @@ public class Calculator extends JFrame {
     private void initOperatorButtons() {
         Container cp = getContentPane();
 
-        JCheckBox invertOperations = new JCheckBox("Inv");
-        cp.add(invertOperations, new RCPosition(5, 7));
-
         cp.add(new BinaryOpButton(model, "/", (a, b) -> a / b), new RCPosition(2, 6));
         cp.add(new BinaryOpButton(model, "*", (a, b) -> a * b), new RCPosition(3, 6));
         cp.add(new BinaryOpButton(model, "-", (a, b) -> a - b), new RCPosition(4, 6));
         cp.add(new BinaryOpButton(model, "+", (a, b) -> a + b), new RCPosition(5, 6));
 
-        cp.add(new UnaryOpButton(model, "1/x", a -> 1.0 / a),
-                new RCPosition(2, 1));
+        cp.add(new UnaryOpButton(model, "1/x", a1 -> 1.0 / a1), new RCPosition(2, 1));
 
-        cp.add(new UnaryOpButton(model, "log", Math::log10, a -> Math.pow(10.0, a), invertOperations::isSelected),
+        JCheckBox invertOperations = new JCheckBox("Inv");
+
+        BiConsumer<InvertibleOpButton, RCPosition> addButton = (button, constraint) -> {
+            invertOperations.addActionListener(e -> button.setInverted(invertOperations.isSelected()));
+            cp.add(button, constraint);
+        };
+
+        addButton.accept(new UnaryOpButton(model, "log", "10^x", Math::log10, a -> Math.pow(10.0, a)),
                 new RCPosition(3, 1));
-        cp.add(new UnaryOpButton(model, "ln", Math::log, Math::exp, invertOperations::isSelected),
+        addButton.accept(new UnaryOpButton(model, "ln", "e^x", Math::log, Math::exp),
                 new RCPosition(4, 1));
-
-        cp.add(new BinaryOpButton(model, "x^n",
-                        Math::pow, (a, b) -> Math.pow(a, 1.0 / b), invertOperations::isSelected),
+        addButton.accept(new BinaryOpButton(model, "x^n", "x^(1/n)", Math::pow, (a, b) -> Math.pow(a, 1.0 / b)),
                 new RCPosition(5, 1));
 
-        cp.add(new UnaryOpButton(model, "sin", Math::sin, Math::asin, invertOperations::isSelected),
+        addButton.accept(new UnaryOpButton(model, "sin", "arcsin", Math::sin, Math::asin),
                 new RCPosition(2, 2));
-        cp.add(new UnaryOpButton(model, "cos", Math::cos, Math::acos, invertOperations::isSelected),
+        addButton.accept(new UnaryOpButton(model, "cos", "arccos", Math::cos, Math::acos),
                 new RCPosition(3, 2));
-        cp.add(new UnaryOpButton(model, "tan", Math::tan, Math::atan, invertOperations::isSelected),
+        addButton.accept(new UnaryOpButton(model, "tan", "arctan", Math::tan, Math::atan),
                 new RCPosition(4, 2));
-        cp.add(new UnaryOpButton(model, "ctg", a -> 1 / Math.tan(a), a -> Math.atan(1 / a), invertOperations::isSelected),
+        addButton.accept(new UnaryOpButton(model, "ctg", "arcctg", a -> 1 / Math.tan(a), a -> Math.atan(1 / a)),
                 new RCPosition(5, 2));
+
+        cp.add(invertOperations, new RCPosition(5, 7));
     }
 
     /**

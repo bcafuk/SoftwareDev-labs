@@ -12,6 +12,13 @@ public class CalculatorButton extends JButton {
     private static final Color BACKGROUND_COLOR = new Color(221, 221, 255);
 
     /**
+     * Creates a button with no set text or icon.
+     */
+    public CalculatorButton() {
+        this(null);
+    }
+
+    /**
      * Creates a button with text.
      *
      * @param text the text of the button
