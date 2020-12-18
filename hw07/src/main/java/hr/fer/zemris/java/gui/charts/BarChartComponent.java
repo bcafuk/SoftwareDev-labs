@@ -186,15 +186,15 @@ public class BarChartComponent extends JComponent {
                 frame.left, frame.bottom + TICK_LENGTH);
 
         int columnLabelBaseline = axisLabelBaseline - fm.getHeight() - AXIS_SPACING;
-        for (int x = model.getxMin(); x <= model.getxMax(); x++) {
-            int barLeft = getAreaX(frame, x);
-            int barRight = getAreaX(frame, x + 1) - 1;
+        for (int i = 0; i < model.getDataCount(); i++) {
+            int barLeft = getAreaX(frame, i);
+            int barRight = getAreaX(frame, i + 1) - 1;
 
             // Tick mark
             g.drawLine(barRight, frame.bottom, barRight, frame.bottom + TICK_LENGTH);
 
             // Column label
-            String columnLabel = Integer.toString(x);
+            String columnLabel = Integer.toString(model.getData().get(i).x);
             g.drawString(columnLabel,
                     (barLeft + barRight - fm.stringWidth(columnLabel)) / 2, columnLabelBaseline);
         }
@@ -265,7 +265,7 @@ public class BarChartComponent extends JComponent {
      * @param frame the frame of pixels just outside the chart area
      */
     private void paintGridlines(Graphics g, Frame frame) {
-        for (int x = model.getxMin(); x <= model.getxMax(); x++) {
+        for (int x = 0; x < model.getDataCount(); x++) {
             int barRight = getAreaX(frame, x + 1) - 1;
             g.drawLine(barRight, frame.top + 1, barRight, frame.bottom - 1);
         }
@@ -286,13 +286,13 @@ public class BarChartComponent extends JComponent {
         int spacingLeft = COLUMN_SPACING / 2;
         int spacingRight = COLUMN_SPACING - spacingLeft;
 
-        for (int x = model.getxMin(); x <= model.getxMax(); x++) {
+        for (int x = 0; x < model.getDataCount(); x++) {
             int barLeft = getAreaX(frame, x) + spacingLeft;
             int barRight = getAreaX(frame, x + 1) - spacingRight;
 
-            Integer y = model.getData().get(x - model.getxMin());
+            int y = model.getData().get(x).y;
 
-            if (y == null || y == 0)
+            if (y == model.getyMin())
                 continue;
 
             int barTop = getAreaY(frame, y);
@@ -309,10 +309,9 @@ public class BarChartComponent extends JComponent {
      * @return the screen-space <i>x</i> coordinate
      */
     private int getAreaX(Frame frame, int x) {
-        int barCount = model.getxMax() - model.getxMin() + 1;
-        double barWidth = (double) (frame.right - frame.left - 1) / barCount;
+        double barWidth = (double) (frame.right - frame.left - 1) / model.getDataCount();
 
-        return frame.left + 1 + (int) Math.round((x - model.getxMin()) * barWidth);
+        return frame.left + 1 + (int) Math.round(x * barWidth);
     }
 
     /**

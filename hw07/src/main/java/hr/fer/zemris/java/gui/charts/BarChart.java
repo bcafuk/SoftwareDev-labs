@@ -1,6 +1,8 @@
 package hr.fer.zemris.java.gui.charts;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * The model of a read-only bar chart.
@@ -9,17 +11,9 @@ import java.util.*;
  */
 public class BarChart {
     /**
-     * An unmodifiable list od data point <i>y</i> values, with {@code null} signifying no data.
+     * An unmodifiable list od data points <i>y</i>.
      */
-    private final List<Integer> data;
-    /**
-     * The <i>x</i> value of the first data point.
-     */
-    private final int xMin;
-    /**
-     * The <i>x</i> value of the last data point.
-     */
-    private final int xMax;
+    private final List<XYValue> data;
     /**
      * The <i>y</i> value of the bottom of the chart.
      */
@@ -78,31 +72,15 @@ public class BarChart {
         if (dataPoints.isEmpty())
             throw new IllegalArgumentException("The data point list must contain at least one data point");
 
-        int xMin = Integer.MAX_VALUE;
-        int xMax = Integer.MIN_VALUE;
-
-        TreeMap<Integer, Integer> dataMap = new TreeMap<>();
         for (XYValue dataPoint : dataPoints) {
             Objects.requireNonNull(dataPoint, "All of the data points must not be null");
 
             if (dataPoint.y < yMin)
                 throw new IllegalArgumentException("Data point @x=" + dataPoint.x + " has a y=" + dataPoint.y +
                         " smaller than the minimum (" + yMin + ")");
-
-            if (dataMap.putIfAbsent(dataPoint.x, dataPoint.y) != null)
-                throw new IllegalArgumentException("Duplicate data point for x=" + dataPoint.x);
-
-            xMin = Math.min(xMin, dataPoint.x);
-            xMax = Math.max(xMax, dataPoint.x);
         }
 
-        List<Integer> data = new ArrayList<>(xMax - xMin + 1);
-        for (int x = xMin; x <= xMax; x++)
-            data.add(dataMap.get(x));
-        this.data = Collections.unmodifiableList(data);
-
-        this.xMin = xMin;
-        this.xMax = xMax;
+        this.data = Collections.unmodifiableList(dataPoints);
 
         int yMaxRemainder = (yMax - yMin) % yStep;
         if (yMaxRemainder != 0)
@@ -117,33 +95,21 @@ public class BarChart {
     }
 
     /**
-     * Returns an unmodifiable list of data point <i>y</i> values, with {@code null} signifying no data.
-     * <p>
-     * The first element has the <i>x</i> value returned by {@link #getxMin()},
-     * and the last has the value returned by {@link #getxMax()}.
+     * Returns an unmodifiable list of data points.
      *
      * @return an unmodifiable list of data points
      */
-    public List<Integer> getData() {
+    public List<XYValue> getData() {
         return data;
     }
 
     /**
-     * The <i>x</i> value of the leftmost data point.
+     * Returns the number of data points.
      *
-     * @return the <i>x</i> value of the leftmost data point
+     * @return the number of data points
      */
-    public int getxMin() {
-        return xMin;
-    }
-
-    /**
-     * The <i>x</i> value of the rightmost data point.
-     *
-     * @return the <i>x</i> value of the rightmost data point
-     */
-    public int getxMax() {
-        return xMax;
+    public int getDataCount() {
+        return data.size();
     }
 
     /**
