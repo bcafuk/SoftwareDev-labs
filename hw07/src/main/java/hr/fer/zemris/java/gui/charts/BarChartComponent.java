@@ -144,14 +144,15 @@ public class BarChartComponent extends JComponent {
      * @return the frame of pixels just outside the chart area
      */
     private Frame getChartAreaFrame() {
+        Insets insets = getInsets();
         FontMetrics fm = getFontMetrics(getFont());
 
         int yDataLabelsWidth = fm.stringWidth(Integer.toString(model.getyMax()));
 
-        int left = fm.getHeight() + yDataLabelsWidth + TICK_LENGTH + 2 * AXIS_SPACING;
-        int right = getWidth() - ARROW_OVERHANG;
-        int top = ARROW_OVERHANG - 1;
-        int bottom = getHeight() - fm.getHeight() * 2 - TICK_LENGTH - 2 * AXIS_SPACING - 1;
+        int left = fm.getHeight() + yDataLabelsWidth + TICK_LENGTH + 2 * AXIS_SPACING + insets.left;
+        int right = getWidth() - ARROW_OVERHANG - insets.right;
+        int top = ARROW_OVERHANG - 1 + insets.top;
+        int bottom = getHeight() - fm.getHeight() * 2 - TICK_LENGTH - 2 * AXIS_SPACING - 1 - insets.bottom;
 
         return new Frame(left, right, top, bottom);
     }
@@ -166,18 +167,18 @@ public class BarChartComponent extends JComponent {
         FontMetrics fm = getFontMetrics(getFont());
 
         // Axis line
-        g.drawLine(frame.left, frame.bottom, frame.right + ARROW_OVERHANG, frame.bottom);
+        g.drawLine(frame.left, frame.bottom, frame.right + ARROW_OVERHANG - 1, frame.bottom);
 
         // Arrow tip
-        g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
-                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL,
+        g.drawLine(frame.right + ARROW_OVERHANG - 1, frame.bottom,
+                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL - 1,
                 frame.bottom - BarChartComponent.ARROW_OFFSET_LATERAL);
-        g.drawLine(frame.right + ARROW_OVERHANG, frame.bottom,
-                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL,
+        g.drawLine(frame.right + ARROW_OVERHANG - 1, frame.bottom,
+                frame.right + BarChartComponent.ARROW_OFFSET_AXIAL - 1,
                 frame.bottom + BarChartComponent.ARROW_OFFSET_LATERAL);
 
         // Axis label
-        int axisLabelBaseline = getHeight() - fm.getDescent() - 1;
+        int axisLabelBaseline = getHeight() - getInsets().bottom - fm.getDescent() - 1;
         g.drawString(model.getxAxisLabel(),
                 (frame.left + frame.right - fm.stringWidth(model.getxAxisLabel())) / 2, axisLabelBaseline);
 
@@ -210,18 +211,18 @@ public class BarChartComponent extends JComponent {
         FontMetrics fm = getFontMetrics(getFont());
 
         // Axis line
-        g.drawLine(frame.left, frame.bottom, frame.left, frame.top - ARROW_OVERHANG);
+        g.drawLine(frame.left, frame.bottom, frame.left, frame.top - ARROW_OVERHANG + 1);
 
         // Arrow tip
-        g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
+        g.drawLine(frame.left, frame.top - ARROW_OVERHANG + 1,
                 frame.left - BarChartComponent.ARROW_OFFSET_LATERAL,
-                frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
-        g.drawLine(frame.left, frame.top - ARROW_OVERHANG,
+                frame.top - BarChartComponent.ARROW_OFFSET_AXIAL + 1);
+        g.drawLine(frame.left, frame.top - ARROW_OVERHANG + 1,
                 frame.left + BarChartComponent.ARROW_OFFSET_LATERAL,
-                frame.top - BarChartComponent.ARROW_OFFSET_AXIAL);
+                frame.top - BarChartComponent.ARROW_OFFSET_AXIAL + 1);
 
         // Axis label
-        int axisLabelBaseline = fm.getAscent() - 1;
+        int axisLabelBaseline = getInsets().left + fm.getAscent() - 1;
         drawVerticalString(g, model.getyAxisLabel(),
                 axisLabelBaseline, (frame.top + frame.bottom + fm.stringWidth(model.getyAxisLabel())) / 2);
 
