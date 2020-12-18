@@ -41,9 +41,9 @@ public class BarChartComponent extends JComponent {
     private static final int AXIS_SPACING = 1;
 
     /**
-     * The amount by which the data columns are shrunk on either side.
+     * The amount by which the data columns are shrunk across their whole width.
      */
-    private static final int COLUMN_SPACING = 1;
+    private static final int COLUMN_SPACING = 5;
 
     /**
      * How far one needs to move perpendicular to the direction of the axis to get to the side of the arrow tip.
@@ -266,7 +266,7 @@ public class BarChartComponent extends JComponent {
      */
     private void paintGridlines(Graphics g, Frame frame) {
         for (int x = model.getxMin(); x <= model.getxMax(); x++) {
-            int barRight = getAreaX(frame, x + 1) - COLUMN_SPACING;
+            int barRight = getAreaX(frame, x + 1) - 1;
             g.drawLine(barRight, frame.top + 1, barRight, frame.bottom - 1);
         }
 
@@ -283,9 +283,12 @@ public class BarChartComponent extends JComponent {
      * @param frame the frame of pixels just outside the chart area
      */
     private void paintChartArea(Graphics g, Frame frame) {
+        int spacingLeft = COLUMN_SPACING / 2;
+        int spacingRight = COLUMN_SPACING - spacingLeft;
+
         for (int x = model.getxMin(); x <= model.getxMax(); x++) {
-            int barLeft = getAreaX(frame, x) + COLUMN_SPACING;
-            int barRight = getAreaX(frame, x + 1) - COLUMN_SPACING;
+            int barLeft = getAreaX(frame, x) + spacingLeft;
+            int barRight = getAreaX(frame, x + 1) - spacingRight;
 
             Integer y = model.getData().get(x - model.getxMin());
 
