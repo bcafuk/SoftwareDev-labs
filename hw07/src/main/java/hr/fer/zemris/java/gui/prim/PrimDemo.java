@@ -31,8 +31,7 @@ public class PrimDemo extends JFrame {
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
 
-        // TODO: Implement and use custom list model
-        DefaultListModel<Integer> model = new DefaultListModel<>();
+        PrimListModel model = new PrimListModel();
 
         JList<Integer> list1 = new JList<>(model);
         JList<Integer> list2 = new JList<>(model);
@@ -43,7 +42,7 @@ public class PrimDemo extends JFrame {
         cp.add(central, BorderLayout.CENTER);
 
         JButton nextButton = new JButton("Sljedeći");
-        nextButton.addActionListener(e -> model.addElement(123));
+        nextButton.addActionListener(e -> model.next());
         cp.add(nextButton, BorderLayout.PAGE_END);
     }
 
@@ -55,7 +54,6 @@ public class PrimDemo extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new PrimDemo();
-            frame.pack();
             frame.setVisible(true);
         });
     }
