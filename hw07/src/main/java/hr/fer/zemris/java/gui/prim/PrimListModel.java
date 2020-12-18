@@ -27,25 +27,39 @@ public class PrimListModel implements ListModel<Integer> {
      * Adds the next prime number to the list.
      */
     public void next() {
-        int lastNumber = numbers.get(numbers.size() - 1);
-        numbers.add(nextPrimeAfter(lastNumber));
+        int p = numbers.get(numbers.size() - 1) + 1;
+        while (!isPrime(p))
+            p++;
 
+        numbers.add(p);
         notifyAboutAddition(numbers.size() - 1);
     }
 
     /**
-     * Finds the smallest prime number greater than {@code n}.
+     * Checks if a number is prime.
      *
-     * @param n the exclusive lower bound for finding the smallest prime
-     * @return the smallest prime number larger than {@code n}
+     * @param n the number to check
+     * @return {@code true} if {@code n} is prime, {@code false} otherwise
      */
-    private static int nextPrimeAfter(int n) {
-        // TODO: Actually find next prime number
-        return 123;
+    private static boolean isPrime(int n) {
+        if (n < 2)
+            return false;
+
+        if (n % 2 == 0)
+            return n == 2;
+
+        int rt_n = (int) Math.sqrt(n);
+        for (int i = 3; i <= rt_n; i += 2)
+            if (n % i == 0)
+                return false;
+
+        return true;
     }
 
     /**
-     * Notifies all subscribed listeners that a new number has been added to the list.
+     * Notifies all subscribed listeners that a new number has been added to the list at a given index.
+     *
+     * @param index the index of the added number
      */
     private void notifyAboutAddition(int index) {
         ListDataEvent e = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, index, index);
