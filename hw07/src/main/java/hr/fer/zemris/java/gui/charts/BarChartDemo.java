@@ -2,7 +2,14 @@ package hr.fer.zemris.java.gui.charts;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A program which parses chart data from a file and displays it in a window.
@@ -22,6 +29,8 @@ public class BarChartDemo extends JFrame {
      * The color of the chart axes and labels.
      */
     private static final Color AXIS_COLOR = Color.BLACK;
+
+    private static final Pattern DATA_POINT_PATTERN = Pattern.compile("([+-]?\\d+),(\\d+)");
 
     /**
      * Creates a new window which displays the given chart, along with the path it was loaded from.
@@ -46,6 +55,9 @@ public class BarChartDemo extends JFrame {
      * @throws NullPointerException if {@code chart} or {@code filePath} is {@code null}
      */
     private void initGUI(BarChart chart, String filePath) {
+        Objects.requireNonNull(chart, "The chart must not be null");
+        Objects.requireNonNull(filePath, "The file path must not be null");
+
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
 
@@ -69,24 +81,62 @@ public class BarChartDemo extends JFrame {
         if (args.length == 0) {
             System.err.println("Usage: BarChartDemo path");
             System.exit(1);
+            return;
         }
-        String path = args[0];
+        String pathString = args[0];
+        Path path = Path.of(pathString);
 
-        BarChart model = new BarChart(
-                Arrays.asList(
-                        new XYValue(1, 8), new XYValue(2, 20), new XYValue(3, 22),
-                        new XYValue(4, 10), new XYValue(5, 4)
-                ),
-                "Number of people in the car",
-                "Frequency",
-                0,
-                22,
-                2
-        );
+        BarChart model;
+        try (InputStream fileStream = Files.newInputStream(path)) {
+            model = parseFile(fileStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String fullPath = path.toAbsolutePath().toString();
 
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new BarChartDemo(model, path);
+            JFrame frame = new BarChartDemo(model, fullPath);
             frame.setVisible(true);
         });
+    }
+
+    /**
+     * Parses chart data from a stream according to the format specified in the assignment document.
+     *
+     * @param input the stream to read from
+     * @return the parsed chart
+     * @throws NullPointerException     if {@code input} is {@code null}
+     * @throws NoSuchElementException   if the file has fewer than 6 lines
+     * @throws NumberFormatException    if a data point is formatted incorrectly
+     * @throws IllegalArgumentException if the {@link BarChart#BarChart(List, String, String, int, int, int)} throws an
+     *                                  {@code IllegalArgumentException}
+     */
+    public static BarChart parseFile(InputStream input) {
+        try (Scanner scanner = new Scanner(Objects.requireNonNull(input))) {
+            String xAxisLabel = scanner.nextLine();
+            String yAxisLabel = scanner.nextLine();
+
+            String[] dataStrings = scanner.nextLine().split(" +");
+            List<XYValue> dataPoints = new ArrayList<>();
+
+            for (String dataString : dataStrings) {
+                Matcher matcher = DATA_POINT_PATTERN.matcher(dataString);
+
+                if (!matcher.matches())
+                    throw new NumberFormatException("Invalid data point format: \"" + dataString + "\"");
+
+                int x = Integer.parseInt(matcher.group(1));
+                int y = Integer.parseInt(matcher.group(2));
+
+                dataPoints.add(new XYValue(x, y));
+            }
+
+            int yMin = scanner.nextInt();
+            int yMax = scanner.nextInt();
+            int yStep = scanner.nextInt();
+
+            return new BarChart(dataPoints, xAxisLabel, yAxisLabel, yMin, yMax, yStep);
+        }
     }
 }
