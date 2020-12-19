@@ -210,17 +210,12 @@ public class CalcLayout implements LayoutManager2 {
 
         Insets insets = parent.getInsets();
 
-        Dimension componentDimension;
-        if (components[0][0] != null)
-            componentDimension = getter.apply(components[0][0]);
-        else
-            componentDimension = null;
+        Dimension componentDimension = null;
 
-        if (componentDimension != null) {
+        if (components[0][0] != null) {
+            Dimension homeDimension = getter.apply(components[0][0]);
             componentDimension = new Dimension(
-                    (componentDimension.width - (HOME_WIDTH - 1) * spacing) / HOME_WIDTH,
-                    componentDimension.height
-            );
+                    (homeDimension.width - (HOME_WIDTH - 1) * spacing) / HOME_WIDTH, homeDimension.height);
         }
 
         for (int y = 0; y < ROWS; y++) {
@@ -232,7 +227,7 @@ public class CalcLayout implements LayoutManager2 {
                 Dimension d = getter.apply(components[y][x]);
 
                 if (componentDimension == null) {
-                    componentDimension = d;
+                    componentDimension = new Dimension(d);
                 } else if (d != null) {
                     componentDimension.width = operator.applyAsInt(componentDimension.width, d.width);
                     componentDimension.height = operator.applyAsInt(componentDimension.height, d.height);
