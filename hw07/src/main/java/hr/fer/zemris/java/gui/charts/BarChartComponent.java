@@ -251,8 +251,9 @@ public class BarChartComponent extends JComponent {
     private void drawVerticalString(Graphics g, String text, int x, int y) {
         Graphics2D g2d = (Graphics2D) g.create();
 
-        AffineTransform at = AffineTransform.getQuadrantRotateInstance(3);
-        g2d.setTransform(at);
+        AffineTransform af = g2d.getTransform();
+        af.quadrantRotate(3);
+        g2d.setTransform(af);
 
         g2d.drawString(text, -y, x);
 
