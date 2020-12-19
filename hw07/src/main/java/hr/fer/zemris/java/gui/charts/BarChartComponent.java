@@ -138,6 +138,46 @@ public class BarChartComponent extends JComponent {
         paintChartArea(g, frame);
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return getMinimumSize();
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        FontMetrics fm = getFontMetrics(getFont());
+
+        int xDataLabelsWidth = model.getData()
+                                    .stream()
+                                    .map(xy -> xy.x)
+                                    .map(x -> Integer.toString(x))
+                                    .map(fm::stringWidth)
+                                    .max(Integer::compare)
+                                    .orElse(0);
+        int columnWidth = Math.max(xDataLabelsWidth, 1 + COLUMN_SPACING);
+
+        int yDataLabelsWidth = fm.stringWidth(Integer.toString(model.getyMax()));
+        int yDataLabelCount = (model.getyMax() - model.getyMin()) / model.getyStep();
+
+        int minX = 0;
+        // y axis
+        minX += 1 + TICK_LENGTH + fm.getHeight() + yDataLabelsWidth + 2 * AXIS_SPACING;
+        // chart area
+        minX += Math.max(fm.stringWidth(model.getxAxisLabel()), columnWidth * model.getDataCount());
+        // right margin
+        minX += ARROW_OVERHANG;
+
+        int minY = 0;
+        // top margin
+        minY += ARROW_OVERHANG;
+        // chart area
+        minY += Math.max(fm.stringWidth(model.getyAxisLabel()), fm.getHeight() * (yDataLabelCount - 1));
+        // x axis
+        minY += 1 + TICK_LENGTH + 2 * fm.getHeight() + 2 * AXIS_SPACING;
+
+        return new Dimension(minX, minY);
+    }
+
     /**
      * Calculates the position of the frame of the chart area.
      *

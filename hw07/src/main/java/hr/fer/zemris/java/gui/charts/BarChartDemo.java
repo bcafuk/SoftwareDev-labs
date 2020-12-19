@@ -45,6 +45,7 @@ public class BarChartDemo extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         initGUI(chart, filePath);
+        pack();
     }
 
     /**
