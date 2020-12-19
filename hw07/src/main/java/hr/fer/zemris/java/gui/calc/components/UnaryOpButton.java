@@ -1,6 +1,7 @@
 package hr.fer.zemris.java.gui.calc.components;
 
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
+import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 
 import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
@@ -44,6 +45,9 @@ public class UnaryOpButton extends InvertibleOpButton {
         Objects.requireNonNull(inverseOp, "The inverse operator must not be null");
 
         addActionListener(e -> {
+            if (model.hasFrozenValue())
+                throw new CalculatorInputException("The calculator has a frozen value");
+
             DoubleUnaryOperator operator = isInverted() ? inverseOp : regularOp;
             model.setValue(operator.applyAsDouble(model.getValue()));
         });
