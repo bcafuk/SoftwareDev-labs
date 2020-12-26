@@ -57,7 +57,7 @@ public class JNotepadPP extends JFrame {
     private JToolBar toolBar;
 
     /**
-     * A list of isteners to be attached to the currently active document.
+     * A list of listeners to be attached to the currently active document.
      */
     private final List<SingleDocumentListener> documentListeners = new ArrayList<>();
 
