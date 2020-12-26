@@ -147,6 +147,7 @@ public class JNotepadPP extends JFrame {
                 documents.createNewDocument();
             }
         };
+        newAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/new.png"));
         newAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
         newAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
 
@@ -171,6 +172,7 @@ public class JNotepadPP extends JFrame {
                 }
             }
         };
+        openAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/open.png"));
         openAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         openAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
 
@@ -185,6 +187,7 @@ public class JNotepadPP extends JFrame {
                 trySave(documents.getCurrentDocument(), null);
             }
         };
+        saveAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/save.png"));
         saveAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         saveAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
         saveAction.setEnabled(false);
@@ -200,6 +203,7 @@ public class JNotepadPP extends JFrame {
                 saveAs(documents.getCurrentDocument());
             }
         };
+        saveAsAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/saveAs.png"));
         saveAsAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
         saveAsAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
         saveAsAction.setEnabled(false);
@@ -215,6 +219,7 @@ public class JNotepadPP extends JFrame {
                 tryClose();
             }
         };
+        closeAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/close.png"));
         closeAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK));
         closeAction.setEnabled(false);
 
@@ -232,6 +237,7 @@ public class JNotepadPP extends JFrame {
                 tryExit();
             }
         };
+        exitAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/exit.png"));
         exitAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_DOWN_MASK));
         exitAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
 
