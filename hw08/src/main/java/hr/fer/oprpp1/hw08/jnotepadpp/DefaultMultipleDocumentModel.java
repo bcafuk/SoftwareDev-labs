@@ -18,11 +18,11 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
     /**
      * The icon displayed on tabs containing unsaved documents.
      */
-    private static final ImageIcon unsavedIcon = Util.loadIcon("icons/unsaved.png");
+    private static final ImageIcon unsavedIcon = Util.loadIcon("icons/status/unsaved.png");
     /**
      * The icon displayed on tabs containing saved documents.
      */
-    private static final ImageIcon savedIcon = Util.loadIcon("icons/saved.png");
+    private static final ImageIcon savedIcon = Util.loadIcon("icons/status/saved.png");
 
     /**
      * A list of open documents.
