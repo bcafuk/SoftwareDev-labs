@@ -29,7 +29,7 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel {
     /**
      * The modification flag.
      */
-    private boolean isModified;
+    private boolean isModified = false;
 
     /**
      * A list of registered listeners.
@@ -46,7 +46,6 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel {
     public DefaultSingleDocumentModel(Path path, String content) {
         filePath = path;
         textComponent = new JTextArea(Objects.requireNonNull(content, "The text content must not be null"));
-        isModified = path == null;
 
         textComponent.getDocument().addDocumentListener(new DocumentListener() {
             @Override
