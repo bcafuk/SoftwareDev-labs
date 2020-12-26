@@ -100,7 +100,30 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
 
     @Override
     public void saveDocument(SingleDocumentModel model, Path newPath) {
+        Objects.requireNonNull(model, "The document model must not be null");
 
+        if (newPath == null && model.getFilePath() == null)
+            throw new IllegalArgumentException("The model does not have a path associated, but no path was provided");
+
+        Path path = newPath == null ? model.getFilePath() : newPath;
+
+        for (SingleDocumentModel document : documents) {
+            if (model == document)
+                continue;
+
+            if (path.equals(document.getFilePath()))
+                throw new ConcurrentModificationException("This file is opened in a different tab");
+        }
+
+        try {
+            Files.writeString(path, model.getTextComponent().getText(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        if (newPath != null)
+            model.setFilePath(newPath);
+        model.setModified(false);
     }
 
     @Override
