@@ -150,6 +150,16 @@ public class JNotepadPP extends JFrame {
         });
 
         localizationProvider.addLocalizationListener(this::updateTitle);
+
+        documentListeners.add(new SingleDocumentListener() {
+            @Override
+            public void documentModifyStatusUpdated(SingleDocumentModel model) {}
+
+            @Override
+            public void documentFilePathUpdated(SingleDocumentModel model) {
+                updateTitle();
+            }
+        });
     }
 
     /**
