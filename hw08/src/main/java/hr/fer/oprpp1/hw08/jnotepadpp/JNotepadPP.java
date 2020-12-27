@@ -188,7 +188,7 @@ public class JNotepadPP extends JFrame {
                     try {
                         documents.loadDocument(path);
                     } catch (UncheckedIOException ex) {
-                        localizedMessageDialog(JOptionPane.ERROR_MESSAGE, "file.open.error");
+                        localizedMessageDialog(JOptionPane.ERROR_MESSAGE, "file.open", "file.open.error");
                     }
                 }
             }
@@ -423,7 +423,8 @@ public class JNotepadPP extends JFrame {
                 long lines = text.lines()
                                  .count();
 
-                localizedMessageDialog(JOptionPane.INFORMATION_MESSAGE, "tools.info.message", chars, nonBlanks, lines);
+                localizedMessageDialog(JOptionPane.INFORMATION_MESSAGE, "tools.info",
+                        "tools.info.message", chars, nonBlanks, lines);
             }
         };
         infoAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/info.png"));
@@ -503,8 +504,8 @@ public class JNotepadPP extends JFrame {
         Path chosenPath = fileChooser.getSelectedFile().toPath();
 
         if (Files.exists(chosenPath)) {
-            int response = localizedConfirmDialog(JOptionPane.QUESTION_MESSAGE, "file.saveAs.confirm",
-                    chosenPath.getFileName().toString());
+            int response = localizedConfirmDialog(JOptionPane.QUESTION_MESSAGE, "file.saveAs",
+                    "file.saveAs.confirm", chosenPath.getFileName().toString());
 
             if (response != 0)
                 return false;
@@ -528,10 +529,10 @@ public class JNotepadPP extends JFrame {
         try {
             documents.saveDocument(model, newPath);
         } catch (UncheckedIOException e) {
-            localizedMessageDialog(JOptionPane.ERROR_MESSAGE, "file.save.error.io");
+            localizedMessageDialog(JOptionPane.ERROR_MESSAGE, "file.save", "file.save.error.io");
             return false;
         } catch (ConcurrentModificationException e) {
-            localizedMessageDialog(JOptionPane.ERROR_MESSAGE, "file.save.error.isOpen");
+            localizedMessageDialog(JOptionPane.ERROR_MESSAGE, "file.save", "file.save.error.isOpen");
             return false;
         }
 
@@ -557,7 +558,7 @@ public class JNotepadPP extends JFrame {
         String fileName = model.getFilePath() != null ?
                 model.getFilePath().getFileName().toString() : localizationProvider.getString("document.unnamed");
 
-        int response = localizedConfirmDialog(JOptionPane.QUESTION_MESSAGE, "file.close.confirm", fileName);
+        int response = localizedConfirmDialog(JOptionPane.QUESTION_MESSAGE, "file.close", "file.close.confirm", fileName);
 
         switch (response) {
             case 0:
@@ -612,18 +613,19 @@ public class JNotepadPP extends JFrame {
      * The {@code formatArgs} array is used for the format argument without any modification.
      *
      * @param messageType designates what kind of message this is
+     * @param titleKey    the translation key used to get the title of the dialog
      * @param messageKey  the translation key used to get the format string for the message
      * @param formatArgs  the format arguments for the message
      * @see JOptionPane#showMessageDialog(Component, Object, String, int)
      */
-    private void localizedMessageDialog(int messageType, String messageKey, Object... formatArgs) {
+    private void localizedMessageDialog(int messageType, String titleKey, String messageKey, Object... formatArgs) {
         String[] options = new String[]{
                 localizationProvider.getString("dialog.ok"),
         };
 
         JOptionPane.showOptionDialog(JNotepadPP.this,
                 String.format(localizationProvider.getString(messageKey), formatArgs),
-                localizationProvider.getString("app.name"),
+                localizationProvider.getString(titleKey),
                 JOptionPane.DEFAULT_OPTION, messageType, null, options, options[0]);
     }
 
@@ -635,13 +637,14 @@ public class JNotepadPP extends JFrame {
      * The {@code formatArgs} array is used for the format argument without any modification.
      *
      * @param messageType designates what kind of message this is
+     * @param titleKey    the translation key used to get the title of the dialog
      * @param messageKey  the translation key used to get the format string for the message
      * @param formatArgs  the format arguments for the message
      * @return {@code 0} if <i>yes</i> was chosen, {@code 1} if <i>no</i> was chosen, {@code 2} if <i>cancel</i> was
      * chosen, or {@link JOptionPane#CLOSED_OPTION} if the dialog was closed without choosing an option.
      * @see JOptionPane#showConfirmDialog(Component, Object, String, int, int)
      */
-    private int localizedConfirmDialog(int messageType, String messageKey, Object... formatArgs) {
+    private int localizedConfirmDialog(int messageType, String titleKey, String messageKey, Object... formatArgs) {
         String[] options = new String[]{
                 localizationProvider.getString("dialog.yes"),
                 localizationProvider.getString("dialog.no"),
@@ -650,7 +653,7 @@ public class JNotepadPP extends JFrame {
 
         return JOptionPane.showOptionDialog(JNotepadPP.this,
                 String.format(localizationProvider.getString(messageKey), formatArgs),
-                localizationProvider.getString("app.name"),
+                localizationProvider.getString(titleKey),
                 JOptionPane.DEFAULT_OPTION, messageType, null, options, options[2]);
     }
 
