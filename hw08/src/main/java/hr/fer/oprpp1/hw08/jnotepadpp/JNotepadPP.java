@@ -90,9 +90,6 @@ public class JNotepadPP extends JFrame {
                 tryExit();
             }
         });
-
-        localizationProvider.addLocalizationListener(() -> fileChooser.setLocale(fileChooser.getLocale()));
-
     }
 
     /**
