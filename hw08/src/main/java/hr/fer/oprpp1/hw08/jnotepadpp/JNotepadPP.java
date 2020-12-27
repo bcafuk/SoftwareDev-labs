@@ -9,7 +9,10 @@ import hr.fer.oprpp1.hw08.jnotepadpp.local.swing.LJMenu;
 import hr.fer.oprpp1.hw08.jnotepadpp.local.swing.LocalizableAction;
 
 import javax.swing.*;
+import javax.swing.event.CaretListener;
+import javax.swing.text.Caret;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
 import java.io.Serial;
 import java.io.UncheckedIOException;
@@ -60,6 +63,10 @@ public class JNotepadPP extends JFrame {
      * A list of listeners to be attached to the currently active document.
      */
     private final List<SingleDocumentListener> documentListeners = new ArrayList<>();
+    /**
+     * A list of listeners to be attached to the currently active document;s caret.
+     */
+    private final List<CaretListener> caretListeners = new ArrayList<>();
 
     /**
      * Constructs a new JNotepad++ window.
@@ -103,6 +110,8 @@ public class JNotepadPP extends JFrame {
 
         initFile();
         toolBar.addSeparator();
+        initEdit();
+
         initLanguage();
 
         updateTitle();
@@ -118,6 +127,14 @@ public class JNotepadPP extends JFrame {
 
                     if (currentModel != null)
                         currentModel.addSingleDocumentListener(listener);
+                }
+
+                for (CaretListener listener : caretListeners) {
+                    if (previousModel != null)
+                        previousModel.getTextComponent().removeCaretListener(listener);
+
+                    if (currentModel != null)
+                        currentModel.getTextComponent().addCaretListener(listener);
                 }
             }
 
@@ -266,6 +283,105 @@ public class JNotepadPP extends JFrame {
 
                 saveAsAction.setEnabled(documents.getNumberOfDocuments() > 0);
                 closeAction.setEnabled(documents.getNumberOfDocuments() > 0);
+            }
+
+            @Override
+            public void documentAdded(SingleDocumentModel model) {}
+
+            @Override
+            public void documentRemoved(SingleDocumentModel model) {}
+        });
+    }
+
+    /**
+     * Initializes the <i>Edit</i> menu in the menu bar and its corresponding part of the toolbar.
+     */
+    private void initEdit() {
+        JMenu editMenu = new LJMenu("edit", localizationProvider);
+        editMenu.setMnemonic(KeyEvent.VK_E);
+        menuBar.add(editMenu);
+
+
+        LocalizableAction cutAction = new LocalizableAction(localizationProvider,
+                "edit.cut", "edit.cut.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                documents.getCurrentDocument().getTextComponent().cut();
+            }
+        };
+        // cutAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/cut.png"));
+        cutAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
+        cutAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
+        cutAction.setEnabled(false);
+
+        toolBar.add(cutAction);
+        editMenu.add(cutAction);
+
+
+        LocalizableAction copyAction = new LocalizableAction(localizationProvider,
+                "edit.copy", "edit.copy.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                documents.getCurrentDocument().getTextComponent().copy();
+            }
+        };
+        // copyAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/copy.png"));
+        copyAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
+        copyAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
+        copyAction.setEnabled(false);
+
+        toolBar.add(copyAction);
+        editMenu.add(copyAction);
+
+
+        LocalizableAction pasteAction = new LocalizableAction(localizationProvider,
+                "edit.paste", "edit.paste.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                documents.getCurrentDocument().getTextComponent().paste();
+            }
+        };
+        // pasteAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/paste.png"));
+        pasteAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
+        pasteAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_P);
+        pasteAction.setEnabled(false);
+
+        toolBar.add(pasteAction);
+        editMenu.add(pasteAction);
+
+
+        caretListeners.add(e -> {
+            boolean hasSelection = (e.getDot() != e.getMark());
+
+            cutAction.setEnabled(hasSelection);
+            copyAction.setEnabled(hasSelection);
+        });
+
+        Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> {
+            boolean clipboardHasText = Toolkit.getDefaultToolkit()
+                                              .getSystemClipboard()
+                                              .isDataFlavorAvailable(DataFlavor.stringFlavor);
+
+            pasteAction.setEnabled(documents.getNumberOfDocuments() > 0 && clipboardHasText);
+        });
+
+        documents.addMultipleDocumentListener(new MultipleDocumentListener() {
+            @Override
+            public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
+                boolean clipboardHasText = Toolkit.getDefaultToolkit()
+                                                  .getSystemClipboard()
+                                                  .isDataFlavorAvailable(DataFlavor.stringFlavor);
+
+                pasteAction.setEnabled(documents.getNumberOfDocuments() > 0 && clipboardHasText);
+
+                boolean hasSelection = false;
+                if (documents.getNumberOfDocuments() > 0) {
+                    Caret caret = documents.getCurrentDocument().getTextComponent().getCaret();
+                    hasSelection = (caret.getDot() != caret.getMark());
+                }
+
+                cutAction.setEnabled(hasSelection);
+                copyAction.setEnabled(hasSelection);
             }
 
             @Override
