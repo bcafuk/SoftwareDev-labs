@@ -309,7 +309,7 @@ public class JNotepadPP extends JFrame {
                 documents.getCurrentDocument().getTextComponent().cut();
             }
         };
-        // cutAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/cut.png"));
+        cutAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/cut.png"));
         cutAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
         cutAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
         cutAction.setEnabled(false);
@@ -325,7 +325,7 @@ public class JNotepadPP extends JFrame {
                 documents.getCurrentDocument().getTextComponent().copy();
             }
         };
-        // copyAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/copy.png"));
+        copyAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/copy.png"));
         copyAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
         copyAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
         copyAction.setEnabled(false);
@@ -341,7 +341,7 @@ public class JNotepadPP extends JFrame {
                 documents.getCurrentDocument().getTextComponent().paste();
             }
         };
-        // pasteAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/paste.png"));
+        pasteAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/paste.png"));
         pasteAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
         pasteAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_P);
         pasteAction.setEnabled(false);
