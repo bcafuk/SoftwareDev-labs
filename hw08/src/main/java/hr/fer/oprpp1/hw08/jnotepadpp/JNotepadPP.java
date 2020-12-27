@@ -13,6 +13,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.text.Caret;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.FlavorListener;
 import java.awt.event.*;
 import java.io.Serial;
 import java.io.UncheckedIOException;
@@ -21,6 +22,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The window of JNotepad++, a text editor which supports editing multiple files in tabs.
@@ -262,24 +264,24 @@ public class JNotepadPP extends JFrame {
         fileMenu.add(exitAction);
 
 
+        Consumer<SingleDocumentModel> saveEnablingListener = m ->
+                saveAction.setEnabled(m.isModified() && m.getFilePath() != null);
+
         documentListeners.add(new SingleDocumentListener() {
             @Override
             public void documentModifyStatusUpdated(SingleDocumentModel model) {
-                saveAction.setEnabled(model.isModified() && model.getFilePath() != null);
+                saveEnablingListener.accept(model);
             }
 
             @Override
-            public void documentFilePathUpdated(SingleDocumentModel model) {
-
-            }
+            public void documentFilePathUpdated(SingleDocumentModel model) {}
         });
 
         documents.addMultipleDocumentListener(new MultipleDocumentListener() {
             @Override
             public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
-                if (currentModel != null) {
-                    saveAction.setEnabled(currentModel.isModified() && currentModel.getFilePath() != null);
-                }
+                if (currentModel != null)
+                    saveEnablingListener.accept(currentModel);
 
                 saveAsAction.setEnabled(documents.getNumberOfDocuments() > 0);
                 closeAction.setEnabled(documents.getNumberOfDocuments() > 0);
@@ -350,6 +352,20 @@ public class JNotepadPP extends JFrame {
         editMenu.add(pasteAction);
 
 
+        FlavorListener pasteEnablingListener = e -> {
+            try {
+                boolean clipboardHasText = Toolkit.getDefaultToolkit()
+                                                  .getSystemClipboard()
+                                                  .isDataFlavorAvailable(DataFlavor.stringFlavor);
+
+                pasteAction.setEnabled(documents.getNumberOfDocuments() > 0 && clipboardHasText);
+            } catch (IllegalStateException ex) {
+                pasteAction.setEnabled(false);
+            }
+        };
+
+        Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(pasteEnablingListener);
+
         caretListeners.add(e -> {
             boolean hasSelection = (e.getDot() != e.getMark());
 
@@ -357,22 +373,10 @@ public class JNotepadPP extends JFrame {
             copyAction.setEnabled(hasSelection);
         });
 
-        Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> {
-            boolean clipboardHasText = Toolkit.getDefaultToolkit()
-                                              .getSystemClipboard()
-                                              .isDataFlavorAvailable(DataFlavor.stringFlavor);
-
-            pasteAction.setEnabled(documents.getNumberOfDocuments() > 0 && clipboardHasText);
-        });
-
         documents.addMultipleDocumentListener(new MultipleDocumentListener() {
             @Override
             public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
-                boolean clipboardHasText = Toolkit.getDefaultToolkit()
-                                                  .getSystemClipboard()
-                                                  .isDataFlavorAvailable(DataFlavor.stringFlavor);
-
-                pasteAction.setEnabled(documents.getNumberOfDocuments() > 0 && clipboardHasText);
+                pasteEnablingListener.flavorsChanged(null);
 
                 boolean hasSelection = false;
                 if (documents.getNumberOfDocuments() > 0) {
