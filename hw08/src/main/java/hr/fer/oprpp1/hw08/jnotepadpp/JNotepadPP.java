@@ -503,7 +503,7 @@ public class JNotepadPP extends JFrame {
         Path chosenPath = fileChooser.getSelectedFile().toPath();
 
         if (Files.exists(chosenPath)) {
-            int response = localizedConfirmDialog(JOptionPane.WARNING_MESSAGE, "file.saveAs.confirm",
+            int response = localizedConfirmDialog(JOptionPane.QUESTION_MESSAGE, "file.saveAs.confirm",
                     chosenPath.getFileName().toString());
 
             if (response != 0)
@@ -557,7 +557,7 @@ public class JNotepadPP extends JFrame {
         String fileName = model.getFilePath() != null ?
                 model.getFilePath().getFileName().toString() : localizationProvider.getString("document.unnamed");
 
-        int response = localizedConfirmDialog(JOptionPane.WARNING_MESSAGE, "file.close.confirm", fileName);
+        int response = localizedConfirmDialog(JOptionPane.QUESTION_MESSAGE, "file.close.confirm", fileName);
 
         switch (response) {
             case 0:
