@@ -113,6 +113,8 @@ public class JNotepadPP extends JFrame {
         initFile();
         toolBar.addSeparator();
         initEdit();
+        toolBar.addSeparator();
+        initTools();
 
         initLanguage();
 
@@ -386,6 +388,57 @@ public class JNotepadPP extends JFrame {
 
                 cutAction.setEnabled(hasSelection);
                 copyAction.setEnabled(hasSelection);
+            }
+
+            @Override
+            public void documentAdded(SingleDocumentModel model) {}
+
+            @Override
+            public void documentRemoved(SingleDocumentModel model) {}
+        });
+    }
+
+    /**
+     * Initializes the <i>Tools</i> menu in the menu bar and its corresponding part of the toolbar.
+     */
+    private void initTools() {
+        JMenu toolsMenu = new LJMenu("tools", localizationProvider);
+        toolsMenu.setMnemonic(KeyEvent.VK_T);
+        menuBar.add(toolsMenu);
+
+
+        LocalizableAction infoAction = new LocalizableAction(localizationProvider,
+                "tools.info", "tools.info.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = documents.getCurrentDocument().getTextComponent().getText();
+
+                long chars = text.codePoints()
+                                 .count();
+
+                long nonBlanks = text.codePoints()
+                                     .filter(cp -> !Character.isWhitespace(cp))
+                                     .count();
+
+                long lines = text.lines()
+                                 .count();
+
+                localizedMessageDialog(JOptionPane.INFORMATION_MESSAGE, "tools.info.message", chars, nonBlanks, lines);
+            }
+        };
+        infoAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/info.png"));
+        infoAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0));
+        infoAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
+        infoAction.setEnabled(false);
+
+        toolBar.add(infoAction);
+        toolsMenu.add(infoAction);
+
+
+        documents.addMultipleDocumentListener(new MultipleDocumentListener() {
+            @Override
+            public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
+                infoAction.setEnabled(documents.getNumberOfDocuments() > 0);
             }
 
             @Override
