@@ -12,10 +12,7 @@ import javax.swing.*;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
-import javax.swing.text.Element;
-import javax.swing.text.PlainDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.FlavorListener;
@@ -27,10 +24,11 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoField;
 import java.util.List;
-import java.util.*;
 import java.util.Timer;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
  * The window of JNotepad++, a text editor which supports editing multiple files in tabs.
@@ -483,10 +481,94 @@ public class JNotepadPP extends JFrame {
         toolsMenu.add(infoAction);
 
 
+        Locale locale = LocalizationProvider.getInstance().getLocale();
+
+
+        JMenu caseTools = new LJMenu("tools.case", localizationProvider);
+        toolsMenu.add(caseTools);
+
+
+        LocalizableAction uppercaseAction = new LocalizableAction(localizationProvider,
+                "tools.case.uppercase", "tools.case.uppercase.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                transformSelection(s -> s.toUpperCase(locale));
+            }
+        };
+        uppercaseAction.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        uppercaseAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
+        uppercaseAction.setEnabled(false);
+
+        caseTools.add(uppercaseAction);
+
+
+        LocalizableAction lowercaseAction = new LocalizableAction(localizationProvider,
+                "tools.case.lowercase", "tools.case.lowercase.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                transformSelection(s -> s.toLowerCase(locale));
+            }
+        };
+        lowercaseAction.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK));
+        lowercaseAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_L);
+        lowercaseAction.setEnabled(false);
+
+        caseTools.add(lowercaseAction);
+
+
+        LocalizableAction toggleCaseAction = new LocalizableAction(localizationProvider,
+                "tools.case.toggle", "tools.case.toggle.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                transformSelection(s -> Util.swapCase(s, locale));
+            }
+        };
+        toggleCaseAction.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        toggleCaseAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
+        toggleCaseAction.setEnabled(false);
+
+        caseTools.add(toggleCaseAction);
+
+
         documents.addMultipleDocumentListener(new MultipleDocumentListener() {
             @Override
             public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
                 infoAction.setEnabled(documents.getNumberOfDocuments() > 0);
+            }
+
+            @Override
+            public void documentAdded(SingleDocumentModel model) {}
+
+            @Override
+            public void documentRemoved(SingleDocumentModel model) {}
+        });
+
+        BiConsumer<Integer, Integer> toolsListener = (dot, mark) -> {
+            boolean hasSelection;
+            if (dot == null || mark == null)
+                hasSelection = false;
+            else
+                hasSelection = !dot.equals(mark);
+
+            uppercaseAction.setEnabled(hasSelection);
+            lowercaseAction.setEnabled(hasSelection);
+            toggleCaseAction.setEnabled(hasSelection);
+        };
+
+        caretListeners.add(e -> toolsListener.accept(e.getDot(), e.getMark()));
+
+        documents.addMultipleDocumentListener(new MultipleDocumentListener() {
+            @Override
+            public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
+                if (currentModel != null) {
+                    Caret caret = currentModel.getTextComponent().getCaret();
+                    toolsListener.accept(caret.getDot(), caret.getMark());
+                } else {
+                    toolsListener.accept(null, null);
+                }
             }
 
             @Override
@@ -773,6 +855,49 @@ public class JNotepadPP extends JFrame {
                 return;
 
         dispose();
+    }
+
+    /**
+     * Uses an operator to change the selected text.
+     *
+     * @param operator the operator to use to transform the text
+     * @throws NullPointerException   if {@code operator} is {@code null}
+     * @throws NoSuchElementException if no documents are open
+     */
+    private void transformSelection(UnaryOperator<String> operator) {
+        Objects.requireNonNull(operator, "The operator must not be null");
+
+        JTextComponent textComponent = documents.getCurrentDocument()
+                                                .getTextComponent();
+
+        Document document = textComponent.getDocument();
+
+        Caret caret = textComponent.getCaret();
+
+        int dot = caret.getDot();
+
+        int begin = Math.min(caret.getDot(), caret.getMark());
+        int length = Math.abs(caret.getDot() - caret.getMark());
+
+        String original;
+        try {
+            original = document.getText(begin, length);
+        } catch (BadLocationException e) {
+            return;
+        }
+
+        String replacement = operator.apply(original);
+
+        textComponent.replaceSelection(replacement);
+
+        // Restore caret
+        if (dot == begin) {
+            caret.setDot(begin + replacement.length());
+            caret.moveDot(begin);
+        } else {
+            caret.setDot(begin);
+            caret.moveDot(begin + replacement.length());
+        }
     }
 
     /**
