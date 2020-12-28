@@ -10,6 +10,9 @@ import hr.fer.oprpp1.hw08.jnotepadpp.local.swing.LocalizableAction;
 
 import javax.swing.*;
 import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -19,9 +22,11 @@ import java.io.Serial;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
+import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -37,6 +42,11 @@ public class JNotepadPP extends JFrame {
      * The default language used at startup.
      */
     private static final String DEFAULT_LANGUAGE = "en";
+
+    /**
+     * The formatter used for the clock.
+     */
+    private static final SimpleDateFormat CLOCK_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     /**
      * The localization provider used to localize the applications' controls.
@@ -64,11 +74,15 @@ public class JNotepadPP extends JFrame {
     /**
      * A list of listeners to be attached to the currently active document.
      */
-    private final List<SingleDocumentListener> documentListeners = new ArrayList<>();
+    private final List<SingleDocumentListener> singleDocumentListeners = new ArrayList<>();
     /**
-     * A list of listeners to be attached to the currently active document;s caret.
+     * A list of listeners to be attached to the currently active document's caret.
      */
     private final List<CaretListener> caretListeners = new ArrayList<>();
+    /**
+     * A list of listeners to be attached to the currently active document's text.
+     */
+    private final List<DocumentListener> documentListeners = new ArrayList<>();
 
     /**
      * Constructs a new JNotepad++ window.
@@ -96,13 +110,16 @@ public class JNotepadPP extends JFrame {
      * Fills the frame with the required GUI elements.
      */
     private void initGUI() {
+        Container innerPane = new JPanel(new BorderLayout());
+
         getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(innerPane, BorderLayout.CENTER);
 
         documents = new DefaultMultipleDocumentModel(localizationProvider);
-        getContentPane().add(documents, BorderLayout.CENTER);
+        innerPane.add(documents, BorderLayout.CENTER);
 
         toolBar = new JToolBar();
-        getContentPane().add(toolBar, BorderLayout.PAGE_START);
+        innerPane.add(toolBar, BorderLayout.PAGE_START);
 
         menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -115,6 +132,8 @@ public class JNotepadPP extends JFrame {
 
         initLanguage();
 
+        initStatusBar();
+
         updateTitle();
 
         documents.addMultipleDocumentListener(new MultipleDocumentListener() {
@@ -122,7 +141,7 @@ public class JNotepadPP extends JFrame {
             public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
                 updateTitle();
 
-                for (SingleDocumentListener listener : documentListeners) {
+                for (SingleDocumentListener listener : singleDocumentListeners) {
                     if (previousModel != null)
                         previousModel.removeSingleDocumentListener(listener);
 
@@ -137,6 +156,14 @@ public class JNotepadPP extends JFrame {
                     if (currentModel != null)
                         currentModel.getTextComponent().addCaretListener(listener);
                 }
+
+                for (DocumentListener listener : documentListeners) {
+                    if (previousModel != null)
+                        previousModel.getTextComponent().getDocument().removeDocumentListener(listener);
+
+                    if (currentModel != null)
+                        currentModel.getTextComponent().getDocument().addDocumentListener(listener);
+                }
             }
 
             @Override
@@ -148,7 +175,7 @@ public class JNotepadPP extends JFrame {
 
         localizationProvider.addLocalizationListener(this::updateTitle);
 
-        documentListeners.add(new SingleDocumentListener() {
+        singleDocumentListeners.add(new SingleDocumentListener() {
             @Override
             public void documentModifyStatusUpdated(SingleDocumentModel model) {}
 
@@ -276,7 +303,7 @@ public class JNotepadPP extends JFrame {
         Consumer<SingleDocumentModel> saveEnablingListener = m ->
                 saveAction.setEnabled(m.isModified() && m.getFilePath() != null);
 
-        documentListeners.add(new SingleDocumentListener() {
+        singleDocumentListeners.add(new SingleDocumentListener() {
             @Override
             public void documentModifyStatusUpdated(SingleDocumentModel model) {
                 saveEnablingListener.accept(model);
@@ -494,6 +521,143 @@ public class JNotepadPP extends JFrame {
             }
         };
         languageMenu.add(germanAction);
+    }
+
+    /**
+     * Initializes the status bar.
+     */
+    private void initStatusBar() {
+        JPanel statusBar = new JPanel(new GridLayout(1, 3, 3, 1));
+        getContentPane().add(statusBar, BorderLayout.AFTER_LAST_LINE);
+
+        statusBar.setBorder(BorderFactory.createEmptyBorder(1, 3, 1, 3));
+
+
+        JLabel lengthStatus = new JLabel();
+        statusBar.add(lengthStatus);
+
+        JLabel positionStatus = new JLabel();
+        statusBar.add(positionStatus);
+
+        JLabel clockStatus = new JLabel((String) null, JLabel.RIGHT);
+        statusBar.add(clockStatus);
+
+
+        Consumer<SingleDocumentModel> lengthListener = m -> {
+            if (m == null) {
+                lengthStatus.setText(null);
+                return;
+            }
+
+            long length = m.getTextComponent()
+                           .getText()
+                           .codePoints()
+                           .count();
+
+            String format = localizationProvider.getString("status.length");
+
+            lengthStatus.setText(String.format(format, length));
+        };
+
+        BiConsumer<Integer, Integer> positionListener = (dot, mark) -> {
+            if (dot == null || mark == null) {
+                positionStatus.setText(null);
+                return;
+            }
+
+            JTextArea textComponent = documents.getCurrentDocument().getTextComponent();
+
+            int line;
+            try {
+                line = textComponent.getLineOfOffset(dot);
+            } catch (BadLocationException ex) {
+                line = -1;
+            }
+
+            long col;
+            try {
+                int linePos = textComponent.getLineStartOffset(line);
+
+                String lineBegin = textComponent.getText(linePos, dot - linePos);
+                col = lineBegin.codePointCount(0, lineBegin.length());
+            } catch (BadLocationException ex) {
+                col = -1;
+            }
+
+            int sel = textComponent.getText()
+                                   .codePointCount(Math.min(dot, mark), Math.max(dot, mark));
+
+            String format = localizationProvider.getString("status.position");
+
+            positionStatus.setText(String.format(format, line + 1, col + 1, sel));
+        };
+
+        documents.addMultipleDocumentListener(new MultipleDocumentListener() {
+            @Override
+            public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
+                lengthListener.accept(currentModel);
+
+                if (currentModel == null) {
+                    positionListener.accept(null, null);
+                } else {
+                    positionListener.accept(currentModel.getTextComponent().getCaret().getDot(),
+                            currentModel.getTextComponent().getCaret().getMark());
+                }
+            }
+
+            @Override
+            public void documentAdded(SingleDocumentModel model) {}
+
+            @Override
+            public void documentRemoved(SingleDocumentModel model) {}
+        });
+
+        documentListeners.add(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                lengthListener.accept(documents.getCurrentDocument());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                lengthListener.accept(documents.getCurrentDocument());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                lengthListener.accept(documents.getCurrentDocument());
+            }
+        });
+
+        caretListeners.add(e -> positionListener.accept(e.getDot(), e.getMark()));
+
+        localizationProvider.addLocalizationListener(() -> {
+            SingleDocumentModel model = documents.getCurrentDocument();
+
+            lengthListener.accept(model);
+
+            if (model == null) {
+                positionListener.accept(null, null);
+            } else {
+                positionListener.accept(model.getTextComponent().getCaret().getDot(),
+                        model.getTextComponent().getCaret().getMark());
+            }
+        });
+
+
+        // Not using a Swing timer because it can desynchronize from the clock.
+        // In contrast, java.util.Timer.scheduleAtFixedRate prevents this.
+        java.util.Timer timer = new java.util.Timer();
+
+        // Synchronize the timer to the clock
+        int millis = new Date().toInstant().get(ChronoField.MILLI_OF_SECOND);
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(() -> clockStatus.setText(CLOCK_FORMAT.format(new Date())));
+            }
+        }, 1000 - millis, 1000);
     }
 
     /**
