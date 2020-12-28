@@ -14,6 +14,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
+import javax.swing.text.Element;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.FlavorListener;
@@ -565,27 +567,30 @@ public class JNotepadPP extends JFrame {
                 return;
             }
 
-            JTextArea textComponent = documents.getCurrentDocument().getTextComponent();
+            PlainDocument document = (PlainDocument) documents.getCurrentDocument()
+                                                              .getTextComponent()
+                                                              .getDocument();
+            Element root = document.getDefaultRootElement();
 
-            int line;
-            try {
-                line = textComponent.getLineOfOffset(dot);
-            } catch (BadLocationException ex) {
-                line = -1;
-            }
+            int line = root.getElementIndex(dot);
 
             long col;
             try {
-                int linePos = textComponent.getLineStartOffset(line);
+                int linePos = root.getElement(line).getStartOffset();
 
-                String lineBegin = textComponent.getText(linePos, dot - linePos);
+                String lineBegin = document.getText(linePos, dot);
                 col = lineBegin.codePointCount(0, lineBegin.length());
-            } catch (BadLocationException ex) {
+            } catch (BadLocationException e) {
                 col = -1;
             }
 
-            int sel = textComponent.getText()
-                                   .codePointCount(Math.min(dot, mark), Math.max(dot, mark));
+            int sel;
+            try {
+                String selection = document.getText(Math.min(dot, mark), Math.abs(dot - mark));
+                sel = selection.codePointCount(0, selection.length());
+            } catch (BadLocationException e) {
+                sel = 0;
+            }
 
             String format = localizationProvider.getString("status.position");
 
