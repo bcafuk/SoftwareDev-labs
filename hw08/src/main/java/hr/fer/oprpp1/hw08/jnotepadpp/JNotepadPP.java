@@ -426,8 +426,8 @@ public class JNotepadPP extends JFrame {
                 pasteEnablingListener.flavorsChanged(null);
 
                 boolean hasSelection = false;
-                if (documents.getNumberOfDocuments() > 0) {
-                    Caret caret = documents.getCurrentDocument().getTextComponent().getCaret();
+                if (currentModel != null) {
+                    Caret caret = currentModel.getTextComponent().getCaret();
                     hasSelection = (caret.getDot() != caret.getMark());
                 }
 
@@ -730,7 +730,11 @@ public class JNotepadPP extends JFrame {
         caretListeners.add(e -> positionListener.accept(e.getDot(), e.getMark()));
 
         localizationProvider.addLocalizationListener(() -> {
-            SingleDocumentModel model = documents.getCurrentDocument();
+            SingleDocumentModel model;
+            if (documents.getNumberOfDocuments() > 0)
+                model = documents.getCurrentDocument();
+            else
+                model = null;
 
             lengthListener.accept(model);
 
