@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.*;
+import java.util.Timer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -87,6 +88,11 @@ public class JNotepadPP extends JFrame {
     private final List<DocumentListener> documentListeners = new ArrayList<>();
 
     /**
+     * The timer used for the clock in the status bar.
+     */
+    private Timer clockTimer;
+
+    /**
      * Constructs a new JNotepad++ window.
      *
      * @throws HeadlessException if {@link GraphicsEnvironment#isHeadless()} returns {@code true}.
@@ -104,6 +110,11 @@ public class JNotepadPP extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 tryExit();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                clockTimer.cancel();
             }
         });
     }
@@ -652,12 +663,12 @@ public class JNotepadPP extends JFrame {
 
         // Not using a Swing timer because it can desynchronize from the clock.
         // In contrast, java.util.Timer.scheduleAtFixedRate prevents this.
-        java.util.Timer timer = new java.util.Timer();
+        clockTimer = new Timer(true);
 
         // Synchronize the timer to the clock
         int millis = new Date().toInstant().get(ChronoField.MILLI_OF_SECOND);
 
-        timer.scheduleAtFixedRate(new TimerTask() {
+        clockTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 SwingUtilities.invokeLater(() -> clockStatus.setText(CLOCK_FORMAT.format(new Date())));
