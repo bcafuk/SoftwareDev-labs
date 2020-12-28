@@ -420,15 +420,15 @@ public class JNotepadPP extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String text = documents.getCurrentDocument().getTextComponent().getText();
 
-                long chars = text.codePoints()
-                                 .count();
+                long chars = text.codePointCount(0, text.length());
 
                 long nonBlanks = text.codePoints()
                                      .filter(cp -> !Character.isWhitespace(cp))
                                      .count();
 
-                long lines = text.lines()
-                                 .count();
+                long lines = documents.getCurrentDocument()
+                                      .getTextComponent()
+                                      .getLineCount();
 
                 localizedMessageDialog(JOptionPane.INFORMATION_MESSAGE, "tools.info",
                         "tools.info.message", chars, nonBlanks, lines);
