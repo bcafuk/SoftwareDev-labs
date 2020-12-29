@@ -21,6 +21,7 @@ import java.io.Serial;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.Collator;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoField;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 /**
  * The window of JNotepad++, a text editor which supports editing multiple files in tabs.
@@ -481,9 +483,6 @@ public class JNotepadPP extends JFrame {
         toolsMenu.add(infoAction);
 
 
-        Locale locale = LocalizationProvider.getInstance().getLocale();
-
-
         JMenu caseTools = new LJMenu("tools.case", localizationProvider);
         toolsMenu.add(caseTools);
 
@@ -492,6 +491,7 @@ public class JNotepadPP extends JFrame {
                 "tools.case.uppercase", "tools.case.uppercase.description") {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Locale locale = LocalizationProvider.getInstance().getLocale();
                 transformSelection(s -> s.toUpperCase(locale));
             }
         };
@@ -507,6 +507,7 @@ public class JNotepadPP extends JFrame {
                 "tools.case.lowercase", "tools.case.lowercase.description") {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Locale locale = LocalizationProvider.getInstance().getLocale();
                 transformSelection(s -> s.toLowerCase(locale));
             }
         };
@@ -522,6 +523,7 @@ public class JNotepadPP extends JFrame {
                 "tools.case.toggle", "tools.case.toggle.description") {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Locale locale = LocalizationProvider.getInstance().getLocale();
                 transformSelection(s -> Util.swapCase(s, locale));
             }
         };
@@ -531,6 +533,45 @@ public class JNotepadPP extends JFrame {
         toggleCaseAction.setEnabled(false);
 
         caseTools.add(toggleCaseAction);
+
+
+        JMenu sortTools = new LJMenu("tools.sort", localizationProvider);
+        sortTools.setIcon(Util.loadIcon("icons/command/sortAsc.png"));
+        toolsMenu.add(sortTools);
+
+
+        LocalizableAction sortAscAction = new LocalizableAction(localizationProvider,
+                "tools.sort.ascending", "tools.sort.ascending.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Locale locale = LocalizationProvider.getInstance().getLocale();
+                selectionLineOperation(s -> s.sorted(Collator.getInstance(locale)));
+            }
+        };
+        sortAscAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/sortAsc.png"));
+        sortAscAction.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_J, InputEvent.CTRL_DOWN_MASK));
+        sortAscAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
+        sortAscAction.setEnabled(false);
+
+        sortTools.add(sortAscAction);
+
+
+        LocalizableAction sortDescAction = new LocalizableAction(localizationProvider,
+                "tools.sort.descending", "tools.sort.descending.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Locale locale = LocalizationProvider.getInstance().getLocale();
+                selectionLineOperation(s -> s.sorted(Collator.getInstance(locale).reversed()));
+            }
+        };
+        sortDescAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/sortDesc.png"));
+        sortDescAction.putValue(Action.ACCELERATOR_KEY,
+                KeyStroke.getKeyStroke(KeyEvent.VK_J, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        sortDescAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
+        sortDescAction.setEnabled(false);
+
+        sortTools.add(sortDescAction);
 
 
         documents.addMultipleDocumentListener(new MultipleDocumentListener() {
@@ -556,6 +597,9 @@ public class JNotepadPP extends JFrame {
             uppercaseAction.setEnabled(hasSelection);
             lowercaseAction.setEnabled(hasSelection);
             toggleCaseAction.setEnabled(hasSelection);
+
+            sortAscAction.setEnabled(hasSelection);
+            sortDescAction.setEnabled(hasSelection);
         };
 
         caretListeners.add(e -> toolsListener.accept(e.getDot(), e.getMark()));
@@ -901,6 +945,72 @@ public class JNotepadPP extends JFrame {
         } else {
             caret.setDot(begin);
             caret.moveDot(begin + replacement.length());
+        }
+    }
+
+    /**
+     * Uses an operator to modify currently selected lines.
+     * <p>
+     * The operator takes the stream of selected lines and is expected to
+     * return a stream of lines to be written in their place.
+     *
+     * @param streamOperator the operator used to transform the lines
+     * @throws NullPointerException   if {@code streamOperator} is {@code null}
+     * @throws NoSuchElementException if no documents are open
+     */
+    private void selectionLineOperation(UnaryOperator<Stream<String>> streamOperator) {
+        Objects.requireNonNull(streamOperator, "The operator must not be null");
+
+        JTextComponent textComponent = documents.getCurrentDocument()
+                                                .getTextComponent();
+
+        Document document = textComponent.getDocument();
+
+        Element root = document.getDefaultRootElement();
+
+        Caret caret = textComponent.getCaret();
+
+        int dot = caret.getDot();
+
+        int selectionBegin = Math.min(caret.getDot(), caret.getMark());
+        int selectionEnd = Math.max(caret.getDot(), caret.getMark());
+
+        int firstLine = root.getElementIndex(selectionBegin);
+        int lastLine = root.getElementIndex(selectionEnd);
+
+        int begin = root.getElement(firstLine).getStartOffset();
+        int end = root.getElement(lastLine).getEndOffset() - 1;
+
+        String[] lines = new String[lastLine - firstLine + 1];
+
+        for (int i = firstLine; i <= lastLine; i++) {
+            Element line = root.getElement(i);
+
+            int lineBegin = line.getStartOffset();
+            int lineEnd = line.getEndOffset() - 1;
+
+            try {
+                lines[i - firstLine] = document.getText(lineBegin, lineEnd - lineBegin);
+            } catch (BadLocationException e) {
+                return;
+            }
+        }
+
+        String[] transformedLines = streamOperator.apply(Arrays.stream(lines)).toArray(String[]::new);
+
+        String result = String.join("\n", transformedLines);
+
+        caret.setDot(end);
+        caret.moveDot(begin);
+        textComponent.replaceSelection(result);
+
+        // Restore caret
+        if (dot == selectionBegin) {
+            caret.setDot(begin + result.length());
+            caret.moveDot(begin);
+        } else {
+            caret.setDot(begin);
+            caret.moveDot(begin + result.length());
         }
     }
 
