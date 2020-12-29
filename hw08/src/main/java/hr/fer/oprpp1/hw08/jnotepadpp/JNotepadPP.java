@@ -484,6 +484,7 @@ public class JNotepadPP extends JFrame {
 
 
         JMenu caseTools = new LJMenu("tools.case", localizationProvider);
+        caseTools.setIcon(Util.loadIcon("icons/command/case.png"));
         toolsMenu.add(caseTools);
 
 
