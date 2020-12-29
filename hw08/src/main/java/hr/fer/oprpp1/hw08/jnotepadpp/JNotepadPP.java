@@ -3,6 +3,7 @@ package hr.fer.oprpp1.hw08.jnotepadpp;
 import hr.fer.oprpp1.hw08.jnotepadpp.documentModel.MultipleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.documentModel.SingleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.documentModel.SingleDocumentModel;
+import hr.fer.oprpp1.hw08.jnotepadpp.local.ILocalizationListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.local.LocalizationProvider;
 import hr.fer.oprpp1.hw08.jnotepadpp.local.swing.FrameLocalizationProvider;
 import hr.fer.oprpp1.hw08.jnotepadpp.local.swing.LJMenu;
@@ -45,6 +46,10 @@ public class JNotepadPP extends JFrame {
      * The default language used at startup.
      */
     private static final String DEFAULT_LANGUAGE = "en";
+    /**
+     * The languages supported by the application.
+     */
+    private static final String[] LANGUAGES = new String[]{"en", "hr", "de"};
 
     /**
      * The formatter used for the clock.
@@ -651,35 +656,33 @@ public class JNotepadPP extends JFrame {
         languageMenu.setMnemonic(KeyEvent.VK_L);
         menuBar.add(languageMenu);
 
+        LocalizableAction[] actions = new LocalizableAction[LANGUAGES.length];
 
-        LocalizableAction englishAction = new LocalizableAction(localizationProvider,
-                "language.en") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LocalizationProvider.getInstance().setLanguage("en");
-            }
+        for (int i = 0; i < LANGUAGES.length; i++) {
+            String language = LANGUAGES[i];
+
+            actions[i] = new LocalizableAction(localizationProvider,
+                    "language." + language) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    LocalizationProvider.getInstance().setLanguage(language);
+                }
+            };
+
+            languageMenu.add(actions[i]);
+        }
+
+        ILocalizationListener disableCurrent = () -> {
+            String currentLanguage = LocalizationProvider.getInstance()
+                                                         .getLocale()
+                                                         .getLanguage();
+
+            for (int i = 0; i < LANGUAGES.length; i++)
+                actions[i].setEnabled(!LANGUAGES[i].equals(currentLanguage));
         };
-        languageMenu.add(englishAction);
 
-
-        LocalizableAction croatianAction = new LocalizableAction(localizationProvider,
-                "language.hr") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LocalizationProvider.getInstance().setLanguage("hr");
-            }
-        };
-        languageMenu.add(croatianAction);
-
-
-        LocalizableAction germanAction = new LocalizableAction(localizationProvider,
-                "language.de") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LocalizationProvider.getInstance().setLanguage("de");
-            }
-        };
-        languageMenu.add(germanAction);
+        disableCurrent.localizationChanged();
+        localizationProvider.addLocalizationListener(disableCurrent);
     }
 
     /**
