@@ -538,6 +538,7 @@ public class JNotepadPP extends JFrame {
 
         JMenu sortTools = new LJMenu("tools.sort", localizationProvider);
         sortTools.setIcon(Util.loadIcon("icons/command/sortAsc.png"));
+        sortTools.setMnemonic(KeyEvent.VK_S);
         toolsMenu.add(sortTools);
 
 
@@ -575,6 +576,21 @@ public class JNotepadPP extends JFrame {
         sortTools.add(sortDescAction);
 
 
+        LocalizableAction uniqueAction = new LocalizableAction(localizationProvider,
+                "tools.unique", "tools.unique.description") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectionLineOperation(Stream::distinct);
+            }
+        };
+        uniqueAction.putValue(Action.SMALL_ICON, Util.loadIcon("icons/command/unique.png"));
+        uniqueAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_K, InputEvent.CTRL_DOWN_MASK));
+        uniqueAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
+        uniqueAction.setEnabled(false);
+
+        toolsMenu.add(uniqueAction);
+
+
         documents.addMultipleDocumentListener(new MultipleDocumentListener() {
             @Override
             public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
@@ -601,6 +617,8 @@ public class JNotepadPP extends JFrame {
 
             sortAscAction.setEnabled(hasSelection);
             sortDescAction.setEnabled(hasSelection);
+
+            uniqueAction.setEnabled(hasSelection);
         };
 
         caretListeners.add(e -> toolsListener.accept(e.getDot(), e.getMark()));
