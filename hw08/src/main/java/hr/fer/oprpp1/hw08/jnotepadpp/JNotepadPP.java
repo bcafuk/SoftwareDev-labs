@@ -741,7 +741,7 @@ public class JNotepadPP extends JFrame {
             try {
                 int linePos = root.getElement(line).getStartOffset();
 
-                String lineBegin = document.getText(linePos, dot);
+                String lineBegin = document.getText(linePos, dot - linePos);
                 col = lineBegin.codePointCount(0, lineBegin.length());
             } catch (BadLocationException e) {
                 col = -1;
